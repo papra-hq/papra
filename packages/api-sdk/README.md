@@ -5,7 +5,7 @@ This is a JS/TS SDK for the Papra API.
 
 # Prerequisites
 
-To use the SDK, you need to have an API key. You can create one in your user settings (under /api-keys).
+For API-key-enabled endpoints, create an API key in your user settings (under /api-keys). Session-only endpoints, such as the current-user endpoints, require a signed-in session instead.
 
 ## Installation
 
@@ -46,6 +46,30 @@ const client = createClient({ apiKey, apiBaseUrl }).forOrganization('org_...');
 
 await client.uploadDocument({ file });
 ```
+
+## Contract-based methods
+
+Methods are derived from the server's contract registry; adding a registry entry adds the corresponding SDK method on the next build. Migrated methods accept separate `params`, `query`, and `body` fields and return the successful response body.
+
+For current-user endpoints, use your existing session rather than an API key:
+
+```ts
+const client = createClient({
+  apiBaseUrl: 'https://papra.example',
+  credentials: 'include', // Send the browser's existing session cookie.
+});
+
+const { user } = await client.getCurrentUser();
+await client.updateCurrentUser({ body: { name: 'Alice' } });
+```
+
+For server-side calls, pass session cookies explicitly through `headers: { Cookie: sessionCookie }`. You can also supply a custom `fetch` implementation. The SDK does not sign users in or maintain a cookie jar.
+
+Contract-based methods currently support JSON request/response bodies and bodyless success responses. Path and query parameters support scalar values. Other content formats are rejected when building the client. Existing handwritten methods, including multipart uploads and `forOrganization`, remain available during migration; organization scoping currently applies only to these legacy methods.
+
+Request values use the schemas' input types and are sent without applying server-side transformations. Responses are validated with Valibot and returned as parsed schema outputs; current-user timestamps remain ISO strings.
+
+Contract-based methods throw `ApiHttpError` for unsuccessful HTTP responses (with `status` and `data`), and `ApiResponseError` for successful responses that violate their declared status, content type, or schema. Network errors propagate from the HTTP transport. Legacy methods retain their existing `ofetch` error behavior.
 
 ## License
 

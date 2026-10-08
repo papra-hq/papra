@@ -881,6 +881,9 @@ importers:
       ofetch:
         specifier: 'catalog:'
         version: 1.4.1
+      valibot:
+        specifier: 'catalog:'
+        version: 1.4.2(typescript@7.0.2)
     devDependencies:
       '@papra/app-server':
         specifier: workspace:*

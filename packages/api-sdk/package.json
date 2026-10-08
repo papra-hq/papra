@@ -24,7 +24,7 @@
     "dist"
   ],
   "type": "module",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -40,12 +40,16 @@
   },
   "dependencies": {
     "@corentinth/chisels": "catalog:",
-    "ofetch": "catalog:"
+    "ofetch": "catalog:",
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@papra/app-server": "workspace:*",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "inlinedDependencies": {
+    "@papra/app-server": "0.0.0"
   }
 }
