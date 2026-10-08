@@ -16,6 +16,7 @@ import type { EventServices } from './events/events.services';
 import type { ShutdownServices } from './graceful-shutdown/graceful-shutdown.services';
 import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import type { AiServices } from '../ai/ai.services';
+import type { ResolveAuthenticationContext } from '../api/api.authentication';
 
 export type ServerInstanceGenerics = {
   Variables: {
@@ -49,3 +50,7 @@ export type GlobalDependencies = {
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;
+
+export type ApiDependencies = GlobalDependencies & {
+  resolveAuthenticationContext: ResolveAuthenticationContext;
+};

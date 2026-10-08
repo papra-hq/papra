@@ -1,6 +1,37 @@
 import { addLogContext } from '@crowlog/async-context-plugin';
 import type { ApiKeyPermissions } from '../api-keys/api-keys.types';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
+import type { Database } from '../app/database/database.types';
+import { buildGetApiKeyFromHeaders } from '../api-keys/api-keys.authentication';
+import { getApiKey } from '../api-keys/api-keys.usecases';
+import { createApiKeysRepository } from '../api-keys/api-keys.repository';
+
+export function buildGetSession({
+  auth,
+}: {
+  auth: {
+    api: { getSession: (args: { headers: Headers }) => Promise<{ user: { id: string } } | null> };
+  };
+}) {
+  return async ({ headers }: { headers: Headers }): Promise<{ userId: string } | null> => {
+    const session = await auth.api.getSession({ headers });
+
+    return session ? { userId: session.user.id } : null;
+  };
+}
+
+export function buildGetApiKey({ db }: { db: Database }) {
+  const apiKeyRepository = createApiKeysRepository({ db });
+
+  return buildGetApiKeyFromHeaders({
+    lookupApiKeyByToken: async ({ token }) => {
+      const { apiKey } = await getApiKey({ token, apiKeyRepository });
+      return apiKey
+        ? { userId: apiKey.userId, permissions: apiKey.permissions, apiKeyId: apiKey.id }
+        : null;
+    },
+  });
+}
 
 export function buildResolveAuthenticationContext({
   getSession,

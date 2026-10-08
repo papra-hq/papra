@@ -1,15 +1,15 @@
-import type { ResolveAuthenticationContext } from '../api/api.authentication';
 import { defineApiRoute } from '../api/api.routes';
-import type { GlobalDependencies } from '../app/server.types';
+import type { ApiDependencies } from '../app/server.types';
 import { getPermissionsForRoles } from '../roles/roles.methods';
 import { createRolesRepository } from '../roles/roles.repository';
 import { getCurrentUserContract } from './users.api.contracts';
 import { createUsersRepository } from './users.repository';
 
-export function setupGetCurrentUserRoute({
-  resolveAuthenticationContext,
-  db,
-}: GlobalDependencies & { resolveAuthenticationContext: ResolveAuthenticationContext }) {
+export function buildUserApiRoutes(deps: ApiDependencies) {
+  return [setupGetCurrentUserRoute(deps)];
+}
+
+function setupGetCurrentUserRoute({ resolveAuthenticationContext, db }: ApiDependencies) {
   return defineApiRoute({
     contract: getCurrentUserContract,
     resolveContext: resolveAuthenticationContext(),

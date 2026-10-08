@@ -9,11 +9,11 @@ import { validateJsonBody } from '../shared/validation/validation';
 import { createUsersRepository } from './users.repository';
 
 export function registerUsersRoutes(context: RouteDefinitionContext) {
-  setupGetCurrentUserRoute(context);
+  // setupGetCurrentUserRoute(context);
   setupUpdateUserRoute(context);
 }
 
-function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
+function _setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
   app.get('/api/users/me', requireAuthentication(), async (context) => {
     const { userId } = getUser({ context });
 
