@@ -43,6 +43,7 @@
     "ofetch": "catalog:"
   },
   "devDependencies": {
+    "@papra/app-server": "workspace:*",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
