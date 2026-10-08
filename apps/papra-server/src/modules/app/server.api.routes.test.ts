@@ -100,24 +100,24 @@ describe('contract API wiring', () => {
   });
 
   test('unmigrated routes receive the session and unread request body', async () => {
-    const { app, user, headers } = await createAuthenticatedServer();
+    const { app, headers } = await createAuthenticatedServer();
 
-    const response = await app.request('/api/users/me', {
-      method: 'PUT',
+    const response = await app.request('/api/organizations', {
+      method: 'POST',
       headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Alice Updated' }),
+      body: JSON.stringify({ name: 'Alice Organization' }),
     });
 
     expect(response.status).toEqual(200);
     expect(await response.json()).toMatchObject({
-      user: { id: user.id, name: 'Alice Updated' },
+      organization: { name: 'Alice Organization' },
     });
 
-    const currentUserResponse = await app.request('/api/users/me', { headers });
+    const organizationsResponse = await app.request('/api/organizations', { headers });
 
-    expect(currentUserResponse.status).toEqual(200);
-    expect(await currentUserResponse.json()).toMatchObject({
-      user: { id: user.id, name: 'Alice Updated' },
+    expect(organizationsResponse.status).toEqual(200);
+    expect(await organizationsResponse.json()).toMatchObject({
+      organizations: [{ name: 'Alice Organization' }],
     });
   });
 });
