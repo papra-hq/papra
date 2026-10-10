@@ -1,4 +1,5 @@
 import { registerAutoTagDocumentTask } from '../auto-tagging/tasks/auto-tag-document.task';
+import { registerExtractDocumentMetadataTask } from '../ai-extraction/tasks/extract-document-metadata.task';
 import type { GlobalDependencies } from '../app/server.types';
 import { registerExtractDocumentFileContentTask } from '../documents/tasks/extract-document-file-content.task';
 import { registerHardDeleteExpiredDocumentsTask } from '../documents/tasks/hard-delete-expired-documents.task';
@@ -16,5 +17,6 @@ export async function registerTaskDefinitions(deps: GlobalDependencies) {
   await registerApplyTaggingRuleToDocumentsTask(deps);
   await registerPurgeExpiredKvEntriesTask(deps);
   await registerAutoTagDocumentTask(deps);
+  await registerExtractDocumentMetadataTask(deps);
   await registerReverifyPlanEntitlementsTask(deps);
 }

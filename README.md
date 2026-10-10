@@ -56,12 +56,13 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 - **API, SDK and webhooks**: Build your own applications on top of Papra.
 - **i18n**: Support for multiple languages.
 - **Custom properties**: Define per-organization custom properties to store additional information about documents.
+- **AI auto tagging**: Automatically tag documents from their extracted content using an LLM.
+- **AI extraction**: Automatically fill document dates, custom properties, and filenames using an LLM.
 - **Document sharing**: Share documents with external users with optional expiration dates and password protection.
 - _Coming soon:_ **Document requests**: Generate upload links for people to add documents.
 - _Coming maybe one day:_ **Mobile app**: Access and upload documents on the go.
 - _Coming maybe one day:_ **Desktop app**: Access and upload documents from your computer.
 - _Coming maybe one day:_ **Browser extension**: Upload documents from your browser.
-- _Coming maybe one day:_ **AI**: Use AI to help you manage or tag your documents.
 
 ## Support
 

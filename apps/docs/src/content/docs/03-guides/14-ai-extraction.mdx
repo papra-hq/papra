@@ -1,0 +1,90 @@
+---
+title: AI document extraction
+description: Automatically extract document dates, custom properties, and filenames using an LLM.
+slug: guides/ai-extraction
+---
+
+This guide shows you how to set up AI-powered metadata extraction for your documents.
+
+## What is AI extraction?
+
+Once a document's content has been extracted, Papra can send that text to an LLM to fill in additional metadata:
+
+- **Document date**: invoices and letters usually contain a date. Extracting it lets you sort and filter documents by that date.
+- **Custom properties**: each property's type and description is sent to the model as structured output, so values like vendor, amount, or category can be filled automatically.
+- **Filename**: you can define a naming pattern. The original filename is always preserved in the document metadata.
+
+The configuration lives per-organization, so each organization can independently enable extraction and choose which parts to run.
+
+Extraction never overwrites existing values. Dates that are already set, custom properties that already have a value, and documents that have already been renamed are left untouched.
+
+## Prerequisites
+
+AI extraction relies on two things:
+
+1. **A configured LLM provider.** Papra supports many providers out of the box, plus any OpenAI-compatible API. See the [LLM configuration guide](/guides/llm-configuration) for details.
+2. **Content extraction.** Metadata is derived from the document’s extracted text, so the document must go through [content extraction](/guides/content-extraction) first.
+
+Custom property extraction also needs at least one custom property defined on the organization. Relation properties (`user_relation`, `document_relation`) are skipped because they cannot be inferred from document text.
+
+## Enabling AI extraction (server)
+
+Extraction is gated by two server-side switches: the global AI switch and the extraction switch. Both must be enabled (the extraction switch is enabled by default).
+
+Example configuration using a local Ollama instance:
+
+```bash
+AI_IS_ENABLED=true
+AI_DEFAULT_MODEL=ollama://qwen3:8b
+AI_EXTRACTION_ENABLED=true
+```
+
+### Server options
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `AI_IS_ENABLED` | `false` | Master switch for all AI features. Must be `true`. |
+| `AI_EXTRACTION_ENABLED` | `true` | Whether organizations are allowed to use AI extraction. |
+| `AI_EXTRACTION_MODEL` | falls back to `AI_DEFAULT_MODEL` | The model used for extraction, in `<adapter>://<model>` form. |
+
+Once enabled on the server, organizations can turn extraction on in their settings.
+
+## Configuring AI extraction (organization)
+
+In your organization settings, under the **AI extraction** section, you can configure:
+
+- **Enable AI extraction**: Enable or disable extraction for this organization.
+- **Extract document date**: Fill the document date when it is not already set.
+- **Extract custom properties**: Fill empty custom properties from the document content.
+- **Rename documents**: Generate a display name. The original filename stays in the document metadata.
+- **Filename pattern**: An optional naming rule, for example `{date} - {vendor}`. Leave empty to let the model choose a concise descriptive name.
+
+Once enabled, every time a document is added to Papra its extracted content is sent to the LLM, and the returned date, custom properties, and filename are applied when they are still empty.
+
+## Testing against a live Ollama model
+
+The server has an integration suite that sends a sample invoice to a real model and checks date, vendor, amount, and filename extraction. With Ollama running and a model pulled:
+
+```bash
+cd apps/papra-server
+TEST_OLLAMA_BASE_URL=http://localhost:11434/v1 \
+TEST_OLLAMA_MODEL_ID=ollama://gpt-oss:20b \
+pnpm exec vitest run src/modules/ai-extraction/int-tests/ollama.ai-extraction.int.test.ts
+```
+
+The suite is skipped unless both environment variables are set. `gpt-oss:20b` needs about 16GB of memory; a smaller local model such as `ollama://qwen3:8b` works the same way.
+
+:::tip
+Custom property descriptions matter. The LLM uses each property’s name, type, description, and select options, so adding clear descriptions significantly improves the quality of the extracted values.
+:::
+
+## Troubleshooting
+
+If extraction is not working as expected:
+
+- Check the server logs for errors related to the LLM provider or the extraction process.
+- Ensure the LLM provider is correctly configured and reachable from the Papra server (see [LLM configuration](/guides/llm-configuration)).
+- Confirm both `AI_IS_ENABLED` and `AI_EXTRACTION_ENABLED` are set, and that AI extraction is enabled in the organization settings.
+- Make sure the document’s content was extracted — with no extracted text, the LLM has nothing to read.
+- If custom properties stay empty, check that they have a supported type (`text`, `number`, `date`, `boolean`, `select`, or `multi_select`) and a useful description.
+- If filenames are not updated, confirm **Rename documents** is enabled and that the document has not already been renamed.

@@ -43,6 +43,7 @@ import { getCommitInfo } from './config.usecases';
 import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
 import { aiConfig } from '../ai/ai.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
+import { aiExtractionConfig } from '../ai-extraction/ai-extraction.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
 import { ensureIntakeEmailWebhookSecretisSetWhenIntakeEmailsAreEnabled } from '../intake-emails/intake-emails.config.models';
 
@@ -193,6 +194,7 @@ export const configDefinition = {
   planEntitlements: planEntitlementsConfig,
   ai: aiConfig,
   autoTagging: autoTaggingConfig,
+  aiExtraction: aiExtractionConfig,
 } as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

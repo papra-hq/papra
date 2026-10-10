@@ -77,6 +77,10 @@ export const sidebar = [
         label: 'Document Auto Tagging',
         slug: 'guides/auto-tagging',
       },
+      {
+        label: 'AI Document Extraction',
+        slug: 'guides/ai-extraction',
+      },
     ],
   },
   {
