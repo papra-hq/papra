@@ -159,6 +159,28 @@ export const PdfViewerToolbar: Component<ToolbarProps> = (props) => {
                 {...triggerProps}
                 variant="ghost"
                 size="icon"
+                class="size-8"
+                aria-label={t('documents.pdf-viewer.search.label')}
+                aria-expanded={props.isSearchOpen()}
+                aria-controls={props.searchId}
+                aria-keyshortcuts="Control+f Meta+f"
+                disabled={!props.store.pdfSlick}
+                onClick={props.onOpenSearch}
+              >
+                <div class="i-tabler-search size-4" />
+              </Button>
+            )}
+          />
+          <TooltipContent>{t('documents.pdf-viewer.search.label')}</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger
+            as={(triggerProps: Record<string, unknown>) => (
+              <Button
+                {...triggerProps}
+                variant="ghost"
+                size="icon"
                 class="size-8 hidden md:inline-flex"
                 onClick={() => {
                   if (props.store.pdfSlick) {
