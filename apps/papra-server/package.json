@@ -81,7 +81,7 @@
     "mime-types": "^3.0.1",
     "nanoid": "^5.1.5",
     "node-cron": "^3.0.3",
-    "nodemailer": "^9.0.0",
+    "nodemailer": "^10.0.0",
     "ofetch": "catalog:",
     "p-limit": "catalog:",
     "p-queue": "^8.1.0",
