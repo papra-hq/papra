@@ -23,4 +23,7 @@ export const organizationSettingsTable = sqliteTable('organization_settings', {
 
   // AI auto-naming settings
   aiAutoNamingEnabled: integer('ai_auto_naming_enabled', { mode: 'boolean' }),
+
+  // AI document date extraction settings
+  aiAutoDocumentDateEnabled: integer('ai_auto_document_date_enabled', { mode: 'boolean' }),
 });

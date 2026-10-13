@@ -14,6 +14,7 @@ const document = {
   name: 'acme-invoice-2026-06.pdf',
   content: [
     'INVOICE #2026-042',
+    'Invoice date: June 3, 2026',
     'From: Acme Corp, 123 Main St',
     'To: John Doe',
     'Web hosting services, June 2026',
@@ -77,5 +78,16 @@ export async function runAutoProcessingTestSuite({
     expect(tagsActions?.tagIdsToAdd).toContain('tag_1');
     expect(titleAction?.shouldRename).toBe(true);
     expect(titleAction?.title.toLowerCase()).toContain('acme');
+  });
+
+  test('the document date is extracted in the ISO format', { timeout }, async () => {
+    const { dateAction } = await promptForAutoProcessing({
+      modelId,
+      aiServices,
+      document,
+      dating: { now: new Date('2026-10-12T00:00:00.000Z') },
+    });
+
+    expect(dateAction?.documentDate).toEqual(new Date('2026-06-03T12:00:00.000Z'));
   });
 }

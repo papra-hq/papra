@@ -179,6 +179,9 @@ export async function fetchOrganizationSettings({ organizationId }: { organizati
         autoNaming: {
           isEnabled: boolean;
         };
+        autoDocumentDate: {
+          isEnabled: boolean;
+        };
       };
     };
   }>({
@@ -204,6 +207,9 @@ export async function updateOrganizationSettings({
         maxTags?: number;
       };
       autoNaming?: {
+        isEnabled?: boolean;
+      };
+      autoDocumentDate?: {
         isEnabled?: boolean;
       };
     };

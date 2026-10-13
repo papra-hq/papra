@@ -108,6 +108,9 @@ describe('config models', () => {
           autoNaming: {
             isEnabled: false,
           },
+          autoDocumentDate: {
+            isEnabled: false,
+          },
         },
       });
     });

@@ -8,12 +8,17 @@ import type { ResolveOrganizationSettingsUsecase } from '../organizations/organi
 import type { TagsRepository } from '../tags/tags.repository';
 import type { Tag } from '../tags/tags.types';
 import { ensureModelId } from '../ai/ai.models';
+import { getDocumentDateAction } from '../auto-document-date/auto-document-date.models';
 import { getTitleAction } from '../auto-naming/auto-naming.models';
 import { getTagsActions } from '../auto-tagging/auto-tagging.models';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import { createLogger } from '../shared/logger/logger';
 import { applyTagsToDocuments, createTag } from '../tags/tags.usecases';
-import type { AutoNamingOptions, AutoTaggingOptions } from './auto-processing.models';
+import type {
+  AutoDocumentDateOptions,
+  AutoNamingOptions,
+  AutoTaggingOptions,
+} from './auto-processing.models';
 import {
   buildAutoProcessingSchema,
   buildAutoProcessingSystemPrompt,
@@ -26,19 +31,21 @@ export async function promptForAutoProcessing({
   modelId,
   tagging,
   naming,
+  dating,
 }: {
   aiServices: AiServices;
   document: { content: string; name: string; originalName?: string; organizationId: string };
   modelId: string;
   tagging?: AutoTaggingOptions;
   naming?: AutoNamingOptions;
+  dating?: AutoDocumentDateOptions;
 }) {
   const autoProcessingResponse = await aiServices.generateStructuredData({
     modelId,
     organizationId: document.organizationId,
     source: 'auto-processing',
-    schema: buildAutoProcessingSchema({ tagging, naming }),
-    systemPrompt: buildAutoProcessingSystemPrompt({ tagging, naming }),
+    schema: buildAutoProcessingSchema({ tagging, naming, dating }),
+    systemPrompt: buildAutoProcessingSystemPrompt({ tagging, naming, dating }),
     userPrompt: buildAutoProcessingUserPrompt({ document }),
   });
 
@@ -58,10 +65,13 @@ export async function promptForAutoProcessing({
           maxTitleLength: naming.maxTitleLength,
         })
       : undefined,
+    dateAction: dating
+      ? getDocumentDateAction({ autoDocumentDateResponse: autoProcessingResponse, now: dating.now })
+      : undefined,
   };
 }
 
-// Auto-tagging and auto-naming share a single AI request so the document content is only sent once
+// Auto-tagging, auto-naming and document date extraction share a single AI request so the document content is only sent once
 export async function autoProcessDocument({
   aiServices,
   documentId,
@@ -71,6 +81,7 @@ export async function autoProcessDocument({
   resolveOrganizationSettings,
   eventServices,
   config,
+  now = new Date(),
   logger = createLogger({ namespace: 'autoProcessDocument' }),
 }: {
   aiServices: AiServices;
@@ -81,6 +92,7 @@ export async function autoProcessDocument({
   resolveOrganizationSettings: ResolveOrganizationSettingsUsecase;
   eventServices: EventServices;
   config: Config;
+  now?: Date;
   logger?: Logger;
 }) {
   const [{ document }, { tags: existingTags }, { organizationSettings }] = await Promise.all([
@@ -98,11 +110,12 @@ export async function autoProcessDocument({
     return;
   }
 
-  const { autoTagging, autoNaming } = organizationSettings.ai;
+  const { autoTagging, autoNaming, autoDocumentDate } = organizationSettings.ai;
 
   const isTaggingEnabled = config.autoTagging.isEnabled && autoTagging.isEnabled;
   const canTag = existingTags.length > 0 || autoTagging.canCreateNewTags;
   const isNamingEnabled = config.autoNaming.isEnabled && autoNaming.isEnabled;
+  const isDatingEnabled = config.autoDocumentDate.isEnabled && autoDocumentDate.isEnabled;
 
   if (isTaggingEnabled && !canTag) {
     logger.info(
@@ -123,21 +136,26 @@ export async function autoProcessDocument({
     ? { maxTitleLength: config.autoNaming.maxTitleLength }
     : undefined;
 
-  if (!tagging && !naming) {
+  // A date set by the user, or by a previous run, is never overwritten
+  const dating: AutoDocumentDateOptions | undefined =
+    isDatingEnabled && document.documentDate === null ? { now } : undefined;
+
+  if (!tagging && !naming && !dating) {
     logger.info(
       { documentId, organizationId },
-      'Auto-tagging and auto-naming are disabled or not applicable. Skipping auto-processing.',
+      'Auto-tagging, auto-naming and document date extraction are disabled or not applicable. Skipping auto-processing.',
     );
     return;
   }
 
   const startedAt = Date.now();
-  const { tagsActions, titleAction } = await promptForAutoProcessing({
+  const { tagsActions, titleAction, dateAction } = await promptForAutoProcessing({
     aiServices,
     document,
     modelId: ensureModelId(autoTagging.modelId),
     tagging,
     naming,
+    dating,
   });
   const durationMs = Date.now() - startedAt;
   logger.info(
@@ -147,6 +165,7 @@ export async function autoProcessDocument({
       durationMs,
       isTagging: Boolean(tagging),
       isNaming: Boolean(naming),
+      isDating: Boolean(dating),
     },
     'Auto-processing completed',
   );
@@ -157,6 +176,17 @@ export async function autoProcessDocument({
       organizationId,
       expectedName: document.name,
       name: titleAction.title,
+      documentsRepository,
+      eventServices,
+      logger,
+    });
+  }
+
+  if (dateAction?.documentDate) {
+    await setDocumentDateIfUnset({
+      documentId,
+      organizationId,
+      documentDate: dateAction.documentDate,
       documentsRepository,
       eventServices,
       logger,
@@ -214,6 +244,46 @@ async function renameDocumentIfUnchanged({
     payload: {
       userId: undefined,
       changes: { name },
+      document,
+    },
+  });
+}
+
+async function setDocumentDateIfUnset({
+  documentId,
+  organizationId,
+  documentDate,
+  documentsRepository,
+  eventServices,
+  logger,
+}: {
+  documentId: string;
+  organizationId: string;
+  documentDate: Date;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+  logger: Logger;
+}) {
+  // The AI call can take a while, skip if the user set a date or deleted the document meanwhile
+  const { document } = await documentsRepository.updateDocumentDateIfUnset({
+    documentId,
+    organizationId,
+    documentDate,
+  });
+
+  if (!document) {
+    logger.info(
+      { documentId, organizationId },
+      'Document date was set or document was deleted during auto-processing. Skipping document date.',
+    );
+    return;
+  }
+
+  eventServices.emitEvent({
+    eventName: 'document.updated',
+    payload: {
+      userId: undefined,
+      changes: { documentDate },
       document,
     },
   });

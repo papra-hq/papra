@@ -32,6 +32,7 @@ describe('organization-settings.repository', () => {
               'aiAutoTaggingMaxTags',
               'aiAutoTaggingModelId',
               'aiAutoNamingEnabled',
+              'aiAutoDocumentDateEnabled',
             ]),
           )
           .from(organizationSettingsTable),
@@ -43,6 +44,7 @@ describe('organization-settings.repository', () => {
           aiAutoTaggingMaxTags: null,
           aiAutoTaggingModelId: null,
           aiAutoNamingEnabled: null,
+          aiAutoDocumentDateEnabled: null,
         },
       ]);
 
@@ -54,6 +56,7 @@ describe('organization-settings.repository', () => {
           aiAutoTaggingMaxTags: 5,
           aiAutoTaggingModelId: 'openai://gpt-4o-mini',
           aiAutoNamingEnabled: true,
+          aiAutoDocumentDateEnabled: true,
         },
       });
 
@@ -67,6 +70,7 @@ describe('organization-settings.repository', () => {
               'aiAutoTaggingMaxTags',
               'aiAutoTaggingModelId',
               'aiAutoNamingEnabled',
+              'aiAutoDocumentDateEnabled',
             ]),
           )
           .from(organizationSettingsTable),
@@ -78,6 +82,7 @@ describe('organization-settings.repository', () => {
           aiAutoTaggingMaxTags: 5,
           aiAutoTaggingModelId: 'openai://gpt-4o-mini',
           aiAutoNamingEnabled: true,
+          aiAutoDocumentDateEnabled: true,
         },
       ]);
     });

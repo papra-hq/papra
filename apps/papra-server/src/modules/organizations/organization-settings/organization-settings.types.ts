@@ -11,6 +11,9 @@ export type OrganizationSettings = {
     autoNaming: {
       isEnabled: boolean;
     };
+    autoDocumentDate: {
+      isEnabled: boolean;
+    };
   };
 };
 
@@ -21,4 +24,5 @@ export type DbUpdatableOrganizationSettings = Pick<
   | 'aiAutoTaggingMaxTags'
   | 'aiAutoTaggingModelId'
   | 'aiAutoNamingEnabled'
+  | 'aiAutoDocumentDateEnabled'
 >;

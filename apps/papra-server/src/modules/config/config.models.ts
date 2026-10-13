@@ -62,6 +62,9 @@ export function getPublicConfig({
     autoNaming: {
       isEnabled: config.autoNaming.isEnabled && config.ai.isEnabled,
     },
+    autoDocumentDate: {
+      isEnabled: config.autoDocumentDate.isEnabled && config.ai.isEnabled,
+    },
   };
 
   return {

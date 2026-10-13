@@ -62,6 +62,9 @@ export async function resolveOrganizationSettings({
         autoNaming: {
           isEnabled: organizationRawSettings?.aiAutoNamingEnabled ?? false,
         },
+        autoDocumentDate: {
+          isEnabled: organizationRawSettings?.aiAutoDocumentDateEnabled ?? false,
+        },
       },
     },
   };

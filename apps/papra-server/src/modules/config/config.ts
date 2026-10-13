@@ -42,6 +42,7 @@ import {
 import { getCommitInfo } from './config.usecases';
 import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
 import { aiConfig } from '../ai/ai.config';
+import { autoDocumentDateConfig } from '../auto-document-date/auto-document-date.config';
 import { autoNamingConfig } from '../auto-naming/auto-naming.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
@@ -194,6 +195,7 @@ export const configDefinition = {
   planEntitlements: planEntitlementsConfig,
   ai: aiConfig,
   autoNaming: autoNamingConfig,
+  autoDocumentDate: autoDocumentDateConfig,
   autoTagging: autoTaggingConfig,
 } as const satisfies AppConfigDefinition;
 

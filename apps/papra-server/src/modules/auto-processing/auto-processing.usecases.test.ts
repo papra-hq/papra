@@ -14,9 +14,11 @@ import type { AutoProcessingResponse } from './auto-processing.models';
 function createTestResolveOrganizationSettings({
   autoTagging = {},
   autoNaming = {},
+  autoDocumentDate = {},
 }: {
   autoTagging?: Partial<{ isEnabled: boolean; canCreateNewTags: boolean; maxTags: number }>;
   autoNaming?: Partial<{ isEnabled: boolean }>;
+  autoDocumentDate?: Partial<{ isEnabled: boolean }>;
 } = {}): ResolveOrganizationSettingsUsecase {
   return async () => ({
     organizationSettings: {
@@ -31,6 +33,10 @@ function createTestResolveOrganizationSettings({
         autoNaming: {
           isEnabled: false,
           ...autoNaming,
+        },
+        autoDocumentDate: {
+          isEnabled: false,
+          ...autoDocumentDate,
         },
       },
     },
@@ -409,6 +415,184 @@ describe('auto-processing usecases', () => {
       });
 
       expect(deps.eventServices.getEmittedEvents()).to.eql([]);
+    });
+
+    test('when document date extraction is enabled and the document has no date, the extracted date is set at noon UTC', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+      });
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: { documentDate: '2026-03-14' },
+      });
+
+      await autoProcessDocument({
+        ...deps,
+        aiServices,
+        logger,
+        now: new Date('2026-10-12T00:00:00.000Z'),
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({
+          autoTagging: { isEnabled: false },
+          autoDocumentDate: { isEnabled: true },
+        }),
+      });
+
+      const { document } = await deps.documentsRepository.getDocumentById({
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+      });
+
+      expect(generateStructuredData).toHaveBeenCalledTimes(1);
+      expect(generateStructuredData.mock.calls[0]![0].systemPrompt).toContain('## Document date');
+      expect(document?.documentDate).to.eql(new Date('2026-03-14T12:00:00.000Z'));
+      expect(deps.eventServices.getEmittedEvents()).toMatchObject([
+        {
+          eventName: 'document.updated',
+          payload: {
+            userId: undefined,
+            changes: { documentDate: new Date('2026-03-14T12:00:00.000Z') },
+            document: { id: 'doc_1' },
+          },
+        },
+      ]);
+    });
+
+    test('when the document already has a date, the date is not requested from the AI nor overwritten', async () => {
+      const { logger } = createTestLogger();
+      const existingDate = new Date('2020-01-01T12:00:00.000Z');
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [{ ...baseDocument, documentDate: existingDate }],
+      });
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: { title: 'Invoice - Acme Corp - March 2026', documentDate: '2026-03-14' },
+      });
+
+      await autoProcessDocument({
+        ...deps,
+        aiServices,
+        logger,
+        now: new Date('2026-10-12T00:00:00.000Z'),
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({
+          autoTagging: { isEnabled: false },
+          autoNaming: { isEnabled: true },
+          autoDocumentDate: { isEnabled: true },
+        }),
+      });
+
+      const { document } = await deps.documentsRepository.getDocumentById({
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+      });
+
+      expect(generateStructuredData.mock.calls[0]![0].systemPrompt).not.toContain(
+        '## Document date',
+      );
+      expect(document?.documentDate).to.eql(existingDate);
+      expect(document?.name).to.eql('Invoice - Acme Corp - March 2026.pdf');
+    });
+
+    test('when the user sets a date during the AI call, it is not overwritten', async () => {
+      const { logger } = createTestLogger();
+      const userDate = new Date('2025-05-05T00:00:00.000Z');
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+      });
+
+      const generateStructuredData = vi.fn().mockImplementation(async () => {
+        await deps.documentsRepository.updateDocument({
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          documentDate: userDate,
+        });
+
+        return { documentDate: '2026-03-14' };
+      });
+
+      await autoProcessDocument({
+        ...deps,
+        aiServices: { generateStructuredData } as unknown as AiServices,
+        logger,
+        now: new Date('2026-10-12T00:00:00.000Z'),
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({
+          autoTagging: { isEnabled: false },
+          autoDocumentDate: { isEnabled: true },
+        }),
+      });
+
+      const { document } = await deps.documentsRepository.getDocumentById({
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+      });
+
+      expect(document?.documentDate).to.eql(userDate);
+      expect(deps.eventServices.getEmittedEvents()).to.eql([]);
+    });
+
+    test('when the AI returns no usable date, the document date stays empty', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+      });
+      const { aiServices } = createTestAiServices({ response: { documentDate: '14/03/2026' } });
+
+      await autoProcessDocument({
+        ...deps,
+        aiServices,
+        logger,
+        now: new Date('2026-10-12T00:00:00.000Z'),
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({
+          autoTagging: { isEnabled: false },
+          autoDocumentDate: { isEnabled: true },
+        }),
+      });
+
+      const { document } = await deps.documentsRepository.getDocumentById({
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+      });
+
+      expect(document?.documentDate).to.eql(null);
+      expect(deps.eventServices.getEmittedEvents()).to.eql([]);
+    });
+
+    test('when document date extraction is disabled at the instance level, the date is not requested', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps(
+        {
+          organizations: [{ id: 'org_1', name: 'Org 1' }],
+          documents: [baseDocument],
+        },
+        { autoDocumentDate: { isEnabled: false } },
+      );
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: { documentDate: '2026-03-14' },
+      });
+
+      await autoProcessDocument({
+        ...deps,
+        aiServices,
+        logger,
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({
+          autoTagging: { isEnabled: false },
+          autoDocumentDate: { isEnabled: true },
+        }),
+      });
+
+      expect(generateStructuredData).not.toHaveBeenCalled();
     });
   });
 });

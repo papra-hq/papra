@@ -72,6 +72,16 @@ Auto naming runs in the same LLM request as auto tagging, so the document conten
 | `AUTO_NAMING_ENABLED` | `true` | Whether organizations are allowed to use auto naming. |
 | `AUTO_NAMING_MAX_TITLE_LENGTH` | `120` | Maximum length of a generated title, capped at `255`. |
 
+## Document date extraction
+
+Papra can also fill in the document date, the date a document was issued or signed rather than the date it was uploaded, by reading it from the content. It only fills documents that have no date yet, so a date set by hand is never replaced.
+
+Document date extraction runs in the same LLM request as auto naming and auto tagging and uses the same model. Enable it on the **AI** page of the organization settings.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `AUTO_DOCUMENT_DATE_ENABLED` | `true` | Whether organizations are allowed to use document date extraction. |
+
 ## Troubleshooting
 
 If auto tagging is not working as expected:

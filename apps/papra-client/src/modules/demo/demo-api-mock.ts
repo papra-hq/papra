@@ -1543,6 +1543,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
             autoNaming: {
               isEnabled: false,
             },
+            autoDocumentDate: {
+              isEnabled: false,
+            },
           },
         },
       };

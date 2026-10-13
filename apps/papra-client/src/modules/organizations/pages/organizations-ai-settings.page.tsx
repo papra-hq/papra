@@ -37,10 +37,6 @@ type AutoTaggingSettings = {
   maxTags: number;
 };
 
-type AutoNamingSettings = {
-  isEnabled: boolean;
-};
-
 const AutoTaggingSettingsCard: Component<{
   organizationId: string;
   settings: AutoTaggingSettings;
@@ -161,19 +157,24 @@ const AutoTaggingSettingsCard: Component<{
   );
 };
 
-const AutoNamingSettingsCard: Component<{
+// AI features that only have an on/off switch in the organization settings
+type AiFeatureToggle = 'autoNaming' | 'autoDocumentDate';
+
+const AiFeatureToggleCard: Component<{
   organizationId: string;
-  settings: AutoNamingSettings;
+  feature: AiFeatureToggle;
+  isEnabled: boolean;
+  label: string;
+  description: string;
 }> = (props) => {
   const queryClient = useQueryClient();
   const { getErrorMessage } = useI18nApiErrors();
-  const { t } = useI18n();
 
-  const updateSettings = async (autoNaming: Partial<AutoNamingSettings>) => {
+  const updateIsEnabled = async (isEnabled: boolean) => {
     const [, error] = await safely(
       updateOrganizationSettings({
         organizationId: props.organizationId,
-        organizationSettingsPartials: { ai: { autoNaming } },
+        organizationSettingsPartials: { ai: { [props.feature]: { isEnabled } } },
       }),
     );
 
@@ -192,15 +193,13 @@ const AutoNamingSettingsCard: Component<{
       <CardContent class="pt-6 flex flex-col gap-6">
         <Switch
           class="flex items-center justify-between gap-4"
-          checked={props.settings.isEnabled}
-          onChange={async (isEnabled) => updateSettings({ isEnabled })}
+          checked={props.isEnabled}
+          onChange={updateIsEnabled}
         >
           <div class="flex flex-col gap-0.5">
-            <SwitchLabel class={textfieldLabel({ label: true })}>
-              {t('organization.settings.auto-naming.enabled.label')}
-            </SwitchLabel>
+            <SwitchLabel class={textfieldLabel({ label: true })}>{props.label}</SwitchLabel>
             <SwitchDescription class={textfieldLabel({ label: false, description: true })}>
-              {t('organization.settings.auto-naming.enabled.description')}
+              {props.description}
             </SwitchDescription>
           </div>
           <SwitchControl>
@@ -222,7 +221,9 @@ export const OrganizationsAiSettingsPage: Component = () => {
   );
 
   const getIsAiAvailableForOrganization = () =>
-    config.autoTagging.isEnabled || config.autoNaming.isEnabled;
+    config.autoTagging.isEnabled ||
+    config.autoNaming.isEnabled ||
+    config.autoDocumentDate.isEnabled;
 
   return (
     <div class="p-6 pb-32 mx-auto max-w-screen-md w-full">
@@ -247,9 +248,24 @@ export const OrganizationsAiSettingsPage: Component = () => {
                   }
                 >
                   <Show when={config.autoNaming.isEnabled}>
-                    <AutoNamingSettingsCard
+                    <AiFeatureToggleCard
                       organizationId={params.organizationId}
-                      settings={getOrganizationSettings().ai.autoNaming}
+                      feature="autoNaming"
+                      isEnabled={getOrganizationSettings().ai.autoNaming.isEnabled}
+                      label={t('organization.settings.auto-naming.enabled.label')}
+                      description={t('organization.settings.auto-naming.enabled.description')}
+                    />
+                  </Show>
+
+                  <Show when={config.autoDocumentDate.isEnabled}>
+                    <AiFeatureToggleCard
+                      organizationId={params.organizationId}
+                      feature="autoDocumentDate"
+                      isEnabled={getOrganizationSettings().ai.autoDocumentDate.isEnabled}
+                      label={t('organization.settings.auto-document-date.enabled.label')}
+                      description={t(
+                        'organization.settings.auto-document-date.enabled.description',
+                      )}
                     />
                   </Show>
 

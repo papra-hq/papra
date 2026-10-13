@@ -97,6 +97,9 @@ export const buildTimeConfig = {
   autoNaming: {
     isEnabled: false,
   },
+  autoDocumentDate: {
+    isEnabled: false,
+  },
 } as const;
 
 export type Config = typeof buildTimeConfig;
@@ -111,4 +114,5 @@ export type RuntimePublicConfig = Pick<
   | 'organizations'
   | 'autoTagging'
   | 'autoNaming'
+  | 'autoDocumentDate'
 >;
