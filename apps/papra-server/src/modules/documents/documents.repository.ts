@@ -36,6 +36,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       updateDocumentStorageKey,
+      updateDocumentNameIfUnchanged,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
     },
@@ -516,6 +517,35 @@ async function updateDocumentStorageKey({
     .returning({ id: documentsTable.id });
 
   return { updated: rows.length > 0 };
+}
+
+async function updateDocumentNameIfUnchanged({
+  documentId,
+  organizationId,
+  expectedName,
+  name,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  expectedName: string;
+  name: string;
+  db: Database;
+}) {
+  const [document] = await db
+    .update(documentsTable)
+    .set({ name })
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.name, expectedName),
+        eq(documentsTable.isDeleted, false),
+      ),
+    )
+    .returning();
+
+  return { document: document ?? null };
 }
 
 async function getGlobalDocumentsStats({ db }: { db: Database }) {

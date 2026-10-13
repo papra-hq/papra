@@ -59,6 +59,9 @@ export function getPublicConfig({
     autoTagging: {
       isEnabled: config.autoTagging.isEnabled && config.ai.isEnabled,
     },
+    autoNaming: {
+      isEnabled: config.autoNaming.isEnabled && config.ai.isEnabled,
+    },
   };
 
   return {
