@@ -849,7 +849,7 @@ importers:
         specifier: 'catalog:'
         version: 66.6.0
       pagefind:
-        specifier: ^1.5.2
+        specifier: 1.5.2
         version: 1.5.2
       sharp:
         specifier: 'catalog:'
