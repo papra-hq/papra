@@ -6,10 +6,12 @@ import { apiResponseBodySerializers } from './responses.serializers';
 export function serializeApiResponse({
   handlerResult,
   responseDefinitions,
+  method,
   serializers = apiResponseBodySerializers,
 }: {
   handlerResult: ApiResponse;
   responseDefinitions: ApiContract['responses'];
+  method?: ApiContract['method'];
   serializers?: Record<string, ApiResponseBodySerializer>;
 }): Response {
   const { status, contentType, body, headers } = handlerResult;
@@ -20,7 +22,7 @@ export function serializeApiResponse({
     throw new Error('Undeclared response status');
   }
 
-  if ([204, 205, 304].includes(status)) {
+  if (method === 'HEAD' || [204, 205, 304].includes(status)) {
     if (body !== undefined || contentType !== undefined) {
       throw new Error('Bodyless responses cannot include a body or Content-Type');
     }

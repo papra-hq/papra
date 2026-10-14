@@ -15,6 +15,42 @@ describe('serializeApiResponse', () => {
     expect(await response.text()).toEqual('');
   });
 
+  test('HEAD responses allow headers-only 200 responses with representation metadata', async () => {
+    const response = serializeApiResponse({
+      method: 'HEAD',
+      handlerResult: {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain', 'Content-Length': '5', 'ETag': '"v1"' },
+      },
+      responseDefinitions: { 200: { description: 'Document metadata.', content: {} } },
+    });
+
+    expect(response.status).toEqual(200);
+    expect(response.headers.get('Content-Type')).toEqual('text/plain');
+    expect(response.headers.get('Content-Length')).toEqual('5');
+    expect(response.headers.get('ETag')).toEqual('"v1"');
+    expect(response.body).toEqual(null);
+    expect(await response.text()).toEqual('');
+  });
+
+  test('HEAD responses reject bodies and serializer content types', () => {
+    expect(() =>
+      serializeApiResponse({
+        method: 'HEAD',
+        handlerResult: { status: 200, body: 'Hello' },
+        responseDefinitions: { 200: { description: 'Document metadata.', content: {} } },
+      }),
+    ).toThrow('Bodyless responses cannot include a body or Content-Type');
+
+    expect(() =>
+      serializeApiResponse({
+        method: 'HEAD',
+        handlerResult: { status: 200, contentType: 'text/plain' },
+        responseDefinitions: { 200: { description: 'Document metadata.', content: {} } },
+      }),
+    ).toThrow('Bodyless responses cannot include a body or Content-Type');
+  });
+
   test('plain text responses use their body serializer and content type', async () => {
     const response = serializeApiResponse({
       handlerResult: { status: 200, contentType: 'text/plain', body: 'Hello' },

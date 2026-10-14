@@ -63,6 +63,50 @@ describe('contract API wiring', () => {
     ).toEqual(true);
   });
 
+  test('HEAD requests reach migrated GET routes and return only their status and headers', async () => {
+    const { app, headers } = await createAuthenticatedServer();
+
+    const response = await app.request('/api/users/me', { method: 'HEAD', headers });
+
+    expect(response.status).toEqual(200);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(response.body).toEqual(null);
+    expect(await response.text()).toEqual('');
+  });
+
+  test('HEAD requests to migrated routes still require authentication', async () => {
+    const { db } = await createInMemoryDatabase();
+    const { app } = createServer(createTestServerDependencies({ db }));
+
+    const response = await app.request('/api/users/me', { method: 'HEAD' });
+
+    expect(response.status).toEqual(401);
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
+    expect(response.body).toEqual(null);
+  });
+
+  test('unmatched HEAD requests continue to legacy GET routes', async () => {
+    const { db } = await createInMemoryDatabase();
+    const { app } = createServer(createTestServerDependencies({ db }));
+
+    const response = await app.request('/api/ping', { method: 'HEAD' });
+
+    expect(response.status).toEqual(200);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(response.body).toEqual(null);
+  });
+
+  test('unknown HEAD paths reach the existing not-found handler without a body', async () => {
+    const { db } = await createInMemoryDatabase();
+    const { app } = createServer(createTestServerDependencies({ db }));
+
+    const response = await app.request('/api/missing', { method: 'HEAD' });
+
+    expect(response.status).toEqual(404);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(response.body).toEqual(null);
+  });
+
   test('the current-user endpoint rejects requests without credentials', async () => {
     const { db } = await createInMemoryDatabase();
     const { app } = createServer(createTestServerDependencies({ db }));

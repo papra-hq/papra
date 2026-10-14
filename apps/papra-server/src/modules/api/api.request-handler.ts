@@ -32,9 +32,16 @@ export function buildApiRequestHandler({
     addRoute(router, route.contract.method, route.contract.path, route);
   }
 
-  return async ({ request }: { request: Request }): Promise<Response | undefined> => {
+  const handleRequest = async ({
+    request,
+  }: {
+    request: Request;
+  }): Promise<Response | undefined> => {
     const url = new URL(request.url);
-    const routeMatch = findRoute(router, request.method.toUpperCase(), url.pathname);
+    const method = request.method.toUpperCase();
+    const routeMatch =
+      findRoute(router, method, url.pathname) ??
+      (method === 'HEAD' ? findRoute(router, 'GET', url.pathname) : undefined);
 
     if (!routeMatch) {
       // Let the caller handle unmatched requests without consuming their body.
@@ -81,6 +88,7 @@ export function buildApiRequestHandler({
       return serializeApiResponse({
         handlerResult,
         responseDefinitions: contract.responses,
+        method: contract.method,
       });
     } catch (error) {
       logger.error({ error }, error instanceof Error ? error.message : 'An error occurred');
@@ -95,5 +103,15 @@ export function buildApiRequestHandler({
 
       return internalServerErrorResponse();
     }
+  };
+
+  return async ({ request }: { request: Request }): Promise<Response | undefined> => {
+    const response = await handleRequest({ request });
+
+    if (request.method.toUpperCase() === 'HEAD' && response !== undefined) {
+      return new Response(null, response);
+    }
+
+    return response;
   };
 }

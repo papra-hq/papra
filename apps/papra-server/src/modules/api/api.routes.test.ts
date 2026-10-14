@@ -337,6 +337,64 @@ describe('defineApiRoute types', () => {
     });
   });
 
+  test('HEAD handlers return only status and headers regardless of status code', () => {
+    const headContract = defineApiContract({
+      method: 'HEAD',
+      path: '/api/items/:id',
+      responses: {
+        200: { description: 'Item metadata.', content: {} },
+        404: { description: 'Item not found.', content: {} },
+      },
+    });
+
+    expectTypeOf<ApiHandlerResult<typeof headContract>>().toEqualTypeOf<
+      | { status: 200; contentType?: never; body?: never; headers?: Record<string, string> }
+      | { status: 404; contentType?: never; body?: never; headers?: Record<string, string> }
+    >();
+
+    const route = defineApiRoute({
+      contract: headContract,
+      handler: async () => ({
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Content-Length': '123' },
+      }),
+    });
+
+    expectTypeOf(route.contract.method).toEqualTypeOf<'HEAD'>();
+
+    defineApiRoute({
+      contract: headContract,
+      // @ts-expect-error HEAD responses cannot carry a body, even with a contentful status.
+      handler: async () => ({ status: 200, body: 'Item' }),
+    });
+
+    defineApiRoute({
+      contract: headContract,
+      // @ts-expect-error Representation metadata belongs in headers, not a body content type.
+      handler: async () => ({ status: 200, contentType: 'text/plain' }),
+    });
+
+    defineApiRoute({
+      contract: headContract,
+      // @ts-expect-error HEAD responses still require a declared status.
+      handler: async () => ({ status: 201 }),
+    });
+  });
+
+  test('HEAD contracts cannot declare response payload schemas', () => {
+    // @ts-expect-error All HEAD response statuses are bodyless.
+    defineApiContract({
+      method: 'HEAD',
+      path: '/api/items/:id',
+      responses: {
+        200: {
+          description: 'Item metadata.',
+          content: { 'text/plain': { schema: v.string() } },
+        },
+      },
+    });
+  });
+
   test('exported input types preserve request outputs', () => {
     expectTypeOf<ApiHandlerInput<typeof contract>>().toEqualTypeOf<{
       body: { name: string; count: number };

@@ -39,7 +39,7 @@ type ApiResponseContentResult<Content, Status extends number> = {
 
 export type ApiHandlerResult<Contract extends ApiContract> = {
   [Status in keyof Contract['responses'] & number]: Expand<
-    (Status extends ApiResponseBodylessStatus
+    (Status extends (Contract['method'] extends 'HEAD' ? number : ApiResponseBodylessStatus)
       ? { status: Status; contentType?: never; body?: never }
       : ApiResponseContentResult<Contract['responses'][Status]['content'], Status>) & {
       headers?: Record<string, string>;
