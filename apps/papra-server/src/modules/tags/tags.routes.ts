@@ -19,7 +19,6 @@ import { addTagToDocument, createTag } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupCreateNewTagRoute(context);
-  setupGetOrganizationTagsRoute(context);
   setupUpdateTagRoute(context);
   setupDeleteTagRoute(context);
   setupAddTagToDocumentRoute(context);
@@ -64,34 +63,6 @@ function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
 
       return context.json({
         tag,
-      });
-    },
-  );
-}
-
-function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/organizations/:organizationId/tags',
-    requireAuthentication({ apiKeyPermissions: ['tags:read'] }),
-    validateParams(
-      v.strictObject({
-        organizationId: organizationIdSchema,
-      }),
-    ),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const { organizationId } = context.req.valid('param');
-
-      const tagsRepository = createTagsRepository({ db });
-      const organizationsRepository = createOrganizationsRepository({ db });
-
-      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-
-      const { tags } = await tagsRepository.getOrganizationTags({ organizationId });
-
-      return context.json({
-        tags,
       });
     },
   );
