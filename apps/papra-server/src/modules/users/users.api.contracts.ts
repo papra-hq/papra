@@ -3,6 +3,7 @@ import * as v from 'valibot';
 import { isoDateStringSchema } from '../api/api.schemas';
 
 export const getCurrentUserContract = defineApiContract({
+  operationId: 'getCurrentUser',
   path: '/api/users/me',
   method: 'GET',
   responses: {
@@ -28,6 +29,7 @@ export const getCurrentUserContract = defineApiContract({
 });
 
 export const updateCurrentUserContract = defineApiContract({
+  operationId: 'updateCurrentUser',
   path: '/api/users/me',
   method: 'PUT',
   request: {

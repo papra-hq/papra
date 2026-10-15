@@ -2,6 +2,7 @@ import * as v from 'valibot';
 import { defineApiContract } from '../../api/api.contracts';
 
 export const pingContract = defineApiContract({
+  operationId: 'ping',
   path: '/api/ping',
   method: 'GET',
   responses: {
@@ -23,6 +24,7 @@ const healthCheckResponseSchema = v.object({
 });
 
 export const healthCheckContract = defineApiContract({
+  operationId: 'checkHealth',
   path: '/api/health',
   method: 'GET',
   responses: {

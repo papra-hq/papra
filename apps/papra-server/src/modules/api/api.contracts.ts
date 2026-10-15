@@ -16,6 +16,7 @@ type ApiBodylessResponseDefinition = {
 };
 
 export type ApiContract = {
+  operationId: string;
   path: string;
   request?: {
     query?: GenericSchema;

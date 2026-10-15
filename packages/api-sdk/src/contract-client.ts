@@ -17,16 +17,22 @@ export function createContractClient<const Contracts extends Record<string, ApiC
   contracts: Contracts;
   apiClient: ApiClient;
 }): ContractClient<Contracts> {
-  const entries = Object.entries(contracts).map(([name, contract]) => {
+  const operationIds = new Set<string>();
+  const entries = Object.values(contracts).map((contract) => {
+    if (operationIds.has(contract.operationId)) {
+      throw new TypeError(`Duplicate operationId: ${contract.operationId}`);
+    }
+
+    operationIds.add(contract.operationId);
     assertSupportedContract(contract);
 
     return [
-      name,
+      contract.operationId,
       async (input: RequestInput = {}) => executeRequest({ contract, apiClient, input }),
     ];
   });
 
-  // Dynamic registry iteration erases the correlation between each name and its contract.
+  // Dynamic registry iteration erases the correlation between each operationId and its contract.
   // Keep that assertion here; callers retain their contract's request and response types.
   return Object.fromEntries(entries) as ContractClient<Contracts>;
 }
