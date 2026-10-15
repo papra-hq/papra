@@ -1,0 +1,39 @@
+import * as v from 'valibot';
+import { defineApiContract } from '../api/api.contracts';
+import { isoDateStringSchema } from '../api/api.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas';
+
+export const getOrganizationTagsContract = defineApiContract({
+  operationId: 'getOrganizationTags',
+  path: '/api/organizations/:organizationId/tags',
+  method: 'GET',
+  request: {
+    params: v.strictObject({
+      organizationId: organizationIdSchema,
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Returns organization tags with their non-deleted document counts.',
+      content: {
+        'application/json': {
+          schema: v.object({
+            tags: v.array(
+              v.object({
+                id: v.string(),
+                createdAt: isoDateStringSchema,
+                updatedAt: isoDateStringSchema,
+                organizationId: v.string(),
+                name: v.string(),
+                normalizedName: v.nullable(v.string()),
+                color: v.string(),
+                description: v.nullable(v.string()),
+                documentsCount: v.number(),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+  },
+});
