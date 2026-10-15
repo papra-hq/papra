@@ -9,6 +9,7 @@ import { defineApiRoute } from './api.routes';
 
 const echoRoute = defineApiRoute({
   contract: defineApiContract({
+    operationId: 'echoUser',
     method: 'POST',
     path: '/api/users/:userId',
     request: {
@@ -74,6 +75,7 @@ describe('buildApiRequestHandler', () => {
         defineApiRoute({
           contract: defineApiContract({
             ...echoRoute.contract,
+            operationId: 'echoContext',
             path: '/api/context/:userId',
             request: {
               params: v.pipe(
@@ -165,6 +167,7 @@ describe('buildApiRequestHandler', () => {
       routes: [
         defineApiRoute({
           contract: defineApiContract({
+            operationId: 'getContext',
             method: 'GET',
             path: '/api/context',
             responses: {
@@ -264,7 +267,12 @@ describe('buildApiRequestHandler', () => {
     const handleApiRequest = buildApiRequestHandler({
       routes: [
         defineApiRoute({
-          contract: defineApiContract({ method: 'GET', path: '/api/error', responses: {} }),
+          contract: defineApiContract({
+            operationId: 'getError',
+            method: 'GET',
+            path: '/api/error',
+            responses: {},
+          }),
           handler: async () => {
             throw createError({
               statusCode: 410,
@@ -302,7 +310,12 @@ describe('buildApiRequestHandler', () => {
       logger,
       routes: [
         defineApiRoute({
-          contract: defineApiContract({ method: 'GET', path: '/api/error', responses: {} }),
+          contract: defineApiContract({
+            operationId: 'getError',
+            method: 'GET',
+            path: '/api/error',
+            responses: {},
+          }),
           handler: async () => {
             throw error;
           },
@@ -371,6 +384,7 @@ describe('buildApiRequestHandler', () => {
         echoRoute,
         defineApiRoute({
           contract: defineApiContract({
+            operationId: 'getPage',
             method: 'GET',
             path: '/api/pages/:page',
             request: { params: v.object({ page: v.pipe(v.string(), v.transform(Number)) }) },
@@ -404,6 +418,7 @@ describe('buildApiRequestHandler', () => {
       routes: [
         defineApiRoute({
           contract: defineApiContract({
+            operationId: 'ignoreItem',
             method: 'POST',
             path: '/api/ignored/:id',
             responses: { 204: { description: 'No content.', content: {} } },
@@ -481,6 +496,7 @@ describe('buildApiRequestHandler', () => {
       routes: [
         defineApiRoute({
           contract: defineApiContract({
+            operationId: 'getMissingDocument',
             method: 'GET',
             path: '/api/missing-document',
             responses: {
@@ -516,6 +532,7 @@ describe('buildApiRequestHandler', () => {
       routes: [
         defineApiRoute({
           contract: defineApiContract({
+            operationId: 'getError',
             method: 'GET',
             path: '/api/error',
             responses: {},

@@ -58,6 +58,6 @@ export type ClientMethod<Contract> = (
     : [input: ClientRequest<Contract>]
 ) => Promise<ClientResponse<Contract>>;
 
-export type ContractClient<Contracts> = {
-  [Name in keyof Contracts]: ClientMethod<Contracts[Name]>;
+export type ContractClient<Contracts extends Record<string, { operationId: string }>> = {
+  [Key in keyof Contracts as Contracts[Key]['operationId']]: ClientMethod<Contracts[Key]>;
 };

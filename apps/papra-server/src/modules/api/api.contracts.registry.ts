@@ -4,8 +4,8 @@ import { getCurrentUserContract, updateCurrentUserContract } from '../users/user
 export type { ApiContract } from './api.contracts';
 
 export const apiContracts = {
-  ping: pingContract,
-  healthCheck: healthCheckContract,
-  getCurrentUser: getCurrentUserContract,
-  updateCurrentUser: updateCurrentUserContract,
+  pingContract,
+  healthCheckContract,
+  getCurrentUserContract,
+  updateCurrentUserContract,
 };

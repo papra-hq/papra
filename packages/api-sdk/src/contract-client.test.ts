@@ -6,6 +6,7 @@ import { ApiHttpError, ApiResponseError } from './contract-client.errors';
 import { createApiClient } from './http-client';
 
 const getItemContract = {
+  operationId: 'call',
   method: 'GET',
   path: '/api/items',
   responses: {
@@ -30,10 +31,36 @@ function createTestClient<const Contract extends ApiContract>(
     },
   });
 
-  return { client: createContractClient({ contracts: { call: contract }, apiClient }), requests };
+  return {
+    client: createContractClient({ contracts: { testContract: contract }, apiClient }),
+    requests,
+  };
 }
 
 describe('contract client', () => {
+  test('methods are named after operation IDs rather than registry exports', async () => {
+    const { client } = createTestClient({ ...getItemContract, operationId: 'getItem' }, () =>
+      Response.json({ name: 'Alice' }),
+    );
+
+    expect(Object.keys(client)).toEqual(['getItem']);
+    expect(await client.getItem()).toEqual({ name: 'Alice' });
+  });
+
+  test('duplicate operation IDs are rejected when building the client', () => {
+    const { apiClient } = createApiClient({ apiBaseUrl: 'https://papra.example' });
+
+    expect(() =>
+      createContractClient({
+        contracts: {
+          getItemContract,
+          duplicateItemContract: { ...getItemContract, path: '/api/other-items' },
+        },
+        apiClient,
+      }),
+    ).toThrow('Duplicate operationId: call');
+  });
+
   test('path and query values are encoded and request transformations are left to the server', async () => {
     let transformations = 0;
     const { client, requests } = createTestClient(
@@ -123,6 +150,7 @@ describe('contract client', () => {
   test('bodyless successful responses return undefined without parsing JSON', async () => {
     const { client } = createTestClient(
       {
+        operationId: 'call',
         method: 'DELETE',
         path: '/api/items',
         responses: { 204: { description: 'Deleted.', content: {} } },

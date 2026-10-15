@@ -9,6 +9,7 @@ import { defineApiRoute } from './api.routes';
 
 const getDocumentRoute = defineApiRoute({
   contract: defineApiContract({
+    operationId: 'getDocument',
     method: 'GET',
     path: '/api/documents/:documentId',
     request: {
@@ -36,6 +37,7 @@ const getDocumentRoute = defineApiRoute({
 
 const headDocumentContract = defineApiContract({
   ...getDocumentRoute.contract,
+  operationId: 'headDocument',
   method: 'HEAD',
   responses: {
     200: { description: 'The document metadata.', content: {} },
@@ -293,6 +295,7 @@ describe('HEAD request handling', () => {
       routes: [
         defineApiRoute({
           contract: defineApiContract({
+            operationId: 'createDocument',
             method: 'POST',
             path: '/api/documents',
             responses: { 204: { description: 'Created.', content: {} } },

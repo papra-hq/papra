@@ -14,7 +14,8 @@ Starting october 2026 we use a new contract-based system to define our API route
 - used by the server to validate and serialize requests and responses
 - used by the SDK to generate client methods and types
 - defined in `*.api.contracts.ts` files, colocated within their domain feature
-- registered in `api.contracts.registry.ts` to be exported by the SDK
+- `operationId` defines the public SDK method name and must be unique
+- registered in the explicit `apiContracts` collection exported from `api.contracts.registry.ts`
 - examples: [users](../users/users.api.contracts.ts)
 - schemas for "inputs" (body, params, query, ...) can have transforms
 - schemas for "outputs" (response) must result in json serializable and not depend on transforms, output as input style

@@ -9,7 +9,8 @@ import * as v from 'valibot';
 import { describe, expectTypeOf, test } from 'vitest';
 
 const contracts = {
-  getItem: {
+  getItemContract: {
+    operationId: 'getItem',
     method: 'GET',
     path: '/api/items',
     responses: {
@@ -19,7 +20,8 @@ const contracts = {
       },
     },
   },
-  updateItem: {
+  updateItemContract: {
+    operationId: 'updateItem',
     method: 'PUT',
     path: '/api/items/:id',
     request: {
@@ -47,7 +49,8 @@ const contracts = {
       },
     },
   },
-  searchItems: {
+  searchItemsContract: {
+    operationId: 'searchItems',
     method: 'GET',
     path: '/api/items/search',
     request: { query: v.object({ search: v.string() }) },
@@ -57,7 +60,7 @@ const contracts = {
 
 describe('contract client types', () => {
   test('request types use schema inputs, before transformations and defaults', () => {
-    expectTypeOf<ClientRequest<typeof contracts.updateItem>>().toEqualTypeOf<
+    expectTypeOf<ClientRequest<typeof contracts.updateItemContract>>().toEqualTypeOf<
       {
         params: { id: string };
       } & {
@@ -69,22 +72,22 @@ describe('contract client types', () => {
   });
 
   test('response types contain parsed successful bodies, excluding HTTP errors', () => {
-    expectTypeOf<ClientResponse<typeof contracts.updateItem>>().toEqualTypeOf<
+    expectTypeOf<ClientResponse<typeof contracts.updateItemContract>>().toEqualTypeOf<
       { count: number } | { id: string } | void
     >();
-    expectTypeOf<ClientResponse<typeof contracts.searchItems>>().toEqualTypeOf<void>();
+    expectTypeOf<ClientResponse<typeof contracts.searchItemsContract>>().toEqualTypeOf<void>();
   });
 
-  test('methods require only their declared inputs and preserve registry names', () => {
+  test('methods require only their declared inputs and use operation IDs', () => {
     expectTypeOf<keyof ContractClient<typeof contracts>>().toEqualTypeOf<
       'getItem' | 'updateItem' | 'searchItems'
     >();
-    expectTypeOf<ClientMethod<typeof contracts.getItem>>().toBeCallableWith();
-    expectTypeOf<ClientMethod<typeof contracts.updateItem>>().toBeCallableWith({
+    expectTypeOf<ClientMethod<typeof contracts.getItemContract>>().toBeCallableWith();
+    expectTypeOf<ClientMethod<typeof contracts.updateItemContract>>().toBeCallableWith({
       params: { id: '123' },
       body: { count: '2' },
     });
-    expectTypeOf<ClientMethod<typeof contracts.searchItems>>().toBeCallableWith({
+    expectTypeOf<ClientMethod<typeof contracts.searchItemsContract>>().toBeCallableWith({
       query: { search: 'Alice' },
     });
 
@@ -102,8 +105,10 @@ describe('contract client types', () => {
       void client.searchItems();
       // @ts-expect-error Methods cannot override the contract's HTTP method.
       void client.getItem({ method: 'POST' });
-      // @ts-expect-error Unknown registry methods are not exposed.
+      // @ts-expect-error Unknown methods are not exposed.
       void client.deleteItem();
+      // @ts-expect-error Registry export names are not exposed as methods.
+      void client.getItemContract();
     }
 
     expectTypeOf(checkInputs).toBeFunction();
@@ -111,7 +116,7 @@ describe('contract client types', () => {
 
   test('a query consisting only of optional fields allows a no-argument call', () => {
     const contract = {
-      ...contracts.getItem,
+      ...contracts.getItemContract,
       request: { query: v.object({ limit: v.optional(v.string(), '10') }) },
     };
 

@@ -10,6 +10,7 @@ const wireDateSchema = v.pipe(
 );
 
 const contract = defineApiContract({
+  operationId: 'updateItem',
   method: 'POST',
   path: '/api/items/:id',
   request: {
@@ -65,6 +66,7 @@ describe('defineApiRoute types', () => {
     });
 
     expectTypeOf(route).toEqualTypeOf<ApiRoute<typeof contract>>();
+    expectTypeOf(route.contract.operationId).toEqualTypeOf<'updateItem'>();
     expectTypeOf(route.contract.method).toEqualTypeOf<'POST'>();
     expectTypeOf(route.contract.path).toEqualTypeOf<'/api/items/:id'>();
     expectTypeOf(route.contract.responses[200].content['application/json'].schema).toEqualTypeOf<
@@ -75,6 +77,7 @@ describe('defineApiRoute types', () => {
   test('missing schemas produce empty query and params objects and an undefined body, without inferring the path', () => {
     defineApiRoute({
       contract: defineApiContract({
+        operationId: 'getItem',
         method: 'GET',
         path: '/api/items/:id',
         responses: { 204: { description: 'No content.', content: {} } },
@@ -186,6 +189,7 @@ describe('defineApiRoute types', () => {
   test('multiple request content types produce a union of parsed body outputs', () => {
     defineApiRoute({
       contract: defineApiContract({
+        operationId: 'createItem',
         method: 'POST',
         path: '/api/items',
         request: {
@@ -323,6 +327,7 @@ describe('defineApiRoute types', () => {
 
   test('bodyless statuses cannot declare response content in their contract', () => {
     defineApiContract({
+      operationId: 'deleteItem',
       method: 'DELETE',
       path: '/api/items/:id',
       responses: {
@@ -339,6 +344,7 @@ describe('defineApiRoute types', () => {
 
   test('HEAD handlers return only status and headers regardless of status code', () => {
     const headContract = defineApiContract({
+      operationId: 'headItem',
       method: 'HEAD',
       path: '/api/items/:id',
       responses: {
@@ -384,6 +390,7 @@ describe('defineApiRoute types', () => {
   test('HEAD contracts cannot declare response payload schemas', () => {
     // @ts-expect-error All HEAD response statuses are bodyless.
     defineApiContract({
+      operationId: 'headItem',
       method: 'HEAD',
       path: '/api/items/:id',
       responses: {
