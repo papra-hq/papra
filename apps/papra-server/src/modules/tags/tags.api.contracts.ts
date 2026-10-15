@@ -2,6 +2,46 @@ import * as v from 'valibot';
 import { defineApiContract } from '../api/api.contracts';
 import { isoDateStringSchema } from '../api/api.schemas';
 import { organizationIdSchema } from '../organizations/organization.schemas';
+import { tagColorSchema, tagDescriptionSchema, tagNameSchema } from './tags.schemas';
+
+export const createOrganizationTagContract = defineApiContract({
+  operationId: 'createOrganizationTag',
+  path: '/api/organizations/:organizationId/tags',
+  method: 'POST',
+  request: {
+    params: v.strictObject({
+      organizationId: organizationIdSchema,
+    }),
+    body: {
+      'application/json': v.strictObject({
+        name: tagNameSchema,
+        color: tagColorSchema,
+        description: v.optional(tagDescriptionSchema),
+      }),
+    },
+  },
+  responses: {
+    200: {
+      description: 'Returns the created organization tag.',
+      content: {
+        'application/json': {
+          schema: v.object({
+            tag: v.object({
+              id: v.string(),
+              createdAt: isoDateStringSchema,
+              updatedAt: isoDateStringSchema,
+              organizationId: v.string(),
+              name: v.string(),
+              normalizedName: v.nullable(v.string()),
+              color: v.string(),
+              description: v.nullable(v.string()),
+            }),
+          }),
+        },
+      },
+    },
+  },
+});
 
 export const getOrganizationTagsContract = defineApiContract({
   operationId: 'getOrganizationTags',

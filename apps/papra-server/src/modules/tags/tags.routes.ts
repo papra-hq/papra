@@ -15,57 +15,13 @@ import { validateJsonBody, validateParams } from '../shared/validation/validatio
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagColorSchema, tagDescriptionSchema, tagIdSchema, tagNameSchema } from './tags.schemas';
-import { addTagToDocument, createTag } from './tags.usecases';
+import { addTagToDocument } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
-  setupCreateNewTagRoute(context);
   setupUpdateTagRoute(context);
   setupDeleteTagRoute(context);
   setupAddTagToDocumentRoute(context);
   setupRemoveTagFromDocumentRoute(context);
-}
-
-function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
-  app.post(
-    '/api/organizations/:organizationId/tags',
-    requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
-    validateParams(
-      v.strictObject({
-        organizationId: organizationIdSchema,
-      }),
-    ),
-    validateJsonBody(
-      v.strictObject({
-        name: tagNameSchema,
-        color: tagColorSchema,
-        description: v.optional(tagDescriptionSchema),
-      }),
-    ),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const { organizationId } = context.req.valid('param');
-      const { name, color, description } = context.req.valid('json');
-
-      const tagsRepository = createTagsRepository({ db });
-      const organizationsRepository = createOrganizationsRepository({ db });
-
-      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-
-      const { tag } = await createTag({
-        organizationId,
-        name,
-        color,
-        description,
-        config,
-        tagsRepository,
-      });
-
-      return context.json({
-        tag,
-      });
-    },
-  );
 }
 
 function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
