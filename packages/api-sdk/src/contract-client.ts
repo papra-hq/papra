@@ -135,7 +135,7 @@ async function executeRequest({
     throw new ApiResponseError({ ...errorContext, message: 'Undeclared response status' });
   }
 
-  if (response.status === 204 || response.status === 205) {
+  if ([204, 205, 304].includes(response.status)) {
     return undefined;
   }
 
