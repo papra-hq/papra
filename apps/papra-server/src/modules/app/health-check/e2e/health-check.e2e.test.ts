@@ -16,8 +16,11 @@ describe('health check routes e2e', () => {
 
         const response = await app.request('/api/health');
 
-        expect(response.status).to.eql(200);
-        expect(await response.json()).to.eql({
+        const body = await response.json();
+
+        expect(response.status).toEqual(200);
+        expect(response.headers.get('Content-Type')).toEqual('application/json');
+        expect(body).toEqual({
           isDatabaseHealthy: true,
           isEverythingOk: true,
           status: 'ok',
@@ -37,8 +40,11 @@ describe('health check routes e2e', () => {
 
         const response = await app.request('/api/health');
 
-        expect(response.status).to.eql(500);
-        expect(await response.json()).to.eql({
+        const body = await response.json();
+
+        expect(response.status).toEqual(500);
+        expect(response.headers.get('Content-Type')).toEqual('application/json');
+        expect(body).toEqual({
           isDatabaseHealthy: false,
           isEverythingOk: false,
           status: 'error',

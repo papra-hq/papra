@@ -2,6 +2,7 @@ import type { ApiDependencies, RouteDefinitionContext } from './server.types';
 
 import { buildApiRequestHandler } from '../api/api.request-handler';
 import { buildUserApiRoutes } from '../users/users.api.routes';
+import { buildHealthCheckApiRoutes } from './health-check/health-check.api.routes';
 import {
   buildGetApiKey,
   buildGetSession,
@@ -9,7 +10,7 @@ import {
 } from '../api/api.authentication';
 
 function buildApiRoutes(deps: ApiDependencies) {
-  return [...buildUserApiRoutes(deps)];
+  return [...buildHealthCheckApiRoutes(deps), ...buildUserApiRoutes(deps)];
 }
 
 export function registerApiRoutes({ app, ...deps }: RouteDefinitionContext) {

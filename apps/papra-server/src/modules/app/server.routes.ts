@@ -17,13 +17,11 @@ import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.route
 import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
-import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 import { registerOrganizationSettingsRoutes } from '../organizations/organization-settings/organization-settings.routes';
 
 export function registerRoutes(context: RouteDefinitionContext) {
   registerAuthRoutes(context);
   registerConfigRoutes(context);
-  registerHealthCheckRoutes(context);
   registerIntakeEmailsRoutes(context);
   registerSubscriptionsRoutes(context);
   registerOrganizationsRoutes(context);
