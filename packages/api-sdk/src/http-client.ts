@@ -4,16 +4,32 @@ import { version } from '../package.json';
 
 export type ApiClient = $Fetch;
 
-export function createApiClient({ apiKey, apiBaseUrl }: { apiKey: string; apiBaseUrl: string }): {
-  apiClient: ApiClient;
-} {
-  const apiClient = ofetch.create({
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'X-Papra-Source': `papra-api-sdk-javascript/${version}`,
-    },
-    baseURL: apiBaseUrl,
-  });
+export type HttpClientOptions = {
+  apiKey?: string;
+  apiBaseUrl: string;
+  headers?: HeadersInit;
+  credentials?: RequestCredentials;
+  fetch?: typeof globalThis.fetch;
+};
+
+export function createApiClient({
+  apiKey,
+  apiBaseUrl,
+  headers: customHeaders,
+  credentials,
+  fetch: fetchImplementation,
+}: HttpClientOptions): { apiClient: ApiClient } {
+  const headers = new Headers(customHeaders);
+  headers.set('X-Papra-Source', `papra-api-sdk-javascript/${version}`);
+
+  if (apiKey) {
+    headers.set('Authorization', `Bearer ${apiKey}`);
+  }
+
+  const apiClient = ofetch.create(
+    { headers, baseURL: apiBaseUrl, credentials },
+    { fetch: fetchImplementation },
+  );
 
   return {
     apiClient,

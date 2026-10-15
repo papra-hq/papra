@@ -15,7 +15,6 @@ import { registerPlanEntitlementsRoutes } from '../plan-entitlements/plan-entitl
 import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
-import { registerUsersRoutes } from '../users/users.routes';
 import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
@@ -27,7 +26,6 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerHealthCheckRoutes(context);
   registerIntakeEmailsRoutes(context);
   registerSubscriptionsRoutes(context);
-  registerUsersRoutes(context);
   registerOrganizationsRoutes(context);
   registerOrganizationSettingsRoutes(context);
   registerDocumentsRoutes(context);

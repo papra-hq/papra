@@ -1,11 +1,8 @@
 import type { Database } from '../app/database/database.types';
 import type { Context } from '../app/server.types';
 import { createMiddleware } from 'hono/factory';
-import { createUnauthorizedError } from '../app/auth/auth.errors';
-import { getAuthorizationHeader } from '../shared/headers/headers.models';
 import { addLogContext } from '../shared/logger/logger';
-import { isNil } from '../shared/utils';
-import { looksLikeAnApiKey } from './api-keys.models';
+import { buildGetApiKeyFromHeaders } from './api-keys.authentication';
 import { createApiKeysRepository } from './api-keys.repository';
 import { getApiKey } from './api-keys.usecases';
 
@@ -13,33 +10,15 @@ import { getApiKey } from './api-keys.usecases';
 // and set it on the context, no auth enforcement is done here
 export function createApiKeyMiddleware({ db }: { db: Database }) {
   const apiKeyRepository = createApiKeysRepository({ db });
+  const getApiKeyFromHeaders = buildGetApiKeyFromHeaders({
+    lookupApiKeyByToken: async ({ token }) => {
+      const { apiKey } = await getApiKey({ token, apiKeyRepository });
+      return apiKey ?? null;
+    },
+  });
 
   return createMiddleware(async (context: Context, next) => {
-    const { authorizationHeader } = getAuthorizationHeader({ context });
-
-    if (isNil(authorizationHeader)) {
-      return next();
-    }
-
-    const parts = authorizationHeader.split(' ');
-
-    if (parts.length !== 2) {
-      throw createUnauthorizedError();
-    }
-
-    const [maybeBearer, token] = parts;
-
-    if (maybeBearer !== 'Bearer') {
-      throw createUnauthorizedError();
-    }
-
-    // The token isn't an API key (e.g. a share-link access token JWT). Leave it for
-    // downstream handlers; protected routes still enforce auth via requireAuthentication.
-    if (!looksLikeAnApiKey(token)) {
-      return next();
-    }
-
-    const { apiKey } = await getApiKey({ token, apiKeyRepository });
+    const apiKey = await getApiKeyFromHeaders({ headers: context.req.raw.headers });
 
     if (apiKey) {
       const userId = apiKey.userId;

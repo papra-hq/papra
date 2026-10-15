@@ -9,6 +9,7 @@ import { registerErrorMiddleware } from './middlewares/errors.middleware';
 import { createTimeoutMiddleware } from './middlewares/timeout.middleware';
 import { registerRoutes } from './server.routes';
 import { registerStaticAssetsRoutes } from './static-assets/static-assets.routes';
+import { registerApiRoutes } from './server.api.routes';
 
 export function createServer(dependencies: GlobalDependencies) {
   const { config, db, shutdownServices } = dependencies;
@@ -23,8 +24,9 @@ export function createServer(dependencies: GlobalDependencies) {
   registerErrorMiddleware({ app });
   registerStaticAssetsRoutes({ app, config });
 
-  app.use(createApiKeyMiddleware({ db }));
+  registerApiRoutes({ app, ...dependencies });
 
+  app.use(createApiKeyMiddleware({ db }));
   registerRoutes({ app, ...dependencies });
 
   return {
