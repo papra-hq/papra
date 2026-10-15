@@ -278,11 +278,6 @@ export const translations = {
   'organization.settings.delete.has-active-subscription':
     "No es pot suprimir l'organització amb una subscripció activa; si us plau, primer cancel·la la teva subscripció.",
 
-  'organization.settings.auto-tagging.page.title': "Configuració de l'etiquetatge automàtic",
-  'organization.settings.auto-tagging.page.description':
-    "Configuració de l'etiquetatge automàtic per a la teva organització. Aquesta funció permet etiquetar contingut automàticament basant-se en prediccions de la IA.",
-  'organization.settings.auto-tagging.unavailable':
-    "L'etiquetatge automàtic no està disponible actualment per a la teva organització. Si us plau, posa't en contacte amb el suport per a més informació.",
   'organization.settings.auto-tagging.enabled.label': "Habilita l'etiquetatge automàtic",
   'organization.settings.auto-tagging.enabled.description':
     "Quan s'habilita, els documents afegits a aquesta organització són etiquetats automàticament per la IA.",
@@ -1076,7 +1071,6 @@ export const translations = {
   'layout.menu.settings': 'Configuració',
   'layout.menu.account': 'Compte',
   'layout.menu.general-settings': 'Configuració general',
-  'layout.menu.auto-tagging': 'Etiquetatge automàtic',
   'layout.menu.usage': 'Ús',
   'layout.menu.intake-emails': "Correus electrònics d'entrada",
   'layout.menu.webhooks': 'Webhooks',

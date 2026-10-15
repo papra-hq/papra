@@ -8,6 +8,9 @@ export type OrganizationSettings = {
       maxTags: number;
       modelId?: string;
     };
+    autoNaming: {
+      isEnabled: boolean;
+    };
   };
 };
 
@@ -17,4 +20,5 @@ export type DbUpdatableOrganizationSettings = Pick<
   | 'aiAutoTaggingCanCreateNewTags'
   | 'aiAutoTaggingMaxTags'
   | 'aiAutoTaggingModelId'
+  | 'aiAutoNamingEnabled'
 >;
