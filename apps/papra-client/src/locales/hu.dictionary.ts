@@ -258,11 +258,6 @@ export const translations = {
   'organization.settings.delete.has-active-subscription':
     'Aktív előfizetéssel rendelkező szervezet nem törölhető, kérjük először mondja le az előfizetést fentebb.',
 
-  'organization.settings.auto-tagging.page.title': 'Automatikus címkézés beállításai',
-  'organization.settings.auto-tagging.page.description':
-    'Szervezete automatikus címkézési beállításai. Ez a funkció lehetővé teszi a tartalmak automatikus címkézését mesterséges intelligencia (MI) alapú előrejelzések alapján.',
-  'organization.settings.auto-tagging.unavailable':
-    'Az automatikus címkézés jelenleg nem érhető el szervezete számára. További információért kérjük, lépjen kapcsolatba az ügyfélszolgálattal.',
   'organization.settings.auto-tagging.enabled.label': 'Automatikus címkézés engedélyezése',
   'organization.settings.auto-tagging.enabled.description':
     'Engedélyezés esetén a szervezethez hozzáadott dokumentumokat az MI automatikusan címkézi.',
@@ -1060,7 +1055,6 @@ export const translations = {
   'layout.menu.settings': 'Beállítások',
   'layout.menu.account': 'Fiók',
   'layout.menu.general-settings': 'Általános beállítások',
-  'layout.menu.auto-tagging': 'Automatikus címkézés',
   'layout.menu.usage': 'Használat',
   'layout.menu.intake-emails': 'Beérkező e-mailek',
   'layout.menu.webhooks': 'Webhookok',

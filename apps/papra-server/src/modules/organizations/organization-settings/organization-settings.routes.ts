@@ -71,6 +71,16 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
                 ),
               }),
             ),
+            autoNaming: v.optional(
+              v.strictObject({
+                isEnabled: v.optional(v.boolean()),
+              }),
+            ),
+            autoDocumentDate: v.optional(
+              v.strictObject({
+                isEnabled: v.optional(v.boolean()),
+              }),
+            ),
           }),
         ),
       }),
@@ -92,6 +102,8 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
             organizationSettingsPartials.ai?.autoTagging?.canCreateNewTags,
           aiAutoTaggingEnabled: organizationSettingsPartials.ai?.autoTagging?.isEnabled,
           aiAutoTaggingMaxTags: organizationSettingsPartials.ai?.autoTagging?.maxTags,
+          aiAutoNamingEnabled: organizationSettingsPartials.ai?.autoNaming?.isEnabled,
+          aiAutoDocumentDateEnabled: organizationSettingsPartials.ai?.autoDocumentDate?.isEnabled,
         },
       });
 

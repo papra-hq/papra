@@ -157,7 +157,61 @@ const AutoTaggingSettingsCard: Component<{
   );
 };
 
-export const OrganizationsAutoTaggingSettingsPage: Component = () => {
+// AI features that only have an on/off switch in the organization settings
+type AiFeatureToggle = 'autoNaming' | 'autoDocumentDate';
+
+const AiFeatureToggleCard: Component<{
+  organizationId: string;
+  feature: AiFeatureToggle;
+  isEnabled: boolean;
+  label: string;
+  description: string;
+}> = (props) => {
+  const queryClient = useQueryClient();
+  const { getErrorMessage } = useI18nApiErrors();
+
+  const updateIsEnabled = async (isEnabled: boolean) => {
+    const [, error] = await safely(
+      updateOrganizationSettings({
+        organizationId: props.organizationId,
+        organizationSettingsPartials: { ai: { [props.feature]: { isEnabled } } },
+      }),
+    );
+
+    if (error) {
+      createToast({ type: 'error', message: getErrorMessage({ error }) });
+      return;
+    }
+
+    await queryClient.invalidateQueries(
+      getOrganizationSettingsQueryOptions({ organizationId: props.organizationId }),
+    );
+  };
+
+  return (
+    <Card>
+      <CardContent class="pt-6 flex flex-col gap-6">
+        <Switch
+          class="flex items-center justify-between gap-4"
+          checked={props.isEnabled}
+          onChange={updateIsEnabled}
+        >
+          <div class="flex flex-col gap-0.5">
+            <SwitchLabel class={textfieldLabel({ label: true })}>{props.label}</SwitchLabel>
+            <SwitchDescription class={textfieldLabel({ label: false, description: true })}>
+              {props.description}
+            </SwitchDescription>
+          </div>
+          <SwitchControl>
+            <SwitchThumb />
+          </SwitchControl>
+        </Switch>
+      </CardContent>
+    </Card>
+  );
+};
+
+export const OrganizationsAiSettingsPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
   const { config } = useConfig();
@@ -166,7 +220,10 @@ export const OrganizationsAutoTaggingSettingsPage: Component = () => {
     getOrganizationSettingsQueryOptions({ organizationId: params.organizationId }),
   );
 
-  const getIsAutoTaggingAvailableForOrganization = () => config.autoTagging.isEnabled;
+  const getIsAiAvailableForOrganization = () =>
+    config.autoTagging.isEnabled ||
+    config.autoNaming.isEnabled ||
+    config.autoDocumentDate.isEnabled;
 
   return (
     <div class="p-6 pb-32 mx-auto max-w-screen-md w-full">
@@ -174,30 +231,50 @@ export const OrganizationsAutoTaggingSettingsPage: Component = () => {
         <Show when={organizationSettingsQuery.data?.organizationSettings}>
           {(getOrganizationSettings) => (
             <>
-              <h1 class="text-xl font-semibold mb-2">
-                {t('organization.settings.auto-tagging.page.title')}
-              </h1>
+              <h1 class="text-xl font-semibold mb-2">{t('organization.settings.ai.page.title')}</h1>
 
-              <p class="text-muted-foreground">
-                {t('organization.settings.auto-tagging.page.description')}
-              </p>
+              <p class="text-muted-foreground">{t('organization.settings.ai.page.description')}</p>
 
               <div class="mt-6 flex flex-col gap-6">
                 <Show
-                  when={getIsAutoTaggingAvailableForOrganization()}
+                  when={getIsAiAvailableForOrganization()}
                   fallback={
                     <Card>
                       <CardContent class="pt-6 flex items-center gap-3 text-muted-foreground">
-                        <div class="i-tabler-tag-off size-5 flex-shrink-0" />
-                        <p class="text-sm">{t('organization.settings.auto-tagging.unavailable')}</p>
+                        <div class="i-tabler-sparkles size-5 flex-shrink-0" />
+                        <p class="text-sm">{t('organization.settings.ai.unavailable')}</p>
                       </CardContent>
                     </Card>
                   }
                 >
-                  <AutoTaggingSettingsCard
-                    organizationId={params.organizationId}
-                    settings={getOrganizationSettings().ai.autoTagging}
-                  />
+                  <Show when={config.autoNaming.isEnabled}>
+                    <AiFeatureToggleCard
+                      organizationId={params.organizationId}
+                      feature="autoNaming"
+                      isEnabled={getOrganizationSettings().ai.autoNaming.isEnabled}
+                      label={t('organization.settings.auto-naming.enabled.label')}
+                      description={t('organization.settings.auto-naming.enabled.description')}
+                    />
+                  </Show>
+
+                  <Show when={config.autoDocumentDate.isEnabled}>
+                    <AiFeatureToggleCard
+                      organizationId={params.organizationId}
+                      feature="autoDocumentDate"
+                      isEnabled={getOrganizationSettings().ai.autoDocumentDate.isEnabled}
+                      label={t('organization.settings.auto-document-date.enabled.label')}
+                      description={t(
+                        'organization.settings.auto-document-date.enabled.description',
+                      )}
+                    />
+                  </Show>
+
+                  <Show when={config.autoTagging.isEnabled}>
+                    <AutoTaggingSettingsCard
+                      organizationId={params.organizationId}
+                      settings={getOrganizationSettings().ai.autoTagging}
+                    />
+                  </Show>
                 </Show>
               </div>
             </>

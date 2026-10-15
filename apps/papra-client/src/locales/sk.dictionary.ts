@@ -262,11 +262,6 @@ export const translations = {
   'organization.settings.delete.has-active-subscription':
     'Organizáciu s aktívnym predplatným nie je možné odstrániť. Najprv zrušte svoje predplatné vyššie.',
 
-  'organization.settings.auto-tagging.page.title': 'Nastavenia automatického štítkovania',
-  'organization.settings.auto-tagging.page.description':
-    'Nastavenia automatického štítkovania pre vašu organizáciu. Táto funkcia umožňuje automaticky priraďovať štítky obsahu na základe predikcií AI.',
-  'organization.settings.auto-tagging.unavailable':
-    'Automatické štítkovanie momentálne nie je pre vašu organizáciu dostupné. Pre viac informácií kontaktujte podporu.',
   'organization.settings.auto-tagging.enabled.label': 'Zapnúť automatické štítkovanie',
   'organization.settings.auto-tagging.enabled.description':
     'Keď je táto možnosť zapnutá, dokumenty pridané do tejto organizácie automaticky oštítkuje AI.',
@@ -1048,7 +1043,6 @@ export const translations = {
   'layout.menu.settings': 'Nastavenia',
   'layout.menu.account': 'Účet',
   'layout.menu.general-settings': 'Všeobecné nastavenia',
-  'layout.menu.auto-tagging': 'Automatické štítkovanie',
   'layout.menu.usage': 'Využitie',
   'layout.menu.intake-emails': 'Prijímacie e-maily',
   'layout.menu.webhooks': 'Webhooky',
