@@ -89,7 +89,7 @@ describe('contract API wiring', () => {
     const { db } = await createInMemoryDatabase();
     const { app } = createServer(createTestServerDependencies({ db }));
 
-    const response = await app.request('/api/ping', { method: 'HEAD' });
+    const response = await app.request('/api/config', { method: 'HEAD' });
 
     expect(response.status).toEqual(200);
     expect(response.headers.get('Content-Type')).toEqual('application/json');
