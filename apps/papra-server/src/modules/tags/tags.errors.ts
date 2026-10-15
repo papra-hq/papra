@@ -12,6 +12,13 @@ export const createTagAlreadyExistsError = createErrorFactory({
   statusCode: 409,
 });
 
+export const createTagCreationFailedError = createErrorFactory({
+  message: 'Tag creation did not return a tag',
+  code: 'tags.creation_failed',
+  statusCode: 500,
+  isInternal: true,
+});
+
 export const createTagNotFoundError = createErrorFactory({
   message: 'Tag not found',
   code: 'tags.not_found',
