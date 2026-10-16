@@ -35,7 +35,28 @@ export type DocumentCustomPropertyValueStorage = {
   value: unknown;
 };
 
+export type DemoOrganizationSettings = {
+  ai: {
+    autoTagging: {
+      isEnabled: boolean;
+      canCreateNewTags: boolean;
+      maxTags: number;
+    };
+    extraction: {
+      isEnabled: boolean;
+      extractDate: boolean;
+      extractCustomProperties: boolean;
+      renameDocuments: boolean;
+      filenamePattern: string;
+    };
+  };
+};
+
 export const organizationStorage = prefixStorage<Organization>(storage, 'organizations');
+export const organizationSettingsStorage = prefixStorage<DemoOrganizationSettings>(
+  storage,
+  'organizationSettings',
+);
 export const documentStorage = prefixStorage<Document>(storage, 'documents');
 export const documentFileStorage = prefixStorage<DocumentFile>(storage, 'documentFiles');
 export const tagStorage = prefixStorage<Omit<Tag, 'documentsCount'>>(storage, 'tags');

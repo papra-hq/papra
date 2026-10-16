@@ -59,6 +59,9 @@ export function getPublicConfig({
     autoTagging: {
       isEnabled: config.autoTagging.isEnabled && config.ai.isEnabled,
     },
+    aiExtraction: {
+      isEnabled: config.aiExtraction.isEnabled && config.ai.isEnabled,
+    },
   };
 
   return {

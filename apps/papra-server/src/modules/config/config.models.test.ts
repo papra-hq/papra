@@ -105,6 +105,9 @@ describe('config models', () => {
           autoTagging: {
             isEnabled: false,
           },
+          aiExtraction: {
+            isEnabled: false,
+          },
         },
       });
     });

@@ -2,7 +2,11 @@ import { desc } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
-import { createDocumentAlreadyExistsError } from './documents.errors';
+import {
+  createDocumentAlreadyExistsError,
+  createDocumentConcurrentUpdateError,
+  createDocumentNotFoundError,
+} from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
 
@@ -350,6 +354,99 @@ describe('documents repository', () => {
           organizationId: 'org-1',
         }),
       ).to.eql(true);
+    });
+  });
+
+  describe('updateDocument', () => {
+    test('applies changes when expected name and date still match', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'document-1.txt',
+            name: 'scan.pdf',
+            originalName: 'scan.pdf',
+            originalSha256Hash: 'hash',
+            content: 'Invoice',
+          },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.updateDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        name: '2024-03-12 Invoice.pdf',
+        documentDate: new Date('2024-03-12T00:00:00.000Z'),
+        expectedName: 'scan.pdf',
+        expectedDocumentDate: null,
+      });
+
+      expect(document).toMatchObject({
+        name: '2024-03-12 Invoice.pdf',
+        documentDate: new Date('2024-03-12T00:00:00.000Z'),
+      });
+    });
+
+    test('rejects the update when the expected name or date no longer match', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'document-1.txt',
+            name: 'User renamed.pdf',
+            originalName: 'scan.pdf',
+            originalSha256Hash: 'hash',
+            content: 'Invoice',
+            documentDate: new Date('2023-01-01T00:00:00.000Z'),
+          },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await expect(
+        documentsRepository.updateDocument({
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          name: '2024-03-12 Invoice.pdf',
+          documentDate: new Date('2024-03-12T00:00:00.000Z'),
+          expectedName: 'scan.pdf',
+          expectedDocumentDate: null,
+        }),
+      ).rejects.toThrow(createDocumentConcurrentUpdateError());
+
+      const [document] = await db.select().from(documentsTable);
+
+      expect(document).toMatchObject({
+        name: 'User renamed.pdf',
+        documentDate: new Date('2023-01-01T00:00:00.000Z'),
+      });
+    });
+
+    test('throws not found when a guarded update targets a missing document', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await expect(
+        documentsRepository.updateDocument({
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          name: '2024-03-12 Invoice.pdf',
+          expectedName: 'scan.pdf',
+          expectedDocumentDate: null,
+        }),
+      ).rejects.toThrow(createDocumentNotFoundError());
     });
   });
 });

@@ -8,6 +8,14 @@ export type OrganizationSettings = {
       maxTags: number;
       modelId?: string;
     };
+    extraction: {
+      isEnabled: boolean;
+      extractDate: boolean;
+      extractCustomProperties: boolean;
+      renameDocuments: boolean;
+      filenamePattern: string;
+      modelId?: string;
+    };
   };
 };
 
@@ -17,4 +25,9 @@ export type DbUpdatableOrganizationSettings = Pick<
   | 'aiAutoTaggingCanCreateNewTags'
   | 'aiAutoTaggingMaxTags'
   | 'aiAutoTaggingModelId'
+  | 'aiExtractionEnabled'
+  | 'aiExtractionExtractDate'
+  | 'aiExtractionExtractCustomProperties'
+  | 'aiExtractionRenameDocuments'
+  | 'aiExtractionFilenamePattern'
 >;

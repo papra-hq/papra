@@ -13,6 +13,13 @@ export function formatOrganizationSettingsForApiResponse({
         'canCreateNewTags',
         'maxTags',
       ]),
+      extraction: pick(organizationSettings.ai.extraction, [
+        'isEnabled',
+        'extractDate',
+        'extractCustomProperties',
+        'renameDocuments',
+        'filenamePattern',
+      ]),
     },
   };
 }

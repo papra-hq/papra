@@ -1,14 +1,16 @@
 import type { Database } from '../app/database/database.types';
 import type { CustomPropertyType } from './custom-properties.constants';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, asc, count, eq, inArray } from 'drizzle-orm';
+import { and, asc, count, eq, inArray, notExists, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/objects';
+import { generateId } from '../shared/random/ids';
 import { isDefined, isNil } from '../shared/utils';
 import { usersTable } from '../users/users.table';
+import { DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_PREFIX } from './custom-properties.constants';
 import { createCustomPropertyDefinitionAlreadyExistsError } from './custom-properties.errors';
 import { generatePropertyKey } from './custom-properties.repository.models';
 import {
@@ -421,25 +423,136 @@ async function getCustomPropertyValuesByDocumentIds({
   return { valuesByDocumentId };
 }
 
+type DocumentCustomPropertyValueInput = {
+  textValue?: string | null;
+  numberValue?: number | null;
+  dateValue?: Date | null;
+  booleanValue?: boolean | null;
+  selectOptionId?: string | null;
+  userId?: string | null;
+  relatedDocumentId?: string | null;
+};
+
+function toInsertSqlValue(value: string | number | boolean | Date | null) {
+  if (value === null) {
+    return sql`null`;
+  }
+
+  if (value instanceof Date) {
+    return sql`${value.getTime()}`;
+  }
+
+  if (typeof value === 'boolean') {
+    return sql`${Number(value)}`;
+  }
+
+  return sql`${value}`;
+}
+
+function selectDocumentCustomPropertyValueRow({
+  db,
+  documentId,
+  propertyDefinitionId,
+  value,
+  now,
+}: {
+  db: Database;
+  documentId: string;
+  propertyDefinitionId: string;
+  value: DocumentCustomPropertyValueInput;
+  now: Date;
+}) {
+  return db
+    .select({
+      id: sql<string>`${generateId({ prefix: DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_PREFIX })}`.as('id'),
+      createdAt: sql<number>`${now.getTime()}`.as('created_at'),
+      updatedAt: sql<number>`${now.getTime()}`.as('updated_at'),
+      documentId: sql<string>`${documentId}`.as('document_id'),
+      propertyDefinitionId: sql<string>`${propertyDefinitionId}`.as('property_definition_id'),
+      textValue: toInsertSqlValue(value.textValue ?? null).as('text_value'),
+      numberValue: toInsertSqlValue(value.numberValue ?? null).as('number_value'),
+      dateValue: toInsertSqlValue(value.dateValue ?? null).as('date_value'),
+      booleanValue: toInsertSqlValue(value.booleanValue ?? null).as('boolean_value'),
+      selectOptionId: toInsertSqlValue(value.selectOptionId ?? null).as('select_option_id'),
+      userId: toInsertSqlValue(value.userId ?? null).as('user_id'),
+      relatedDocumentId: toInsertSqlValue(value.relatedDocumentId ?? null).as(
+        'related_document_id',
+      ),
+    })
+    .from(sql`(select 1)`)
+    .where(
+      notExists(
+        db
+          .select({ id: sql`1` })
+          .from(documentCustomPropertyValuesTable)
+          .where(
+            and(
+              eq(documentCustomPropertyValuesTable.documentId, documentId),
+              eq(documentCustomPropertyValuesTable.propertyDefinitionId, propertyDefinitionId),
+            ),
+          ),
+      ),
+    );
+}
+
+async function insertDocumentCustomPropertyValuesIfAbsent({
+  db,
+  documentId,
+  propertyDefinitionId,
+  values,
+}: {
+  db: Database;
+  documentId: string;
+  propertyDefinitionId: string;
+  values: DocumentCustomPropertyValueInput[];
+}) {
+  if (values.length === 0) {
+    return { applied: true };
+  }
+
+  const now = new Date();
+  const source = sql.join(
+    values.map((value) =>
+      selectDocumentCustomPropertyValueRow({
+        db,
+        documentId,
+        propertyDefinitionId,
+        value,
+        now,
+      }).getSQL(),
+    ),
+    sql` union all `,
+  );
+  const inserted = await db
+    .insert(documentCustomPropertyValuesTable)
+    .select(source)
+    .returning({ id: documentCustomPropertyValuesTable.id });
+
+  return { applied: inserted.length > 0 };
+}
+
 async function setDocumentCustomPropertyValue({
   documentId,
   propertyDefinitionId,
   values,
+  expectedAbsent = false,
   db,
 }: {
   documentId: string;
   propertyDefinitionId: string;
-  values: {
-    textValue?: string | null;
-    numberValue?: number | null;
-    dateValue?: Date | null;
-    booleanValue?: boolean | null;
-    selectOptionId?: string | null;
-    userId?: string | null;
-    relatedDocumentId?: string | null;
-  }[];
+  values: DocumentCustomPropertyValueInput[];
+  expectedAbsent?: boolean;
   db: Database;
 }) {
+  if (expectedAbsent) {
+    return insertDocumentCustomPropertyValuesIfAbsent({
+      db,
+      documentId,
+      propertyDefinitionId,
+      values,
+    });
+  }
+
   await db
     .delete(documentCustomPropertyValuesTable)
     .where(
@@ -458,6 +571,8 @@ async function setDocumentCustomPropertyValue({
       })),
     );
   }
+
+  return { applied: true };
 }
 
 async function deleteDocumentCustomPropertyValue({

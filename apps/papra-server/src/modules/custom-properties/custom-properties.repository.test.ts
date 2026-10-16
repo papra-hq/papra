@@ -248,4 +248,130 @@ describe('custom-properties repository', () => {
       ).rejects.toThrow(createCustomPropertyDefinitionAlreadyExistsError());
     });
   });
+
+  describe('document values', () => {
+    test('inserts a value when the property is still absent', async () => {
+      const orgId = 'org_111111111111111111111111';
+      const docId = 'doc_111111111111111111111111';
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: orgId, name: 'Test Org' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
+      });
+
+      const repository = createCustomPropertiesRepository({ db });
+      const { propertyDefinition } = await repository.createPropertyDefinition({
+        definition: { organizationId: orgId, name: 'Vendor', type: CUSTOM_PROPERTY_TYPES.TEXT },
+      });
+
+      const { applied } = await repository.setDocumentCustomPropertyValue({
+        documentId: docId,
+        propertyDefinitionId: propertyDefinition.id,
+        expectedAbsent: true,
+        values: [{ textValue: 'Acme Corp' }],
+      });
+
+      expect(applied).to.eql(true);
+
+      const { values } = await repository.getDocumentCustomPropertyValues({ documentId: docId });
+      expect(values).to.have.length(1);
+      expect(values[0]!.value.textValue).to.eql('Acme Corp');
+    });
+
+    test('inserts multiple values atomically when the property is still absent', async () => {
+      const orgId = 'org_111111111111111111111111';
+      const docId = 'doc_111111111111111111111111';
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: orgId, name: 'Test Org' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
+      });
+
+      const repository = createCustomPropertiesRepository({ db });
+      const { propertyDefinition } = await repository.createPropertyDefinition({
+        definition: { organizationId: orgId, name: 'Tags', type: CUSTOM_PROPERTY_TYPES.TEXT },
+      });
+
+      const { applied } = await repository.setDocumentCustomPropertyValue({
+        documentId: docId,
+        propertyDefinitionId: propertyDefinition.id,
+        expectedAbsent: true,
+        values: [{ textValue: 'alpha' }, { textValue: 'beta' }],
+      });
+
+      expect(applied).to.eql(true);
+
+      const { values } = await repository.getDocumentCustomPropertyValues({ documentId: docId });
+      expect(
+        values.map((row) => row.value.textValue).sort((a, b) => (a ?? '').localeCompare(b ?? '')),
+      ).to.eql(['alpha', 'beta']);
+    });
+
+    test('does not overwrite an existing value when expectedAbsent is set', async () => {
+      const orgId = 'org_111111111111111111111111';
+      const docId = 'doc_111111111111111111111111';
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: orgId, name: 'Test Org' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
+      });
+
+      const repository = createCustomPropertiesRepository({ db });
+      const { propertyDefinition } = await repository.createPropertyDefinition({
+        definition: { organizationId: orgId, name: 'Vendor', type: CUSTOM_PROPERTY_TYPES.TEXT },
+      });
+
+      await repository.setDocumentCustomPropertyValue({
+        documentId: docId,
+        propertyDefinitionId: propertyDefinition.id,
+        values: [{ textValue: 'Existing vendor' }],
+      });
+
+      const { applied } = await repository.setDocumentCustomPropertyValue({
+        documentId: docId,
+        propertyDefinitionId: propertyDefinition.id,
+        expectedAbsent: true,
+        values: [{ textValue: 'Acme Corp' }],
+      });
+
+      expect(applied).to.eql(false);
+
+      const { values } = await repository.getDocumentCustomPropertyValues({ documentId: docId });
+      expect(values).to.have.length(1);
+      expect(values[0]!.value.textValue).to.eql('Existing vendor');
+    });
+  });
 });

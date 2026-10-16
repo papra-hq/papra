@@ -24,6 +24,14 @@ function createTestResolveOrganizationSettings(
           modelId: 'gpt-4',
           ...autoTagging,
         },
+        extraction: {
+          isEnabled: false,
+          extractDate: true,
+          extractCustomProperties: true,
+          renameDocuments: false,
+          filenamePattern: '',
+          modelId: 'gpt-4',
+        },
       },
     },
   });
