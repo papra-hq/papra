@@ -2,13 +2,21 @@ import type { ApiDependencies } from '../app/server.types';
 import { defineApiRoute } from '../api/api.routes';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { createOrganizationTagContract, getOrganizationTagsContract } from './tags.api.contracts';
-import { createTagCreationFailedError } from './tags.errors';
+import {
+  createOrganizationTagContract,
+  getOrganizationTagsContract,
+  updateOrganizationTagContract,
+} from './tags.api.contracts';
+import { createTagCreationFailedError, createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { createTag } from './tags.usecases';
 
 export function buildTagsApiRoutes(deps: ApiDependencies) {
-  return [setupGetOrganizationTagsRoute(deps), setupCreateOrganizationTagRoute(deps)];
+  return [
+    setupGetOrganizationTagsRoute(deps),
+    setupCreateOrganizationTagRoute(deps),
+    setupUpdateOrganizationTagRoute(deps),
+  ];
 }
 
 function setupCreateOrganizationTagRoute({
@@ -40,6 +48,47 @@ function setupCreateOrganizationTagRoute({
 
       if (!tag) {
         throw createTagCreationFailedError();
+      }
+
+      return {
+        status: 200,
+        contentType: 'application/json',
+        body: {
+          tag: {
+            ...tag,
+            createdAt: tag.createdAt.toISOString(),
+            updatedAt: tag.updatedAt.toISOString(),
+          },
+        },
+      };
+    },
+  });
+}
+
+function setupUpdateOrganizationTagRoute({ resolveAuthenticationContext, db }: ApiDependencies) {
+  return defineApiRoute({
+    contract: updateOrganizationTagContract,
+    resolveContext: resolveAuthenticationContext({ apiKeyPermissions: ['tags:update'] }),
+    handler: async ({
+      context: { userId },
+      params: { organizationId, tagId },
+      body: { name, color, description },
+    }) => {
+      const tagsRepository = createTagsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { tag } = await tagsRepository.updateTag({
+        tagId,
+        organizationId,
+        name,
+        color,
+        description,
+      });
+
+      if (!tag) {
+        throw createTagNotFoundError();
       }
 
       return {
