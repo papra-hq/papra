@@ -3,6 +3,7 @@ import { getCurrentUserContract, updateCurrentUserContract } from '../users/user
 import {
   createOrganizationTagContract,
   getOrganizationTagsContract,
+  updateOrganizationTagContract,
 } from '../tags/tags.api.contracts';
 
 export type { ApiContract } from './api.contracts';
@@ -14,4 +15,5 @@ export const apiContracts = {
   updateCurrentUserContract,
   getOrganizationTagsContract,
   createOrganizationTagContract,
+  updateOrganizationTagContract,
 };

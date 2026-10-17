@@ -14,61 +14,13 @@ import { ensureUserIsInOrganization } from '../organizations/organizations.useca
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
-import { tagColorSchema, tagDescriptionSchema, tagIdSchema, tagNameSchema } from './tags.schemas';
+import { tagIdSchema } from './tags.schemas';
 import { addTagToDocument } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
-  setupUpdateTagRoute(context);
   setupDeleteTagRoute(context);
   setupAddTagToDocumentRoute(context);
   setupRemoveTagFromDocumentRoute(context);
-}
-
-function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
-  app.put(
-    '/api/organizations/:organizationId/tags/:tagId',
-    requireAuthentication({ apiKeyPermissions: ['tags:update'] }),
-    validateParams(
-      v.strictObject({
-        organizationId: organizationIdSchema,
-        tagId: tagIdSchema,
-      }),
-    ),
-    validateJsonBody(
-      v.strictObject({
-        name: v.optional(tagNameSchema),
-        color: v.optional(tagColorSchema),
-        description: v.optional(tagDescriptionSchema),
-      }),
-    ),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const { organizationId, tagId } = context.req.valid('param');
-      const { name, color, description } = context.req.valid('json');
-
-      const tagsRepository = createTagsRepository({ db });
-      const organizationsRepository = createOrganizationsRepository({ db });
-
-      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-
-      const { tag } = await tagsRepository.updateTag({
-        tagId,
-        organizationId,
-        name,
-        color,
-        description,
-      });
-
-      if (!tag) {
-        throw createTagNotFoundError();
-      }
-
-      return context.json({
-        tag,
-      });
-    },
-  );
 }
 
 function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {

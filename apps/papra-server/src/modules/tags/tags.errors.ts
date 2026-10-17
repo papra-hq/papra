@@ -19,11 +19,13 @@ export const createTagCreationFailedError = createErrorFactory({
   isInternal: true,
 });
 
-export const createTagNotFoundError = createErrorFactory({
+export const tagNotFoundErrorDefinition = {
   message: 'Tag not found',
   code: 'tags.not_found',
   statusCode: 404,
-});
+} as const;
+
+export const createTagNotFoundError = createErrorFactory(tagNotFoundErrorDefinition);
 
 export const createOrganizationTagLimitReachedError = createErrorFactory({
   message: 'The maximum number of tags for this organization has been reached.',
