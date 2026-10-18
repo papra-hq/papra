@@ -1,16 +1,22 @@
 import type { ApiDependencies } from '../app/server.types';
 import { defineApiRoute } from '../api/api.routes';
+import { createDocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
+import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
+import { createDocumentNotFoundError } from '../documents/documents.errors';
+import { createDocumentsRepository } from '../documents/documents.repository';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import {
+  addOrganizationDocumentTagContract,
   createOrganizationTagContract,
   deleteOrganizationTagContract,
   getOrganizationTagsContract,
+  removeOrganizationDocumentTagContract,
   updateOrganizationTagContract,
 } from './tags.api.contracts';
 import { createTagCreationFailedError, createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
-import { createTag } from './tags.usecases';
+import { addTagToDocument, createTag } from './tags.usecases';
 
 export function buildTagsApiRoutes(deps: ApiDependencies) {
   return [
@@ -18,7 +24,112 @@ export function buildTagsApiRoutes(deps: ApiDependencies) {
     setupCreateOrganizationTagRoute(deps),
     setupUpdateOrganizationTagRoute(deps),
     setupDeleteOrganizationTagRoute(deps),
+    setupAddTagToDocumentRoute(deps),
+    setupRemoveTagFromDocumentRoute(deps),
   ];
+}
+
+function setupAddTagToDocumentRoute({
+  resolveAuthenticationContext,
+  db,
+  webhookTriggerServices,
+}: ApiDependencies) {
+  return defineApiRoute({
+    contract: addOrganizationDocumentTagContract,
+    resolveContext: resolveAuthenticationContext({
+      apiKeyPermissions: ['documents:update', 'tags:read'],
+    }),
+    handler: async ({
+      context: { userId },
+      params: { organizationId, documentId },
+      body: { tagId },
+    }) => {
+      const tagsRepository = createTagsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const [{ document }, { tag }] = await Promise.all([
+        documentsRepository.getDocumentById({ organizationId, documentId }),
+        tagsRepository.getTagById({ tagId, organizationId }),
+      ]);
+
+      if (!document) {
+        throw createDocumentNotFoundError();
+      }
+
+      if (!tag) {
+        throw createTagNotFoundError();
+      }
+
+      await addTagToDocument({
+        tagId,
+        documentId,
+        organizationId,
+        userId,
+        tag,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
+
+      return { status: 204 };
+    },
+  });
+}
+
+function setupRemoveTagFromDocumentRoute({
+  resolveAuthenticationContext,
+  db,
+  webhookTriggerServices,
+}: ApiDependencies) {
+  return defineApiRoute({
+    contract: removeOrganizationDocumentTagContract,
+    resolveContext: resolveAuthenticationContext({
+      apiKeyPermissions: ['documents:update', 'tags:read'],
+    }),
+    handler: async ({ context: { userId }, params: { organizationId, documentId, tagId } }) => {
+      const tagsRepository = createTagsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const [{ document }, { tag }] = await Promise.all([
+        documentsRepository.getDocumentById({ organizationId, documentId }),
+        tagsRepository.getTagById({ tagId, organizationId }),
+      ]);
+
+      if (!document) {
+        throw createDocumentNotFoundError();
+      }
+
+      if (!tag) {
+        throw createTagNotFoundError();
+      }
+
+      await tagsRepository.removeTagFromDocument({ tagId, documentId });
+
+      webhookTriggerServices.deferTriggerWebhooks({
+        organizationId,
+        event: 'document:tag:removed',
+        payloads: [{ documentId, organizationId, tagId, tagName: tag.name }],
+      });
+
+      deferRegisterDocumentActivityLog({
+        documentId,
+        event: 'untagged',
+        userId,
+        documentActivityRepository,
+        tagId,
+      });
+
+      return { status: 204 };
+    },
+  });
 }
 
 function setupCreateOrganizationTagRoute({
