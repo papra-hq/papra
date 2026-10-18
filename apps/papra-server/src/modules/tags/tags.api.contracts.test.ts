@@ -1,6 +1,10 @@
 import * as v from 'valibot';
 import { describe, expect, test } from 'vitest';
-import { createOrganizationTagContract, updateOrganizationTagContract } from './tags.api.contracts';
+import {
+  createOrganizationTagContract,
+  deleteOrganizationTagContract,
+  updateOrganizationTagContract,
+} from './tags.api.contracts';
 
 const bodySchema = createOrganizationTagContract.request.body['application/json'];
 
@@ -55,6 +59,23 @@ describe('updateOrganizationTagContract', () => {
       false,
     );
     expect(v.safeParse(paramsSchema, { ...params, tagId: 'invalid' }).success).toEqual(false);
+  });
+});
+
+describe('deleteOrganizationTagContract', () => {
+  const schema = deleteOrganizationTagContract.request.params;
+  const params = {
+    organizationId: 'org_123456789012345678901234',
+    tagId: 'tag_123456789012345678901234',
+  };
+
+  test('tag deletion requires valid organization and tag IDs', () => {
+    expect(v.parse(schema, params)).toEqual(params);
+    expect(v.safeParse(schema, { organizationId: params.organizationId }).success).toEqual(false);
+    expect(v.safeParse(schema, { tagId: params.tagId }).success).toEqual(false);
+    expect(v.safeParse(schema, { ...params, organizationId: 'invalid' }).success).toEqual(false);
+    expect(v.safeParse(schema, { ...params, tagId: 'invalid' }).success).toEqual(false);
+    expect(v.safeParse(schema, { ...params, extra: true }).success).toEqual(false);
   });
 });
 

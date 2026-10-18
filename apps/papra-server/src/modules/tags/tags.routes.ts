@@ -18,36 +18,8 @@ import { tagIdSchema } from './tags.schemas';
 import { addTagToDocument } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
-  setupDeleteTagRoute(context);
   setupAddTagToDocumentRoute(context);
   setupRemoveTagFromDocumentRoute(context);
-}
-
-function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
-  app.delete(
-    '/api/organizations/:organizationId/tags/:tagId',
-    requireAuthentication({ apiKeyPermissions: ['tags:delete'] }),
-    validateParams(
-      v.strictObject({
-        organizationId: organizationIdSchema,
-        tagId: tagIdSchema,
-      }),
-    ),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const { organizationId, tagId } = context.req.valid('param');
-
-      const tagsRepository = createTagsRepository({ db });
-      const organizationsRepository = createOrganizationsRepository({ db });
-
-      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-
-      await tagsRepository.deleteTag({ tagId, organizationId });
-
-      return context.body(null, 204);
-    },
-  );
 }
 
 function setupAddTagToDocumentRoute({ app, db, webhookTriggerServices }: RouteDefinitionContext) {
