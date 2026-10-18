@@ -86,6 +86,25 @@ export const updateOrganizationTagContract = defineApiContract({
   },
 });
 
+export const deleteOrganizationTagContract = defineApiContract({
+  operationId: 'deleteOrganizationTag',
+  path: '/api/organizations/:organizationId/tags/:tagId',
+  method: 'DELETE',
+  request: {
+    params: v.strictObject({
+      organizationId: organizationIdSchema,
+      tagId: tagIdSchema,
+    }),
+  },
+  responses: {
+    204: {
+      description: 'Deletes the organization tag.',
+      content: {},
+    },
+    ...errorResponseDefinition(tagNotFoundErrorDefinition),
+  },
+});
+
 export const getOrganizationTagsContract = defineApiContract({
   operationId: 'getOrganizationTags',
   path: '/api/organizations/:organizationId/tags',

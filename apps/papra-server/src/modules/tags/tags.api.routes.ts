@@ -4,6 +4,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import {
   createOrganizationTagContract,
+  deleteOrganizationTagContract,
   getOrganizationTagsContract,
   updateOrganizationTagContract,
 } from './tags.api.contracts';
@@ -16,6 +17,7 @@ export function buildTagsApiRoutes(deps: ApiDependencies) {
     setupGetOrganizationTagsRoute(deps),
     setupCreateOrganizationTagRoute(deps),
     setupUpdateOrganizationTagRoute(deps),
+    setupDeleteOrganizationTagRoute(deps),
   ];
 }
 
@@ -102,6 +104,23 @@ function setupUpdateOrganizationTagRoute({ resolveAuthenticationContext, db }: A
           },
         },
       };
+    },
+  });
+}
+
+function setupDeleteOrganizationTagRoute({ resolveAuthenticationContext, db }: ApiDependencies) {
+  return defineApiRoute({
+    contract: deleteOrganizationTagContract,
+    resolveContext: resolveAuthenticationContext({ apiKeyPermissions: ['tags:delete'] }),
+    handler: async ({ context: { userId }, params: { organizationId, tagId } }) => {
+      const tagsRepository = createTagsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await tagsRepository.deleteTag({ tagId, organizationId });
+
+      return { status: 204 };
     },
   });
 }

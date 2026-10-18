@@ -2,6 +2,7 @@ import { healthCheckContract, pingContract } from '../app/health-check/health-ch
 import { getCurrentUserContract, updateCurrentUserContract } from '../users/users.api.contracts';
 import {
   createOrganizationTagContract,
+  deleteOrganizationTagContract,
   getOrganizationTagsContract,
   updateOrganizationTagContract,
 } from '../tags/tags.api.contracts';
@@ -16,4 +17,5 @@ export const apiContracts = {
   getOrganizationTagsContract,
   createOrganizationTagContract,
   updateOrganizationTagContract,
+  deleteOrganizationTagContract,
 };
