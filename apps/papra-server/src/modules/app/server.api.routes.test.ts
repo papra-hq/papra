@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { createApiKeysRepository } from '../api-keys/api-keys.repository';
 import { createApiKey } from '../api-keys/api-keys.usecases';
 import { overrideConfig } from '../config/config.test-utils';
+import { getPublicConfigContract } from '../config/config.api.contracts';
 import { PERMISSIONS_BY_ROLE } from '../roles/roles.constants';
 import { userRolesTable } from '../roles/roles.table';
 import { getCurrentUserContract } from '../users/users.api.contracts';
@@ -37,6 +38,35 @@ async function createAuthenticatedServer() {
 }
 
 describe('contract API wiring', () => {
+  test('the public config supports anonymous GET and HEAD requests', async () => {
+    const { db } = await createInMemoryDatabase();
+    const { app } = createServer(createTestServerDependencies({ db }));
+
+    const response = await app.request('/api/config');
+    const body = await response.json();
+
+    expect(response.status).toEqual(200);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(body).toMatchObject({
+      config: {
+        version: 'dev',
+        gitCommitSha: 'unknown',
+        gitCommitDate: 'unknown',
+        documents: { isReprocessingEnabled: true },
+      },
+    });
+    expect(
+      v.parse(getPublicConfigContract.responses[200].content['application/json'].schema, body),
+    ).toEqual(body);
+
+    const headResponse = await app.request('/api/config', { method: 'HEAD' });
+
+    expect(headResponse.status).toEqual(200);
+    expect(headResponse.headers.get('Content-Type')).toEqual('application/json');
+    expect(headResponse.body).toEqual(null);
+    expect(await headResponse.text()).toEqual('');
+  });
+
   test('session cookies authenticate the current-user endpoint and return its wire contract', async () => {
     const { app, db, user, headers } = await createAuthenticatedServer();
     await db.insert(userRolesTable).values({ userId: user.id, role: 'admin' });
@@ -86,10 +116,9 @@ describe('contract API wiring', () => {
   });
 
   test('unmatched HEAD requests continue to legacy GET routes', async () => {
-    const { db } = await createInMemoryDatabase();
-    const { app } = createServer(createTestServerDependencies({ db }));
+    const { app, headers } = await createAuthenticatedServer();
 
-    const response = await app.request('/api/config', { method: 'HEAD' });
+    const response = await app.request('/api/api-keys', { method: 'HEAD', headers });
 
     expect(response.status).toEqual(200);
     expect(response.headers.get('Content-Type')).toEqual('application/json');
