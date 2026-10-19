@@ -47,7 +47,7 @@ Once enabled on the server, organizations can turn auto tagging on in their sett
 
 ## Configuring auto tagging (organization)
 
-In your organization settings, under the **Auto tagging** section, you can configure:
+In your organization settings, on the **AI** page, you can configure:
 
 - **Enable auto tagging**: Enable or disable auto tagging for this organization.
 - **Create new tags**: Allow or disallow creating new tags when none of the existing tags are relevant.
@@ -60,6 +60,17 @@ Once enabled, every time a document is added to Papra its extracted content is s
 :::tip
 Tag descriptions matter. The LLM uses each tag's name **and** description to decide what is relevant, so adding clear descriptions to your tags significantly improves the quality of the suggestions.
 :::
+
+## Auto naming
+
+Papra can also give documents a descriptive title based on their content, which is useful for files with meaningless names such as scanner output (`SCAN_20260728_0001.pdf` becomes `Invoice - Acme Corp - June 2026`). The original file name is kept and a title the user changed while the AI was running is never overwritten.
+
+Auto naming runs in the same LLM request as auto tagging, so the document content is only sent once, and it uses the auto tagging model (`AUTO_TAGGING_MODEL`, falling back to `AI_DEFAULT_MODEL`). Auto naming and auto tagging can be enabled independently on the **AI** page of the organization settings.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `AUTO_NAMING_ENABLED` | `true` | Whether organizations are allowed to use auto naming. |
+| `AUTO_NAMING_MAX_TITLE_LENGTH` | `120` | Maximum length of a generated title, capped at `255`. |
 
 ## Troubleshooting
 

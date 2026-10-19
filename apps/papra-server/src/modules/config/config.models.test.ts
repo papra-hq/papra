@@ -121,6 +121,9 @@ describe('config models', () => {
           autoTagging: {
             isEnabled: false,
           },
+          autoNaming: {
+            isEnabled: false,
+          },
         },
       });
       expect(v.parse(publicConfigSchema, JSON.parse(JSON.stringify(result.publicConfig)))).toEqual(
