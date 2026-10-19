@@ -1,6 +1,13 @@
 import { healthCheckContract, pingContract } from '../app/health-check/health-check.api.contracts';
 import { getPublicConfigContract } from '../config/config.api.contracts';
-import { getOrganizationsContract } from '../organizations/organizations.api.contracts';
+import {
+  createOrganizationContract,
+  getDeletedOrganizationsContract,
+  getOrganizationContract,
+  getOrganizationsContract,
+  softDeleteOrganizationContract,
+  updateOrganizationContract,
+} from '../organizations/organizations.api.contracts';
 import { getCurrentUserContract, updateCurrentUserContract } from '../users/users.api.contracts';
 import {
   addOrganizationDocumentTagContract,
@@ -20,6 +27,11 @@ export const apiContracts = {
   getCurrentUserContract,
   updateCurrentUserContract,
   getOrganizationsContract,
+  getDeletedOrganizationsContract,
+  createOrganizationContract,
+  getOrganizationContract,
+  updateOrganizationContract,
+  softDeleteOrganizationContract,
   getOrganizationTagsContract,
   createOrganizationTagContract,
   updateOrganizationTagContract,
