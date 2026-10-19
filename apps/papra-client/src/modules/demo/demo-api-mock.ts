@@ -1540,6 +1540,12 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
               canCreateNewTags: false,
               maxTags: 10,
             },
+            autoNaming: {
+              isEnabled: false,
+            },
+            autoDocumentDate: {
+              isEnabled: false,
+            },
           },
         },
       };

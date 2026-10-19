@@ -8,6 +8,7 @@ import { createDocumentsRepository } from '../documents.repository';
 import { extractAndSaveDocumentFileContent } from '../documents.usecases';
 import type { Config } from '../../config/config.types';
 import { buildExtractDocumentTextUsecase } from '../content-extraction/content-extraction.usecases';
+import { isAutoProcessingEnabled } from '../../auto-processing/auto-processing.config.models';
 
 export async function registerExtractDocumentFileContentTask({
   taskServices,
@@ -54,12 +55,12 @@ export async function registerExtractDocumentFileContentTask({
         extractDocumentText,
       });
 
-      if (!config.ai.isEnabled || !config.autoTagging.isEnabled) {
+      if (!isAutoProcessingEnabled({ config })) {
         return;
       }
 
       await taskServices.scheduleJob({
-        taskName: 'auto-tag-document',
+        taskName: 'auto-process-document',
         data: { documentId, organizationId },
       });
     },

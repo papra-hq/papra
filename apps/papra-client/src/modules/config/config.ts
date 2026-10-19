@@ -94,6 +94,12 @@ export const buildTimeConfig = {
   autoTagging: {
     isEnabled: false,
   },
+  autoNaming: {
+    isEnabled: false,
+  },
+  autoDocumentDate: {
+    isEnabled: false,
+  },
 } as const;
 
 export type Config = typeof buildTimeConfig;
@@ -107,4 +113,6 @@ export type RuntimePublicConfig = Pick<
   | 'intakeEmails'
   | 'organizations'
   | 'autoTagging'
+  | 'autoNaming'
+  | 'autoDocumentDate'
 >;

@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, desc, eq, inArray, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, lt, sql } from 'drizzle-orm';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { chunkArray } from '../shared/arrays/arrays.utils';
@@ -36,6 +36,8 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       updateDocumentStorageKey,
+      updateDocumentNameIfUnchanged,
+      updateDocumentDateIfUnset,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
     },
@@ -516,6 +518,62 @@ async function updateDocumentStorageKey({
     .returning({ id: documentsTable.id });
 
   return { updated: rows.length > 0 };
+}
+
+async function updateDocumentNameIfUnchanged({
+  documentId,
+  organizationId,
+  expectedName,
+  name,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  expectedName: string;
+  name: string;
+  db: Database;
+}) {
+  const [document] = await db
+    .update(documentsTable)
+    .set({ name })
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.name, expectedName),
+        eq(documentsTable.isDeleted, false),
+      ),
+    )
+    .returning();
+
+  return { document: document ?? null };
+}
+
+async function updateDocumentDateIfUnset({
+  documentId,
+  organizationId,
+  documentDate,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  documentDate: Date;
+  db: Database;
+}) {
+  const [document] = await db
+    .update(documentsTable)
+    .set({ documentDate })
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+        isNull(documentsTable.documentDate),
+        eq(documentsTable.isDeleted, false),
+      ),
+    )
+    .returning();
+
+  return { document: document ?? null };
 }
 
 async function getGlobalDocumentsStats({ db }: { db: Database }) {

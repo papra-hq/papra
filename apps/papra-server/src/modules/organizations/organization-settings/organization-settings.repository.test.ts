@@ -30,6 +30,9 @@ describe('organization-settings.repository', () => {
               'aiAutoTaggingEnabled',
               'aiAutoTaggingCanCreateNewTags',
               'aiAutoTaggingMaxTags',
+              'aiAutoTaggingModelId',
+              'aiAutoNamingEnabled',
+              'aiAutoDocumentDateEnabled',
             ]),
           )
           .from(organizationSettingsTable),
@@ -39,6 +42,9 @@ describe('organization-settings.repository', () => {
           aiAutoTaggingEnabled: true,
           aiAutoTaggingCanCreateNewTags: null,
           aiAutoTaggingMaxTags: null,
+          aiAutoTaggingModelId: null,
+          aiAutoNamingEnabled: null,
+          aiAutoDocumentDateEnabled: null,
         },
       ]);
 
@@ -48,6 +54,9 @@ describe('organization-settings.repository', () => {
           aiAutoTaggingEnabled: false,
           aiAutoTaggingCanCreateNewTags: true,
           aiAutoTaggingMaxTags: 5,
+          aiAutoTaggingModelId: 'openai://gpt-4o-mini',
+          aiAutoNamingEnabled: true,
+          aiAutoDocumentDateEnabled: true,
         },
       });
 
@@ -59,6 +68,9 @@ describe('organization-settings.repository', () => {
               'aiAutoTaggingEnabled',
               'aiAutoTaggingCanCreateNewTags',
               'aiAutoTaggingMaxTags',
+              'aiAutoTaggingModelId',
+              'aiAutoNamingEnabled',
+              'aiAutoDocumentDateEnabled',
             ]),
           )
           .from(organizationSettingsTable),
@@ -68,6 +80,9 @@ describe('organization-settings.repository', () => {
           aiAutoTaggingEnabled: false,
           aiAutoTaggingCanCreateNewTags: true,
           aiAutoTaggingMaxTags: 5,
+          aiAutoTaggingModelId: 'openai://gpt-4o-mini',
+          aiAutoNamingEnabled: true,
+          aiAutoDocumentDateEnabled: true,
         },
       ]);
     });
