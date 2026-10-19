@@ -2,9 +2,73 @@ import * as v from 'valibot';
 import { defineApiContract } from '../api/api.contracts';
 import { isoDateStringSchema } from '../api/api.schemas';
 import { organizationIdSchema } from '../organizations/organization.schemas';
+import { documentIdSchema } from '../documents/documents.schemas';
 import { tagColorSchema, tagDescriptionSchema, tagIdSchema, tagNameSchema } from './tags.schemas';
 import { errorResponseDefinition } from '../api/api.contracts.errors';
 import { tagNotFoundErrorDefinition } from './tags.errors';
+
+const documentTagNotFoundResponse = {
+  description: 'The document or tag was not found in the organization.',
+  content: {
+    'application/json': {
+      schema: v.object({
+        error: v.object({
+          code: v.picklist(['document.not_found', 'tags.not_found']),
+          message: v.string(),
+        }),
+      }),
+    },
+  },
+};
+
+export const addOrganizationDocumentTagContract = defineApiContract({
+  operationId: 'addOrganizationDocumentTag',
+  path: '/api/organizations/:organizationId/documents/:documentId/tags',
+  method: 'POST',
+  request: {
+    params: v.strictObject({
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
+    }),
+    body: {
+      'application/json': v.strictObject({
+        tagId: tagIdSchema,
+      }),
+    },
+  },
+  responses: {
+    204: {
+      description: 'Adds the tag to the document.',
+      content: {},
+    },
+    404: documentTagNotFoundResponse,
+    ...errorResponseDefinition({
+      statusCode: 409,
+      code: 'documents.already_has_tag',
+      message: 'Document already has tag',
+    }),
+  },
+});
+
+export const removeOrganizationDocumentTagContract = defineApiContract({
+  operationId: 'removeOrganizationDocumentTag',
+  path: '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
+  method: 'DELETE',
+  request: {
+    params: v.strictObject({
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
+      tagId: tagIdSchema,
+    }),
+  },
+  responses: {
+    204: {
+      description: 'Removes the tag from the document.',
+      content: {},
+    },
+    404: documentTagNotFoundResponse,
+  },
+});
 
 export const createOrganizationTagContract = defineApiContract({
   operationId: 'createOrganizationTag',

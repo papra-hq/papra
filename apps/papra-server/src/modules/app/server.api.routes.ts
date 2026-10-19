@@ -36,6 +36,15 @@ export function registerApiRoutes({ app, ...deps }: RouteDefinitionContext) {
   });
 
   app.use('/api/*', async (context, next) => {
+    // Keep the legacy static batch route ahead of the migrated :documentId/tags route.
+    // Remove this bypass when the batch endpoint joins the contract router.
+    if (
+      context.req.method === 'POST' &&
+      /^\/api\/organizations\/[^/]+\/documents\/batch\/tags$/.test(context.req.path)
+    ) {
+      return next();
+    }
+
     const response = await handleApiRequest({
       request: context.req.raw,
     });

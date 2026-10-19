@@ -14,7 +14,6 @@ import { registerOrganizationsRoutes } from '../organizations/organizations.rout
 import { registerPlanEntitlementsRoutes } from '../plan-entitlements/plan-entitlements.routes';
 import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
-import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerOrganizationSettingsRoutes } from '../organizations/organization-settings/organization-settings.routes';
@@ -28,7 +27,6 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerOrganizationSettingsRoutes(context);
   registerDocumentsRoutes(context);
   registerDocumentsBatchRoutes(context);
-  registerTagsRoutes(context);
   registerDocumentViewsRoutes(context);
   registerTaggingRulesRoutes(context);
   registerApiKeysRoutes(context);
