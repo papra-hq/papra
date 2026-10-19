@@ -40,8 +40,6 @@ describe('server routes', () => {
     const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig() }));
 
     const publicRoutes = [
-      'GET /api/config',
-
       // Authentication is handled by payload signature verification
       'POST /api/intake-emails/ingest',
 
