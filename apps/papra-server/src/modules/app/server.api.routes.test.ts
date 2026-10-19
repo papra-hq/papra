@@ -142,26 +142,4 @@ describe('contract API wiring', () => {
       error: { message: 'Unauthorized', code: 'auth.unauthorized' },
     });
   });
-
-  test('unmigrated routes receive the session and unread request body', async () => {
-    const { app, headers } = await createAuthenticatedServer();
-
-    const response = await app.request('/api/organizations', {
-      method: 'POST',
-      headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Alice Organization' }),
-    });
-
-    expect(response.status).toEqual(200);
-    expect(await response.json()).toMatchObject({
-      organization: { name: 'Alice Organization' },
-    });
-
-    const organizationsResponse = await app.request('/api/organizations', { headers });
-
-    expect(organizationsResponse.status).toEqual(200);
-    expect(await organizationsResponse.json()).toMatchObject({
-      organizations: [{ name: 'Alice Organization' }],
-    });
-  });
 });

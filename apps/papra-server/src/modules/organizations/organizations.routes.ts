@@ -31,7 +31,6 @@ import {
 } from './organizations.usecases';
 
 export function registerOrganizationsRoutes(context: RouteDefinitionContext) {
-  setupGetOrganizationsRoute(context);
   setupGetDeletedOrganizationsRoute(context);
   setupCreateOrganizationRoute(context);
   setupGetOrganizationRoute(context);
@@ -44,24 +43,6 @@ export function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetMembershipRoute(context);
   setupGetOrganizationInvitationsRoute(context);
   setupRestoreOrganizationRoute(context);
-}
-
-function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/organizations',
-    requireAuthentication({ apiKeyPermissions: ['organizations:read'] }),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const organizationsRepository = createOrganizationsRepository({ db });
-
-      const { organizations } = await organizationsRepository.getUserOrganizations({ userId });
-
-      return context.json({
-        organizations,
-      });
-    },
-  );
 }
 
 function setupGetDeletedOrganizationsRoute({ app, db }: RouteDefinitionContext) {
