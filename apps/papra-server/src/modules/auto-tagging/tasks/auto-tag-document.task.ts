@@ -1,7 +1,13 @@
 import type { Database } from '../../app/database/database.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import { createTagsRepository } from '../../tags/tags.repository';
-import { autoTagDocument } from '../../auto-tagging/auto-tagging.usecases';
+import {
+  buildApplyAutoTaggingActions,
+  buildAutoTagDocument,
+  buildPromptForAutoTagging,
+} from '../../auto-tagging/auto-tagging.usecases';
+import { applyTagsToDocuments, createTag } from '../../tags/tags.usecases';
+import { createLogger } from '../../shared/logger/logger';
 import { createResolveOrganizationSettingsUsecase } from '../../organizations/organization-settings/organization-settings.usecases';
 import { createOrganizationSettingsRepository } from '../../organizations/organization-settings/organization-settings.repository';
 import type { Config } from '../../config/config.types';
@@ -41,19 +47,24 @@ export async function registerAutoTagDocumentTask({
         organizationId: string;
       };
 
-      await autoTagDocument({
-        documentId,
-        organizationId,
-        aiServices,
+      const logger = createLogger({ namespace: 'autoTagDocument' });
+      const autoTagDocument = buildAutoTagDocument({
         documentsRepository,
         tagsRepository,
-        config,
+        logger,
+        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
+        applyAutoTaggingActions: buildApplyAutoTaggingActions({
+          createTag: async (args) => createTag({ ...args, config, tagsRepository }),
+          applyTagsToDocuments: async (args) =>
+            applyTagsToDocuments({ ...args, tagsRepository, eventServices, logger }),
+        }),
         resolveOrganizationSettings: createResolveOrganizationSettingsUsecase({
           config,
           organizationSettingsRepository,
         }),
-        eventServices,
       });
+
+      await autoTagDocument({ documentId, organizationId });
     },
   });
 }

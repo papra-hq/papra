@@ -83,6 +83,11 @@ export function buildAutoTaggingSchema({
   });
 }
 
+export type AutoTaggingActions = {
+  tagIdsToAdd: string[];
+  tagsToCreate: { name: string; description?: string }[];
+};
+
 export function getTagsActions({
   autoTaggingResponse,
   existingTags,
@@ -91,10 +96,7 @@ export function getTagsActions({
   autoTaggingResponse: AutoTaggingResponse;
   existingTags: { name: string; id: string }[];
   maxTags: number;
-}): {
-  tagIdsToAdd: string[];
-  tagsToCreate: { name: string; description?: string }[];
-} {
+}): AutoTaggingActions {
   const { existingTags: requestedExistingTagNames = [], newTags = [] } = autoTaggingResponse;
 
   const existingTagNamesMap = new Map(existingTags.map((tag) => [tag.name, tag.id]));
