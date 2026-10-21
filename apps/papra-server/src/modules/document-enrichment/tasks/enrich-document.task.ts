@@ -3,7 +3,6 @@ import type { TaskServices } from '../../tasks/tasks.services';
 import { createTagsRepository } from '../../tags/tags.repository';
 import {
   buildApplyAutoTaggingActions,
-  buildAutoTagDocument,
   buildPromptForAutoTagging,
 } from '../../auto-tagging/auto-tagging.usecases';
 import { applyTagsToDocuments, createTag } from '../../tags/tags.usecases';
@@ -14,8 +13,9 @@ import type { Config } from '../../config/config.types';
 import { createDocumentsRepository } from '../../documents/documents.repository';
 import type { EventServices } from '../../app/events/events.services';
 import type { AiServices } from '../../ai/ai.services';
+import { buildEnrichDocument } from '../document-enrichment.usecases';
 
-export async function registerAutoTagDocumentTask({
+export async function registerEnrichDocumentTask({
   taskServices,
   aiServices,
   db,
@@ -32,7 +32,7 @@ export async function registerAutoTagDocumentTask({
     return;
   }
 
-  const taskName = 'auto-tag-document';
+  const taskName = 'enrich-document';
 
   taskServices.registerTask({
     taskName,
@@ -47,8 +47,8 @@ export async function registerAutoTagDocumentTask({
         organizationId: string;
       };
 
-      const logger = createLogger({ namespace: 'autoTagDocument' });
-      const autoTagDocument = buildAutoTagDocument({
+      const logger = createLogger({ namespace: 'documentEnrichment' });
+      const enrichDocument = buildEnrichDocument({
         documentsRepository,
         tagsRepository,
         logger,
@@ -64,7 +64,7 @@ export async function registerAutoTagDocumentTask({
         }),
       });
 
-      await autoTagDocument({ documentId, organizationId });
+      await enrichDocument({ documentId, organizationId });
     },
   });
 }
