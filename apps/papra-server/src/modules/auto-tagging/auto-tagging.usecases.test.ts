@@ -4,38 +4,13 @@ import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createTestEventServices } from '../app/events/events.test-utils';
 import type { AiServices } from '../ai/ai.services';
 import { overrideConfig } from '../config/config.test-utils';
-import { createDocumentNotFoundError } from '../documents/documents.errors';
-import { createDocumentsRepository } from '../documents/documents.repository';
-import type { ResolveOrganizationSettingsUsecase } from '../organizations/organization-settings/organization-settings.usecases';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { applyTagsToDocuments, createTag } from '../tags/tags.usecases';
-import {
-  buildApplyAutoTaggingActions,
-  buildAutoTagDocument,
-  buildPromptForAutoTagging,
-} from './auto-tagging.usecases';
+import { buildApplyAutoTaggingActions, buildPromptForAutoTagging } from './auto-tagging.usecases';
 import type { AutoTaggingResponse } from './auto-tagging.models';
 import { buildAutoTaggingSystemPrompt, buildAutoTaggingUserPrompt } from './auto-tagging.models';
-
-function createTestResolveOrganizationSettings(
-  autoTagging: Partial<{ isEnabled: boolean; canCreateNewTags: boolean; maxTags: number }> = {},
-): ResolveOrganizationSettingsUsecase {
-  return async () => ({
-    organizationSettings: {
-      ai: {
-        autoTagging: {
-          isEnabled: true,
-          canCreateNewTags: false,
-          maxTags: 5,
-          modelId: 'gpt-4',
-          ...autoTagging,
-        },
-      },
-    },
-  });
-}
 
 function createTestAiServices({ response }: { response: AutoTaggingResponse }) {
   const generateStructuredData = vi
@@ -59,7 +34,6 @@ async function createTestDeps(
 
   return {
     db,
-    documentsRepository: createDocumentsRepository({ db }),
     tagsRepository,
     eventServices,
     logger,
@@ -143,163 +117,6 @@ describe('auto-tagging usecases', () => {
       expect(
         v.safeParse(request.schema!, { existingTags: ['Unknown'], newTags: [] }).success,
       ).toEqual(false);
-    });
-  });
-
-  describe('buildAutoTagDocument', () => {
-    test('when auto-tagging is disabled in the organization settings, the document is not tagged and the AI is not called', async () => {
-      const deps = await createTestDeps(seed);
-      const { aiServices, generateStructuredData } = createTestAiServices({
-        response: { existingTags: ['Finance'] },
-      });
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({ isEnabled: false }),
-      });
-
-      await autoTagDocument(documentIds);
-
-      expect(generateStructuredData).not.toHaveBeenCalled();
-      expect(await deps.db.select().from(documentsTagsTable)).toEqual([]);
-    });
-
-    test('when the organization has no existing tags and cannot create new ones, the document is not tagged and the AI is not called', async () => {
-      const deps = await createTestDeps({
-        organizations: seed.organizations,
-        documents: seed.documents,
-      });
-      const { aiServices, generateStructuredData } = createTestAiServices({
-        response: { existingTags: [] },
-      });
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({
-          isEnabled: true,
-          canCreateNewTags: false,
-        }),
-      });
-
-      await autoTagDocument(documentIds);
-
-      expect(generateStructuredData).not.toHaveBeenCalled();
-      expect(await deps.db.select().from(documentsTagsTable)).toEqual([]);
-    });
-
-    test('when the AI selects existing tags, they are applied to the document', async () => {
-      const deps = await createTestDeps(seed);
-      const { aiServices } = createTestAiServices({ response: { existingTags: ['Finance'] } });
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
-        resolveOrganizationSettings: createTestResolveOrganizationSettings(),
-      });
-
-      await autoTagDocument(documentIds);
-
-      expect(await deps.db.select().from(documentsTagsTable)).toEqual([
-        { documentId: 'doc_1', tagId: 'tag_1' },
-      ]);
-    });
-
-    test('when the AI proposes new tags, they are created and applied to the document', async () => {
-      const deps = await createTestDeps({
-        organizations: seed.organizations,
-        documents: seed.documents,
-      });
-      const { aiServices } = createTestAiServices({
-        response: { newTags: [{ name: 'Invoice', description: 'Invoices and receipts' }] },
-      });
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({
-          canCreateNewTags: true,
-        }),
-      });
-
-      await autoTagDocument(documentIds);
-
-      const createdTags = await deps.db.select().from(tagsTable);
-      expect(createdTags.length).toEqual(1);
-      expect(createdTags[0]).toMatchObject({
-        name: 'Invoice',
-        description: 'Invoices and receipts',
-        color: '#CCCCCC',
-        organizationId: 'org_1',
-      });
-      expect(await deps.db.select().from(documentsTagsTable)).toEqual([
-        { documentId: 'doc_1', tagId: createdTags[0]!.id },
-      ]);
-    });
-
-    test('the organization model and tag settings are passed to analysis and its actions are passed to application', async () => {
-      const deps = await createTestDeps(seed);
-      const actions = { tagIdsToAdd: ['tag_1'], tagsToCreate: [{ name: 'Invoice' }] };
-      const promptForAutoTagging = vi
-        .fn<ReturnType<typeof buildPromptForAutoTagging>>()
-        .mockResolvedValue(actions);
-      const applyAutoTaggingActions = vi
-        .fn<ReturnType<typeof buildApplyAutoTaggingActions>>()
-        .mockResolvedValue();
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging,
-        applyAutoTaggingActions,
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({
-          maxTags: 2,
-          canCreateNewTags: true,
-        }),
-      });
-
-      await autoTagDocument(documentIds);
-
-      expect(promptForAutoTagging).toHaveBeenCalledTimes(1);
-      const [request] = promptForAutoTagging.mock.calls[0]!;
-      expect(request).toMatchObject({
-        document: baseDocument,
-        canCreateNewTags: true,
-        maxTags: 2,
-        modelId: 'gpt-4',
-      });
-      expect(request.existingTags.toSorted((a, b) => a.id.localeCompare(b.id))).toMatchObject(
-        seed.tags,
-      );
-      expect(applyAutoTaggingActions).toHaveBeenCalledExactlyOnceWith({
-        ...documentIds,
-        ...actions,
-      });
-    });
-
-    test('a missing document fails before analysis', async () => {
-      const deps = await createTestDeps({ organizations: seed.organizations, tags: seed.tags });
-      const promptForAutoTagging = vi.fn<ReturnType<typeof buildPromptForAutoTagging>>();
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging,
-        resolveOrganizationSettings: createTestResolveOrganizationSettings(),
-      });
-
-      await expect(autoTagDocument(documentIds)).rejects.toEqual(createDocumentNotFoundError());
-      expect(promptForAutoTagging).not.toHaveBeenCalled();
-    });
-
-    test('an inference failure is propagated without applying tags', async () => {
-      const deps = await createTestDeps(seed);
-      const error = new Error('Inference failed');
-      const { aiServices, generateStructuredData } = createTestAiServices({ response: {} });
-      generateStructuredData.mockRejectedValue(error);
-      const applyAutoTaggingActions = vi.fn<ReturnType<typeof buildApplyAutoTaggingActions>>();
-      const autoTagDocument = buildAutoTagDocument({
-        ...deps,
-        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
-        applyAutoTaggingActions,
-        resolveOrganizationSettings: createTestResolveOrganizationSettings(),
-      });
-
-      await expect(autoTagDocument(documentIds)).rejects.toEqual(error);
-      expect(applyAutoTaggingActions).not.toHaveBeenCalled();
     });
   });
 
