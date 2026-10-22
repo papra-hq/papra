@@ -5,7 +5,7 @@
   },
   "build": {
     "production": {
-      "node": "26.1.0",
+      "node": "26.12.1",
       "autoIncrement": true
     },
     "release-apk": {
