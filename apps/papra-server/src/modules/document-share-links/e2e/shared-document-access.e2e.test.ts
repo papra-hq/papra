@@ -1,4 +1,6 @@
 import { describe, expect, test } from 'vitest';
+import { createApiKeysRepository } from '../../api-keys/api-keys.repository';
+import { createApiKey } from '../../api-keys/api-keys.usecases';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
 import { createTestServerDependencies } from '../../app/server.test-utils';
@@ -58,7 +60,7 @@ async function createTestApp() {
     createTestServerDependencies({ db, config, documentsStorageService }),
   );
 
-  return { app };
+  return { app, db };
 }
 
 describe('shared document access e2e', () => {
@@ -235,7 +237,15 @@ describe('shared document access e2e', () => {
   });
 
   test('a document in a soft-deleted organization is no longer reachable through its share link, and access resumes once the organization is restored', async () => {
-    const { app } = await createTestApp();
+    const { app, db } = await createTestApp();
+    const { token } = await createApiKey({
+      apiKeyRepository: createApiKeysRepository({ db }),
+      name: 'Delete organization',
+      userId: 'usr_111111111111111111111111',
+      permissions: ['organizations:delete'],
+      organizationIds: ['org_222222222222222222222222'],
+      allOrganizations: false,
+    });
 
     const createResponse = await app.request(
       '/api/organizations/org_222222222222222222222222/documents/doc_333333333333333333333333/share-links',
@@ -254,12 +264,11 @@ describe('shared document access e2e', () => {
     expect((await app.request(`/api/share-links/${shareLink.token}/document`)).status).toBe(200);
 
     // Soft-delete the organization.
-    const deleteResponse = await app.request(
-      '/api/organizations/org_222222222222222222222222',
-      { method: 'DELETE' },
-      { loggedInUserId: 'usr_111111111111111111111111' },
-    );
-    expect(deleteResponse.status).toBe(204);
+    const deleteResponse = await app.request('/api/organizations/org_222222222222222222222222', {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(deleteResponse.status).toEqual(204);
 
     // Public access to both the metadata and the file must stop with a 410 Gone.
     const deletedOrgDocumentResponse = await app.request(

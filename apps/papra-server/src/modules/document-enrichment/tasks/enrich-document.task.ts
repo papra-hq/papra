@@ -1,15 +1,21 @@
 import type { Database } from '../../app/database/database.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import { createTagsRepository } from '../../tags/tags.repository';
-import { autoTagDocument } from '../../auto-tagging/auto-tagging.usecases';
+import {
+  buildApplyAutoTaggingActions,
+  buildPromptForAutoTagging,
+} from '../../auto-tagging/auto-tagging.usecases';
+import { applyTagsToDocuments, createTag } from '../../tags/tags.usecases';
+import { createLogger } from '../../shared/logger/logger';
 import { createResolveOrganizationSettingsUsecase } from '../../organizations/organization-settings/organization-settings.usecases';
 import { createOrganizationSettingsRepository } from '../../organizations/organization-settings/organization-settings.repository';
 import type { Config } from '../../config/config.types';
 import { createDocumentsRepository } from '../../documents/documents.repository';
 import type { EventServices } from '../../app/events/events.services';
 import type { AiServices } from '../../ai/ai.services';
+import { buildEnrichDocument } from '../document-enrichment.usecases';
 
-export async function registerAutoTagDocumentTask({
+export async function registerEnrichDocumentTask({
   taskServices,
   aiServices,
   db,
@@ -26,7 +32,7 @@ export async function registerAutoTagDocumentTask({
     return;
   }
 
-  const taskName = 'auto-tag-document';
+  const taskName = 'enrich-document';
 
   taskServices.registerTask({
     taskName,
@@ -41,19 +47,24 @@ export async function registerAutoTagDocumentTask({
         organizationId: string;
       };
 
-      await autoTagDocument({
-        documentId,
-        organizationId,
-        aiServices,
+      const logger = createLogger({ namespace: 'documentEnrichment' });
+      const enrichDocument = buildEnrichDocument({
         documentsRepository,
         tagsRepository,
-        config,
+        logger,
+        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
+        applyAutoTaggingActions: buildApplyAutoTaggingActions({
+          createTag: async (args) => createTag({ ...args, config, tagsRepository }),
+          applyTagsToDocuments: async (args) =>
+            applyTagsToDocuments({ ...args, tagsRepository, eventServices, logger }),
+        }),
         resolveOrganizationSettings: createResolveOrganizationSettingsUsecase({
           config,
           organizationSettingsRepository,
         }),
-        eventServices,
       });
+
+      await enrichDocument({ documentId, organizationId });
     },
   });
 }

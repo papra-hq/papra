@@ -1,13 +1,13 @@
-import type { Database } from '../../app/database/database.types';
-import type { EventServices } from '../../app/events/events.services';
-import type { TaskServices } from '../../tasks/tasks.services';
-import type { StorageService } from '../../storage/storage.services';
-import { createTaggingRulesRepository } from '../../tagging-rules/tagging-rules.repository';
-import { createTagsRepository } from '../../tags/tags.repository';
-import { createDocumentsRepository } from '../documents.repository';
-import { extractAndSaveDocumentFileContent } from '../documents.usecases';
-import type { Config } from '../../config/config.types';
-import { buildExtractDocumentTextUsecase } from '../content-extraction/content-extraction.usecases';
+import type { Database } from "../../app/database/database.types";
+import type { EventServices } from "../../app/events/events.services";
+import type { TaskServices } from "../../tasks/tasks.services";
+import type { StorageService } from "../../storage/storage.services";
+import { createTaggingRulesRepository } from "../../tagging-rules/tagging-rules.repository";
+import { createTagsRepository } from "../../tags/tags.repository";
+import { createDocumentsRepository } from "../documents.repository";
+import { extractAndSaveDocumentFileContent } from "../documents.usecases";
+import type { Config } from "../../config/config.types";
+import { buildExtractDocumentTextUsecase } from "../content-extraction/content-extraction.usecases";
 
 export async function registerExtractDocumentFileContentTask({
   taskServices,
@@ -22,7 +22,7 @@ export async function registerExtractDocumentFileContentTask({
   eventServices: EventServices;
   config: Config;
 }) {
-  const taskName = 'extract-document-file-content';
+  const taskName = "extract-document-file-content";
 
   taskServices.registerTask({
     taskName,
@@ -56,17 +56,21 @@ export async function registerExtractDocumentFileContentTask({
 
       if (config.ai.isEnabled && config.autoTagging.isEnabled) {
         await taskServices.scheduleJob({
-          taskName: 'auto-tag-document',
+          taskName: "auto-tag-document",
           data: { documentId, organizationId },
         });
       }
 
       if (config.ai.isEnabled && config.aiExtraction.isEnabled) {
         await taskServices.scheduleJob({
-          taskName: 'extract-document-metadata',
+          taskName: "extract-document-metadata",
           data: { documentId, organizationId },
         });
       }
+      await taskServices.scheduleJob({
+        taskName: "enrich-document",
+        data: { documentId, organizationId },
+      });
     },
   });
 }

@@ -1,18 +1,29 @@
-import { describe, expect, test, vi } from 'vitest';
-import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { createTestEventServices } from '../app/events/events.test-utils';
-import type { AiServices } from '../ai/ai.services';
-import { overrideConfig } from '../config/config.test-utils';
-import { createDocumentsRepository } from '../documents/documents.repository';
-import type { ResolveOrganizationSettingsUsecase } from '../organizations/organization-settings/organization-settings.usecases';
-import { createTestLogger } from '../shared/logger/logger.test-utils';
-import { createTagsRepository } from '../tags/tags.repository';
-import { documentsTagsTable, tagsTable } from '../tags/tags.table';
-import { autoTagDocument } from './auto-tagging.usecases';
-import type { AutoTaggingResponse } from './auto-tagging.models';
+import { describe, expect, test, vi } from "vitest";
+import * as v from "valibot";
+import { createInMemoryDatabase } from "../app/database/database.test-utils";
+import { createTestEventServices } from "../app/events/events.test-utils";
+import type { AiServices } from "../ai/ai.services";
+import { overrideConfig } from "../config/config.test-utils";
+import { createTestLogger } from "../shared/logger/logger.test-utils";
+import { createTagsRepository } from "../tags/tags.repository";
+import { documentsTagsTable, tagsTable } from "../tags/tags.table";
+import { applyTagsToDocuments, createTag } from "../tags/tags.usecases";
+import {
+  buildApplyAutoTaggingActions,
+  buildPromptForAutoTagging,
+} from "./auto-tagging.usecases";
+import type { AutoTaggingResponse } from "./auto-tagging.models";
+import {
+  buildAutoTaggingSystemPrompt,
+  buildAutoTaggingUserPrompt,
+} from "./auto-tagging.models";
 
 function createTestResolveOrganizationSettings(
-  autoTagging: Partial<{ isEnabled: boolean; canCreateNewTags: boolean; maxTags: number }> = {},
+  autoTagging: Partial<{
+    isEnabled: boolean;
+    canCreateNewTags: boolean;
+    maxTags: number;
+  }> = {},
 ): ResolveOrganizationSettingsUsecase {
   return async () => ({
     organizationSettings: {
@@ -21,7 +32,7 @@ function createTestResolveOrganizationSettings(
           isEnabled: true,
           canCreateNewTags: false,
           maxTags: 5,
-          modelId: 'gpt-4',
+          modelId: "gpt-4",
           ...autoTagging,
         },
         extraction: {
@@ -29,8 +40,8 @@ function createTestResolveOrganizationSettings(
           extractDate: true,
           extractCustomProperties: true,
           renameDocuments: false,
-          filenamePattern: '',
-          modelId: 'gpt-4',
+          filenamePattern: "",
+          modelId: "gpt-4",
         },
       },
     },
@@ -38,7 +49,9 @@ function createTestResolveOrganizationSettings(
 }
 
 function createTestAiServices({ response }: { response: AutoTaggingResponse }) {
-  const generateStructuredData = vi.fn().mockResolvedValue(response);
+  const generateStructuredData = vi
+    .fn<AiServices["generateStructuredData"]>()
+    .mockResolvedValue(response);
 
   return {
     aiServices: { generateStructuredData } as AiServices,
@@ -46,162 +59,198 @@ function createTestAiServices({ response }: { response: AutoTaggingResponse }) {
   };
 }
 
-async function createTestDeps(seedOptions: Parameters<typeof createInMemoryDatabase>[0]) {
+async function createTestDeps(
+  seedOptions: Parameters<typeof createInMemoryDatabase>[0],
+  config = overrideConfig(),
+) {
   const { db } = await createInMemoryDatabase(seedOptions);
+  const tagsRepository = createTagsRepository({ db });
+  const eventServices = createTestEventServices();
+  const { logger } = createTestLogger();
 
   return {
     db,
-    documentsRepository: createDocumentsRepository({ db }),
-    tagsRepository: createTagsRepository({ db }),
-    eventServices: createTestEventServices(),
-    config: overrideConfig(),
+    tagsRepository,
+    eventServices,
+    logger,
+    applyAutoTaggingActions: buildApplyAutoTaggingActions({
+      createTag: async (args) => createTag({ ...args, config, tagsRepository }),
+      applyTagsToDocuments: async (args) =>
+        applyTagsToDocuments({
+          ...args,
+          tagsRepository,
+          eventServices,
+          logger,
+        }),
+    }),
   };
 }
 
 const baseDocument = {
-  id: 'doc_1',
-  organizationId: 'org_1',
-  name: 'Doc 1',
-  originalName: 'Doc 1',
-  originalStorageKey: 'doc_1',
-  originalSha256Hash: 'doc_1',
-  mimeType: 'text/plain',
-  content: 'Some document content',
+  id: "doc_1",
+  organizationId: "org_1",
+  name: "Doc 1",
+  originalName: "Doc 1",
+  originalStorageKey: "doc_1",
+  originalSha256Hash: "doc_1",
+  mimeType: "text/plain",
+  content: "Some document content",
 };
 
-describe('auto-tagging usecases', () => {
-  describe('autoTagDocument', () => {
-    test('when auto-tagging is disabled in the organization settings, the document is not tagged and the AI is not called', async () => {
-      const { logger } = createTestLogger();
-      const deps = await createTestDeps({
-        organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [baseDocument],
-        tags: [
-          {
-            id: 'tag_1',
-            name: 'Finance',
-            normalizedName: 'finance',
-            color: '#000000',
-            organizationId: 'org_1',
-          },
+const financeTag = {
+  id: "tag_1",
+  name: "Finance",
+  normalizedName: "finance",
+  color: "#000000",
+  organizationId: "org_1",
+};
+
+const householdTag = {
+  id: "tag_2",
+  name: "Household",
+  normalizedName: "household",
+  color: "#000000",
+  organizationId: "org_1",
+};
+
+const documentIds = { documentId: "doc_1", organizationId: "org_1" };
+
+const seed = {
+  organizations: [{ id: "org_1", name: "Org 1" }],
+  documents: [baseDocument],
+  tags: [financeTag, householdTag],
+};
+
+describe("auto-tagging usecases", () => {
+  describe("buildPromptForAutoTagging", () => {
+    test("analysis uses the existing prompts and accounting source and returns bounded tag actions without applying them", async () => {
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: {
+          existingTags: ["Finance", "Finance", "Unknown"],
+          newTags: [
+            { name: "Invoice", description: "Invoices and receipts" },
+            { name: "Other" },
+          ],
+        },
+      });
+      const promptForAutoTagging = buildPromptForAutoTagging({ aiServices });
+      const options = {
+        existingTags: seed.tags,
+        canCreateNewTags: true,
+        maxTags: 2,
+      };
+
+      expect(
+        await promptForAutoTagging({
+          document: baseDocument,
+          modelId: "openai://gpt-4",
+          ...options,
+        }),
+      ).toEqual({
+        tagIdsToAdd: ["tag_1"],
+        tagsToCreate: [
+          { name: "Invoice", description: "Invoices and receipts" },
         ],
       });
-      const { aiServices, generateStructuredData } = createTestAiServices({
-        response: { existingTags: ['Finance'] },
+      expect(generateStructuredData).toHaveBeenCalledTimes(1);
+      const [request] = generateStructuredData.mock.calls[0]!;
+      expect(request).toMatchObject({
+        organizationId: "org_1",
+        modelId: "openai://gpt-4",
+        source: "auto-tagging",
+        systemPrompt: buildAutoTaggingSystemPrompt(options),
+        userPrompt: buildAutoTaggingUserPrompt({ document: baseDocument }),
       });
-
-      await autoTagDocument({
-        ...deps,
-        aiServices,
-        logger,
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({ isEnabled: false }),
-      });
-
-      expect(generateStructuredData).not.toHaveBeenCalled();
-      expect(await deps.db.select().from(documentsTagsTable)).to.eql([]);
+      expect(
+        v.safeParse(request.schema!, { existingTags: ["Finance"], newTags: [] })
+          .success,
+      ).toEqual(true);
+      expect(
+        v.safeParse(request.schema!, { existingTags: ["Unknown"], newTags: [] })
+          .success,
+      ).toEqual(false);
     });
+  });
 
-    test('when the organization has no existing tags and cannot create new ones, the document is not tagged and the AI is not called', async () => {
-      const { logger } = createTestLogger();
-      const deps = await createTestDeps({
-        organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [baseDocument],
-      });
-      const { aiServices, generateStructuredData } = createTestAiServices({
-        response: { existingTags: [] },
-      });
+  describe("buildApplyAutoTaggingActions", () => {
+    test("existing and successfully created tags are applied despite a creation failure, preserving current tags and emitting the domain event", async () => {
+      const deps = await createTestDeps(seed);
+      await deps.db
+        .insert(documentsTagsTable)
+        .values({ documentId: "doc_1", tagId: "tag_2" });
 
-      await autoTagDocument({
-        ...deps,
-        aiServices,
-        logger,
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({
-          isEnabled: true,
-          canCreateNewTags: false,
-        }),
-      });
-
-      expect(generateStructuredData).not.toHaveBeenCalled();
-      expect(await deps.db.select().from(documentsTagsTable)).to.eql([]);
-    });
-
-    test('when the AI selects existing tags, they are applied to the document', async () => {
-      const { logger } = createTestLogger();
-      const deps = await createTestDeps({
-        organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [baseDocument],
-        tags: [
-          {
-            id: 'tag_1',
-            name: 'Finance',
-            normalizedName: 'finance',
-            color: '#000000',
-            organizationId: 'org_1',
-          },
-          {
-            id: 'tag_2',
-            name: 'Household',
-            normalizedName: 'household',
-            color: '#000000',
-            organizationId: 'org_1',
-          },
+      await deps.applyAutoTaggingActions({
+        ...documentIds,
+        tagIdsToAdd: ["tag_1"],
+        tagsToCreate: [
+          { name: "Finance" },
+          { name: "Invoice", description: "Invoices and receipts" },
         ],
       });
-      const { aiServices } = createTestAiServices({ response: { existingTags: ['Finance'] } });
 
-      await autoTagDocument({
-        ...deps,
-        aiServices,
-        logger,
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({
-          isEnabled: true,
-          canCreateNewTags: false,
-        }),
+      const tags = await deps.db.select().from(tagsTable);
+      expect(tags.length).toEqual(3);
+      const invoiceTag = tags.find((tag) => tag.name === "Invoice")!;
+      expect(invoiceTag).toMatchObject({
+        description: "Invoices and receipts",
+        color: "#CCCCCC",
+        organizationId: "org_1",
       });
-
-      expect(await deps.db.select().from(documentsTagsTable)).to.eql([
-        { documentId: 'doc_1', tagId: 'tag_1' },
+      const documentTags = await deps.db.select().from(documentsTagsTable);
+      expect(documentTags.map(({ tagId }) => tagId).sort()).toEqual(
+        ["tag_1", "tag_2", invoiceTag.id].sort(),
+      );
+      expect(deps.eventServices.getEmittedEvents()).toEqual([
+        {
+          eventName: "document.tags.changed",
+          payload: {
+            organizationId: "org_1",
+            userId: undefined,
+            addedPairs: [
+              { documentId: "doc_1", tagId: "tag_1", tagName: "Finance" },
+              { documentId: "doc_1", tagId: invoiceTag.id, tagName: "Invoice" },
+            ],
+            removedPairs: [],
+          },
+        },
       ]);
     });
 
-    test('when the AI proposes new tags, they are created and applied to the document', async () => {
-      const { logger } = createTestLogger();
-      const deps = await createTestDeps({
-        organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [baseDocument],
-      });
-      const { aiServices } = createTestAiServices({
-        response: { newTags: [{ name: 'Invoice', description: 'Invoices and receipts' }] },
+    test("the organization tag limit prevents new tags without preventing existing tags from being applied", async () => {
+      const deps = await createTestDeps(
+        seed,
+        overrideConfig({ tags: { maxTagsPerOrganization: 2 } }),
+      );
+
+      await deps.applyAutoTaggingActions({
+        ...documentIds,
+        tagIdsToAdd: ["tag_1"],
+        tagsToCreate: [{ name: "Invoice" }],
       });
 
-      await autoTagDocument({
-        ...deps,
-        aiServices,
-        logger,
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        resolveOrganizationSettings: createTestResolveOrganizationSettings({
-          isEnabled: true,
-          canCreateNewTags: true,
-        }),
-      });
-
-      const createdTags = await deps.db.select().from(tagsTable);
-      expect(createdTags.length).to.eql(1);
-      expect(createdTags[0]).toMatchObject({
-        name: 'Invoice',
-        description: 'Invoices and receipts',
-      });
-
-      expect(await deps.db.select().from(documentsTagsTable)).to.eql([
-        { documentId: 'doc_1', tagId: createdTags[0]!.id },
+      expect((await deps.db.select().from(tagsTable)).length).toEqual(2);
+      expect(await deps.db.select().from(documentsTagsTable)).toEqual([
+        { documentId: "doc_1", tagId: "tag_1" },
       ]);
+    });
+
+    test("empty actions leave existing tags untouched and emit no event", async () => {
+      const deps = await createTestDeps(seed);
+      await deps.db
+        .insert(documentsTagsTable)
+        .values({ documentId: "doc_1", tagId: "tag_2" });
+
+      await deps.applyAutoTaggingActions({
+        ...documentIds,
+        tagIdsToAdd: [],
+        tagsToCreate: [],
+      });
+
+      expect((await deps.db.select().from(tagsTable)).length).toEqual(2);
+      expect(await deps.db.select().from(documentsTagsTable)).toEqual([
+        { documentId: "doc_1", tagId: "tag_2" },
+      ]);
+      expect(deps.eventServices.getEmittedEvents()).toEqual([]);
     });
   });
 });

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import type { Config } from '../../config/config.types';
 import { createAiServices } from '../../ai/ai.services';
-import { promptForAutoTagging } from '../auto-tagging.usecases';
+import { buildPromptForAutoTagging } from '../auto-tagging.usecases';
 import type { Logger } from '@crowlog/logger';
 import { createAiCreditsRepository } from '../../ai-credits/ai-credits.repository';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
@@ -51,11 +51,12 @@ export async function runAutoTaggingTestSuite({
     planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
   });
 
+  const promptForAutoTagging = buildPromptForAutoTagging({ aiServices });
+
   test('auto-tagging should correctly identify tags for a document', { timeout }, async () => {
     const { tagIdsToAdd, tagsToCreate } = await promptForAutoTagging({
       existingTags,
       modelId,
-      aiServices,
       canCreateNewTags: false,
       document,
       maxTags: 3,
