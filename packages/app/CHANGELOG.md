@@ -1,5 +1,15 @@
 # @papra/app
 
+## 26.7.1
+
+### Patch Changes
+
+- [#1577](https://github.com/papra-hq/papra/pull/1577) [`5c308cc`](https://github.com/papra-hq/papra/commit/5c308ccc973ee74b3807c5d300f3fb0e8bbbed11) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated Node.js to 26.12.1 to include the latest security fixes.
+
+- [#1556](https://github.com/papra-hq/papra/pull/1556) [`b5763bb`](https://github.com/papra-hq/papra/commit/b5763bb24f3a73b878ca2f7ec268d484bcae0e18) Thanks [@CorentinTh](https://github.com/CorentinTh)! - API breaking change: PUT /api/users/me now returns only id, email, name, createdAt, updatedAt, and twoFactorEnabled instead of the full user object.
+
+- [#1552](https://github.com/papra-hq/papra/pull/1552) [`e7acb46`](https://github.com/papra-hq/papra/commit/e7acb46f9bc6ca0890092a88505e083e8b516774) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Search across all pages in the advanced PDF viewer using Ctrl+F / Cmd+F, with match highlighting and previous/next navigation.
+
 ## 26.7.0
 
 ### Minor Changes
