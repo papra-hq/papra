@@ -1,5 +1,6 @@
 import { healthCheckContract, pingContract } from '../app/health-check/health-check.api.contracts';
 import { getPublicConfigContract } from '../config/config.api.contracts';
+import { enrichDocumentContract } from '../document-enrichment/document-enrichment.api.contracts';
 import {
   createOrganizationContract,
   getDeletedOrganizationsContract,
@@ -38,4 +39,5 @@ export const apiContracts = {
   deleteOrganizationTagContract,
   addOrganizationDocumentTagContract,
   removeOrganizationDocumentTagContract,
+  enrichDocumentContract,
 };
