@@ -136,7 +136,19 @@ export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = 
       URL.revokeObjectURL(prev);
     }
 
-    return getIsImage() || getIsPdf() ? URL.createObjectURL(props.blob) : undefined;
+    if (!getIsImage() && !getIsPdf()) {
+      return undefined;
+    }
+
+    // The file endpoint intentionally serves files as application/octet-stream
+    // attachments. Re-wrap previewable files with their trusted document MIME
+    // type so browsers can render images and PDFs from the object URL.
+    const previewBlob =
+      props.blob.type === props.mimeType
+        ? props.blob
+        : new Blob([props.blob], { type: props.mimeType });
+
+    return URL.createObjectURL(previewBlob);
   });
 
   onCleanup(() => {
