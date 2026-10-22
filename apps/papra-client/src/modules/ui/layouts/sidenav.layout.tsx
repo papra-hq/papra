@@ -53,7 +53,7 @@ export const SidenavLayout: ParentComponent<{
         <props.sideNav />
       </div>
 
-      <div class="flex-1 min-h-0 flex flex-col">
+      <div class="flex-1 min-h-0 min-w-0 flex flex-col">
         {props.topSection && <props.topSection />}
 
         <div class="flex items-center px-6 pt-4">
