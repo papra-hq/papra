@@ -153,16 +153,6 @@ export async function processFile({
     errorFolder,
   } = config.ingestionFolder;
 
-  // Get the file from the ingestion folder as a File Instance
-  const [getFileResult, getFileError] = safelySync(() => getFile({ filePath, fs }));
-
-  if (getFileError) {
-    logger.error({ filePath, error: getFileError }, 'Error reading file');
-    return;
-  }
-
-  const { fileStream, mimeType, fileName } = getFileResult;
-
   const { organizationId } = await getFileOrganizationId({
     filePath,
     ingestionFolderPath,
@@ -189,31 +179,110 @@ export async function processFile({
     return;
   }
 
-  // TODO: switch to native stream
-  const [result, error] = await safely(
-    createDocument({
-      fileStream,
-      fileName,
-      mimeType,
-      organizationId,
-    }),
-  );
+  let result;
+  let error: any;
+  let isReadFileError = false;
+  const maxAttempts = 5;
+  let attempt = 0;
+
+  while (attempt < maxAttempts) {
+    attempt++;
+    const [getFileResult, getFileError] = safelySync(() => getFile({ filePath, fs }));
+
+    if (getFileError) {
+      error = getFileError;
+      isReadFileError = true;
+      const isRetryable =
+        getFileError.code === 'EIO' ||
+        getFileError.code === 'EBUSY' ||
+        getFileError.code === 'ENOENT' ||
+        getFileError.message?.includes('EIO') ||
+        getFileError.message?.includes('EBUSY');
+
+      if (isRetryable && attempt < maxAttempts) {
+        logger.warn(
+          { filePath, error: getFileError, attempt },
+          'Error reading file from ingestion folder, retrying...',
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        continue;
+      }
+      break;
+    }
+
+    isReadFileError = false;
+    const { fileStream, mimeType, fileName } = getFileResult;
+
+    // TODO: switch to native stream
+    const [createResult, createError] = await safely(
+      createDocument({
+        fileStream,
+        fileName,
+        mimeType,
+        organizationId,
+      }),
+    );
+
+    result = createResult;
+    error = createError;
+
+    if (error) {
+      const isNotInsertedBecauseAlreadyExists = isErrorWithCode({
+        error,
+        code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE,
+      });
+
+      if (isNotInsertedBecauseAlreadyExists) {
+        break;
+      }
+
+      const isRetryable =
+        error.code === 'EIO' ||
+        error.code === 'EBUSY' ||
+        error.code === 'ENOENT' ||
+        error.message?.includes('EIO') ||
+        error.message?.includes('EBUSY');
+
+      if (isRetryable && attempt < maxAttempts) {
+        logger.warn(
+          { filePath, error, attempt },
+          'Error creating document from ingestion folder (retryable), retrying...',
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (error) {
+    if (isReadFileError) {
+      logger.error({ filePath, error }, 'Error reading file');
+      return;
+    }
+
+    const isNotInsertedBecauseAlreadyExists = isErrorWithCode({
+      error,
+      code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE,
+    });
+
+    if (!isNotInsertedBecauseAlreadyExists) {
+      logger.error({ filePath, error }, 'Error creating document');
+      const errorFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
+        path: errorFolder,
+        organizationIngestionFolderPath,
+      });
+
+      await moveIngestionFile({ filePath, moveToFolder: errorFolderPath, fs });
+      return;
+    }
+  }
 
   const isNotInsertedBecauseAlreadyExists = isErrorWithCode({
     error,
     code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE,
   });
-
-  if (error && !isNotInsertedBecauseAlreadyExists) {
-    logger.error({ filePath, error }, 'Error creating document');
-    const errorFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
-      path: errorFolder,
-      organizationIngestionFolderPath,
-    });
-
-    await moveIngestionFile({ filePath, moveToFolder: errorFolderPath, fs });
-    return;
-  }
 
   if (isNotInsertedBecauseAlreadyExists) {
     logger.info({ filePath }, 'Document not inserted because it already exists');
