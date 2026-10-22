@@ -1,5 +1,6 @@
 import type { ApiDependencies, RouteDefinitionContext } from './server.types';
 
+import { buildAdminOrganizationsApiRoutes } from '../admin/organizations/organizations.api.routes';
 import { buildApiRequestHandler } from '../api/api.request-handler';
 import { buildConfigApiRoutes } from '../config/config.api.routes';
 import { buildOrganizationsApiRoutes } from '../organizations/organizations.api.routes';
@@ -14,6 +15,7 @@ import {
 
 function buildApiRoutes(deps: ApiDependencies) {
   return [
+    ...buildAdminOrganizationsApiRoutes(deps),
     ...buildHealthCheckApiRoutes(deps),
     ...buildConfigApiRoutes(deps),
     ...buildUserApiRoutes(deps),

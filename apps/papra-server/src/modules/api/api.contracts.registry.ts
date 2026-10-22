@@ -1,3 +1,4 @@
+import { adminSoftDeleteOrganizationContract } from '../admin/organizations/organizations.api.contracts';
 import { healthCheckContract, pingContract } from '../app/health-check/health-check.api.contracts';
 import { getPublicConfigContract } from '../config/config.api.contracts';
 import {
@@ -21,6 +22,7 @@ import {
 export type { ApiContract } from './api.contracts';
 
 export const apiContracts = {
+  adminSoftDeleteOrganizationContract,
   pingContract,
   healthCheckContract,
   getPublicConfigContract,

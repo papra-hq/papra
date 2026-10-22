@@ -58,6 +58,13 @@ export async function getOrganizationBasicInfo({ organizationId }: { organizatio
   return { organization };
 }
 
+export async function deleteOrganization({ organizationId }: { organizationId: string }) {
+  await apiClient({
+    method: 'DELETE',
+    path: `/api/admin/organizations/${organizationId}`,
+  });
+}
+
 export async function getOrganizationMembers({ organizationId }: { organizationId: string }) {
   const { members } = await apiClient<{
     members: OrganizationMember[];
