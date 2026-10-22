@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.4.0
+
+### Minor Changes
+
+- [#1556](https://github.com/papra-hq/papra/pull/1556) [`b5763bb`](https://github.com/papra-hq/papra/commit/b5763bb24f3a73b878ca2f7ec268d484bcae0e18) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added auto-generated methods from the new api definition
+
 ## 1.3.1
 
 ### Patch Changes
