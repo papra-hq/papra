@@ -54,6 +54,13 @@ export async function extractText({
       subExtractorsUsed: subExtractorsUsed ?? [],
     };
   } catch (error) {
+    logger?.error(
+      {
+        error:
+          error instanceof Error ? { message: error.message, stack: error.stack } : String(error),
+      },
+      'Text extraction failed',
+    );
     return {
       error: error as Error,
       extractorName,

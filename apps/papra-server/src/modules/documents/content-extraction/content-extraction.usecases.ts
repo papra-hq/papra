@@ -38,6 +38,7 @@ export function buildExtractDocumentTextUsecase({
         const { text, extractionContext } = await strategy.extractTextFromDocument({
           file,
           ocrLanguages,
+          logger,
         });
         const durationMs = Date.now() - startingTime;
 
