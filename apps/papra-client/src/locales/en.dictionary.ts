@@ -1349,6 +1349,17 @@ export const translations = {
   'admin.organization-detail.stats.deleted-storage': 'Deleted Storage',
   'admin.organization-detail.stats.total-documents': 'Total Documents',
   'admin.organization-detail.stats.total-storage': 'Total Storage',
+  'admin.organization-detail.delete.title': 'Delete organization',
+  'admin.organization-detail.delete.description':
+    'Remove all members and invitations and schedule this organization and its documents for permanent deletion.',
+  'admin.organization-detail.delete.button': 'Delete organization',
+  'admin.organization-detail.delete.confirm.title': 'Delete organization?',
+  'admin.organization-detail.delete.confirm.message':
+    'Are you sure you want to delete "{{ name }}"? All members will lose access immediately and pending invitations will be removed. The organization and its documents will be scheduled for permanent deletion.',
+  'admin.organization-detail.delete.confirm.cancel-button': 'Cancel',
+  'admin.organization-detail.delete.has-active-subscription':
+    'This organization has an active subscription. Cancel it or schedule its cancellation before deleting the organization.',
+  'admin.organization-detail.delete.success': 'Organization deleted successfully.',
 
   'admin.users.title': 'User Management',
   'admin.users.description': 'Manage and view all users in the system',
