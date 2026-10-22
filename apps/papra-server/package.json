@@ -114,7 +114,7 @@
     "memfs": "4.17.2",
     "testcontainers": "11.5.1",
     "typescript": "catalog:",
-    "vite": "8.1.0",
+    "vite": "8.1.6",
     "vitest": "catalog:"
   }
 }
