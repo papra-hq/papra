@@ -26,55 +26,96 @@ const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', 
 const defaultCommand = `mkdir -p ./app-data/{db,documents} && docker compose up -d`;
 ---
 
-
 <h2 class="mt-8 mb-2">General settings</h2>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="port" class="min-w-32">External port</label>
-  <input id="port" class="input-field" value="1221" type="number" min="1024" max="65535" placeholder="eg: 1221" />
+  <label for="port" class="min-w-32">
+    External port
+  </label>
+  <input
+    id="port"
+    class="input-field"
+    value="1221"
+    type="number"
+    min="1024"
+    max="65535"
+    placeholder="eg: 1221"
+  />
 </div>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="app-base-url" class="min-w-32">App base URL</label>
-  <input id="app-base-url" class="input-field" type="text" placeholder="eg: https://papra.example.com" value="http://localhost:1221" />
+  <label for="app-base-url" class="min-w-32">
+    App base URL
+  </label>
+  <input
+    id="app-base-url"
+    class="input-field"
+    type="text"
+    placeholder="eg: https://papra.example.com"
+    value="http://localhost:1221"
+  />
 </div>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="source" class="min-w-32">Image source</label>
+  <label for="source" class="min-w-32">
+    Image source
+  </label>
   <select class="input-field mt-0" id="source">
-    {Object.entries(images).map(([registry, imageName]) => <option class="bg-background" value={imageName}>{`${registry} - ${imageName}`}</option>)}
+    {Object.entries(images).map(([registry, imageName]) => (
+      <option class="bg-background" value={imageName}>{`${registry} - ${imageName}`}</option>
+    ))}
   </select>
 </div>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="service-name" class="min-w-32">Service Name</label>
+  <label for="service-name" class="min-w-32">
+    Service Name
+  </label>
   <input id="service-name" class="input-field" value="papra" type="text" placeholder="eg: papra" />
 </div>
 
 <div class="flex items-center gap-2 mt-1">
-  <label
-    for="auth-secret"
-    class="min-w-32"
-  >
-  Auth secret
+  <label for="auth-secret" class="min-w-32">
+    Auth secret
   </label>
   <div class="flex items-center gap-2 mt-0 w-full">
-    <input class="input-field font-mono" id="auth-secret" type="text" placeholder="eg: 1234567890" />
-    <button class="btn bg-muted" id="refresh-secret"> Refresh </button>
+    <input
+      class="input-field font-mono"
+      id="auth-secret"
+      type="text"
+      placeholder="eg: 1234567890"
+    />
+    <button class="btn bg-muted" id="refresh-secret">
+      Refresh
+    </button>
   </div>
 </div>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="volume-path" class="min-w-32">Volume path</label>
-  <input id="volume-path" class="input-field" value="./app-data" type="text" placeholder="eg: ./app-data" />
+  <label for="volume-path" class="min-w-32">
+    Volume path
+  </label>
+  <input
+    id="volume-path"
+    class="input-field"
+    value="./app-data"
+    type="text"
+    placeholder="eg: ./app-data"
+  />
 </div>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="privileged-mode" class="min-w-32">Privileged mode</label>
+  <label for="privileged-mode" class="min-w-32">
+    Privileged mode
+  </label>
   <div class="flex items-center gap-2 mt-0 w-full">
     <select class="input-field mt-0" id="privileged-mode">
-      <option value="false" class="bg-background">Rootless</option>
-      <option value="true" class="bg-background">Root</option>
+      <option value="false" class="bg-background">
+        Rootless
+      </option>
+      <option value="true" class="bg-background">
+        Root
+      </option>
     </select>
   </div>
 </div>
@@ -82,406 +123,501 @@ const defaultCommand = `mkdir -p ./app-data/{db,documents} && docker compose up 
 <h2 class="mt-8 mb-2">Ingestion folder</h2>
 
 <div class="flex items-center gap-2 mt-1">
-  <label for="ingestion-enabled" class="min-w-32">Enable ingestion</label>
+  <label for="ingestion-enabled" class="min-w-32">
+    Enable ingestion
+  </label>
   <div class="flex items-center gap-2 mt-0 w-full">
     <select class="input-field mt-0" id="ingestion-enabled">
-      <option value="false" class="bg-background">Disabled</option>
-      <option value="true" class="bg-background">Enabled</option>
+      <option value="false" class="bg-background">
+        Disabled
+      </option>
+      <option value="true" class="bg-background">
+        Enabled
+      </option>
     </select>
   </div>
 </div>
 
 <div class="flex items-center gap-2 mt-1" id="ingestion-path-container" style="display: none;">
-  <label for="ingestion-path" class="min-w-32">Ingestion path</label>
-  <input id="ingestion-path" class="input-field" value="./ingestion" type="text" placeholder="eg: ./ingestion" />
+  <label for="ingestion-path" class="min-w-32">
+    Ingestion path
+  </label>
+  <input
+    id="ingestion-path"
+    class="input-field"
+    value="./ingestion"
+    type="text"
+    placeholder="eg: ./ingestion"
+  />
 </div>
 
 <h2 class="mt-8 mb-2">Intake emails</h2>
 <div class="flex items-center gap-2 mt-1">
-  <label for="intake-email-enabled" class="min-w-32">Enabled</label>
+  <label for="intake-email-enabled" class="min-w-32">
+    Enabled
+  </label>
   <div class="flex items-center gap-2 mt-0 w-full">
     <select class="input-field mt-0" id="intake-email-enabled">
-      <option value="false" class="bg-background">Disabled</option>
-      <option value="true" class="bg-background">Enabled</option>
+      <option value="false" class="bg-background">
+        Disabled
+      </option>
+      <option value="true" class="bg-background">
+        Enabled
+      </option>
     </select>
   </div>
 </div>
 
 <div class="flex items-center gap-2 mt-1" id="intake-email-driver-container" style="display: none;">
-  <label for="intake-email-driver" class="min-w-32">Driver</label>
+  <label for="intake-email-driver" class="min-w-32">
+    Driver
+  </label>
   <div class="flex items-center gap-2 mt-0 w-full">
     <select class="input-field mt-0" id="intake-email-driver">
-      <option value="owlrelay" class="bg-background">OwlRelay</option>
-      <option value="catch-all" class="bg-background">Cloudflare Email Worker</option>
+      <option value="owlrelay" class="bg-background">
+        OwlRelay
+      </option>
+      <option value="catch-all" class="bg-background">
+        Cloudflare Email Worker
+      </option>
     </select>
   </div>
 </div>
 
 <div id="intake-email-owlrelay-config" style="display: none;" class="mt-1">
   <div class="flex items-center gap-2 mt-1">
-    <label for="intake-email-owlrelay-api-key" class="min-w-32">API Key</label>
-    <input id="intake-email-owlrelay-api-key" class="input-field" type="text" placeholder="owrl_*****" />
+    <label for="intake-email-owlrelay-api-key" class="min-w-32">
+      API Key
+    </label>
+    <input
+      id="intake-email-owlrelay-api-key"
+      class="input-field"
+      type="text"
+      placeholder="owrl_*****"
+    />
   </div>
   <div class="flex items-center gap-2 mt-1">
-    <label for="intake-email-owlrelay-webhook-url" class="min-w-32">Webhook URL</label>
-    <input id="intake-email-owlrelay-webhook-url" class="input-field" type="text" placeholder="https://your-instance.com/api/intake-emails/ingest" value="https://localhost:1221/api/intake-emails/ingest" />
+    <label for="intake-email-owlrelay-webhook-url" class="min-w-32">
+      Webhook URL
+    </label>
+    <input
+      id="intake-email-owlrelay-webhook-url"
+      class="input-field"
+      type="text"
+      placeholder="https://your-instance.com/api/intake-emails/ingest"
+      value="https://localhost:1221/api/intake-emails/ingest"
+    />
   </div>
 </div>
 
 <div id="intake-email-cf-worker-config" style="display: none;" class="mt-1">
   <div class="flex items-center gap-2 mt-1">
-    <label for="intake-email-cf-email-domain" class="min-w-32">Email domain</label>
-    <input id="intake-email-cf-email-domain" class="input-field" type="text" placeholder="papra.email" />
+    <label for="intake-email-cf-email-domain" class="min-w-32">
+      Email domain
+    </label>
+    <input
+      id="intake-email-cf-email-domain"
+      class="input-field"
+      type="text"
+      placeholder="papra.email"
+    />
   </div>
 </div>
 
-<div class="flex items-center gap-2 mt-1" id="intake-email-webhook-secret-container" style="display: none;">
-  <label for="intake-email-webhook-secret" class="min-w-32">Webhook secret</label>
+<div
+  class="flex items-center gap-2 mt-1"
+  id="intake-email-webhook-secret-container"
+  style="display: none;"
+>
+  <label for="intake-email-webhook-secret" class="min-w-32">
+    Webhook secret
+  </label>
   <div class="flex items-center gap-2 mt-0 w-full">
-    <input class="input-field font-mono" id="intake-email-webhook-secret" type="text" placeholder="a-random-key" />
-    <button class="btn bg-muted" id="refresh-webhook-secret">Refresh</button>
+    <input
+      class="input-field font-mono"
+      id="intake-email-webhook-secret"
+      type="text"
+      placeholder="a-random-key"
+    />
+    <button class="btn bg-muted" id="refresh-webhook-secret">
+      Refresh
+    </button>
   </div>
 </div>
 
 <div id="docker-compose-output" class="mt-12" set:html={dcHtml} />
 
-<pre id="command-output" class="bg-card p-4 rounded-md text-muted-foreground text-sm font-mono overflow-x-auto">{defaultCommand}</pre>
+<pre
+  id="command-output"
+  class="bg-card p-4 rounded-md text-muted-foreground text-sm font-mono overflow-x-auto"
+>{defaultCommand}</pre>
 
 <div class="flex items-center gap-2 mt-4">
-  <button class="btn bg-muted mt-0" id="download-button">Download docker-compose.yml</button>
-  <button class="btn bg-muted mt-0" id="copy-button">Copy docker compose to clipboard</button>
-  <button class="btn bg-muted mt-0" id="copy-command-button">Copy command</button>
+  <button class="btn bg-muted mt-0" id="download-button">
+    Download docker-compose.yml
+  </button>
+  <button class="btn bg-muted mt-0" id="copy-button">
+    Copy docker compose to clipboard
+  </button>
+  <button class="btn bg-muted mt-0" id="copy-command-button">
+    Copy command
+  </button>
 </div>
 
-
 <script>
-import { codeToHtml } from 'shiki';
-import { stringify } from 'yaml';
+  import { codeToHtml } from 'shiki';
+  import { stringify } from 'yaml';
 
-const portInput = document.getElementById('port') as HTMLInputElement;
-const sourceSelect = document.getElementById('source') as HTMLSelectElement;
-const serviceNameInput = document.getElementById('service-name') as HTMLInputElement;
-const authSecretInput = document.getElementById('auth-secret') as HTMLInputElement;
-const appBaseUrlInput = document.getElementById('app-base-url') as HTMLInputElement;
-const refreshSecretButton = document.getElementById('refresh-secret');
-const copyButton = document.getElementById('copy-button');
-const dockerComposeOutput = document.getElementById('docker-compose-output');
-const downloadButton = document.getElementById('download-button');
-const volumePathInput = document.getElementById('volume-path') as HTMLInputElement;
-const privilegedModeSelect = document.getElementById('privileged-mode') as HTMLSelectElement;
-const ingestionEnabledSelect = document.getElementById('ingestion-enabled') as HTMLSelectElement;
-const ingestionPathInput = document.getElementById('ingestion-path') as HTMLInputElement;
-const ingestionPathContainer = document.getElementById('ingestion-path-container') as HTMLDivElement;
-const intakeEmailEnabledSelect = document.getElementById('intake-email-enabled') as HTMLSelectElement;
-const intakeDriverSelect = document.getElementById('intake-email-driver') as HTMLSelectElement;
-const owlrelayConfig = document.getElementById('intake-email-owlrelay-config') as HTMLDivElement;
-const cfWorkerConfig = document.getElementById('intake-email-cf-worker-config') as HTMLDivElement;
-const owlrelayApiKeyInput = document.getElementById('intake-email-owlrelay-api-key') as HTMLInputElement;
-const owlrelayWebhookUrlInput = document.getElementById('intake-email-owlrelay-webhook-url') as HTMLInputElement;
-const cfEmailDomainInput = document.getElementById('intake-email-cf-email-domain') as HTMLInputElement;
-const webhookSecretInput = document.getElementById('intake-email-webhook-secret') as HTMLInputElement;
-const refreshWebhookSecretButton = document.getElementById('refresh-webhook-secret');
-const commandOutput = document.getElementById('command-output');
-const copyCommandButton = document.getElementById('copy-command-button');
+  const portInput = document.getElementById('port') as HTMLInputElement;
+  const sourceSelect = document.getElementById('source') as HTMLSelectElement;
+  const serviceNameInput = document.getElementById('service-name') as HTMLInputElement;
+  const authSecretInput = document.getElementById('auth-secret') as HTMLInputElement;
+  const appBaseUrlInput = document.getElementById('app-base-url') as HTMLInputElement;
+  const refreshSecretButton = document.getElementById('refresh-secret');
+  const copyButton = document.getElementById('copy-button');
+  const dockerComposeOutput = document.getElementById('docker-compose-output');
+  const downloadButton = document.getElementById('download-button');
+  const volumePathInput = document.getElementById('volume-path') as HTMLInputElement;
+  const privilegedModeSelect = document.getElementById('privileged-mode') as HTMLSelectElement;
+  const ingestionEnabledSelect = document.getElementById('ingestion-enabled') as HTMLSelectElement;
+  const ingestionPathInput = document.getElementById('ingestion-path') as HTMLInputElement;
+  const ingestionPathContainer = document.getElementById(
+    'ingestion-path-container',
+  ) as HTMLDivElement;
+  const intakeEmailEnabledSelect = document.getElementById(
+    'intake-email-enabled',
+  ) as HTMLSelectElement;
+  const intakeDriverSelect = document.getElementById('intake-email-driver') as HTMLSelectElement;
+  const owlrelayConfig = document.getElementById('intake-email-owlrelay-config') as HTMLDivElement;
+  const cfWorkerConfig = document.getElementById('intake-email-cf-worker-config') as HTMLDivElement;
+  const owlrelayApiKeyInput = document.getElementById(
+    'intake-email-owlrelay-api-key',
+  ) as HTMLInputElement;
+  const owlrelayWebhookUrlInput = document.getElementById(
+    'intake-email-owlrelay-webhook-url',
+  ) as HTMLInputElement;
+  const cfEmailDomainInput = document.getElementById(
+    'intake-email-cf-email-domain',
+  ) as HTMLInputElement;
+  const webhookSecretInput = document.getElementById(
+    'intake-email-webhook-secret',
+  ) as HTMLInputElement;
+  const refreshWebhookSecretButton = document.getElementById('refresh-webhook-secret');
+  const commandOutput = document.getElementById('command-output');
+  const copyCommandButton = document.getElementById('copy-command-button');
 
-// Track whether the app base URL has been customized by the user
-let isAppBaseUrlCustomized = false;
-// Track whether the webhook URL has been customized by the user
-let isWebhookUrlCustomized = false;
+  // Track whether the app base URL has been customized by the user
+  let isAppBaseUrlCustomized = false;
+  // Track whether the webhook URL has been customized by the user
+  let isWebhookUrlCustomized = false;
 
-function getRandomString() {
-  const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  return Array.from({ length: 48 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
-}
-
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text);
-}
-
-function isDefaultAppBaseUrl(url: string, port: string): boolean {
-  return url === `http://localhost:${port}`;
-}
-
-function generateDefaultWebhookUrl(baseUrl: string): string {
-  // Remove trailing slash if present
-  const cleanBaseUrl = baseUrl.replace(/\/$/, '');
-  return `${cleanBaseUrl}/api/intake-emails/ingest`;
-}
-
-function isDefaultWebhookUrl(webhookUrl: string, baseUrl: string): boolean {
-  return webhookUrl === generateDefaultWebhookUrl(baseUrl);
-}
-
-function refreshIsWebhookUrlCustomized() {
-  const currentBaseUrl = appBaseUrlInput.value.trim();
-  const currentWebhookUrl = owlrelayWebhookUrlInput.value.trim();
-
-  if (isDefaultWebhookUrl(currentWebhookUrl, currentBaseUrl)) {
-    isWebhookUrlCustomized = false;
-  } else {
-    isWebhookUrlCustomized = true;
+  function getRandomString() {
+    const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return Array.from(
+      { length: 48 },
+      () => alphabet[Math.floor(Math.random() * alphabet.length)],
+    ).join('');
   }
-}
 
-function refreshIsAppBaseUrlCustomized() {
-  const currentPort = portInput.value;
-  const currentUrl = appBaseUrlInput.value.trim();
-
-  if (isDefaultAppBaseUrl(currentUrl, currentPort)) {
-    isAppBaseUrlCustomized = false;
-  } else {
-    isAppBaseUrlCustomized = true;
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
   }
-}
 
-function updateWebhookUrlFromBaseUrl() {
-  if (!isWebhookUrlCustomized) {
-    const baseUrl = appBaseUrlInput.value.trim();
-    if (baseUrl) {
-      owlrelayWebhookUrlInput.value = generateDefaultWebhookUrl(baseUrl);
+  function isDefaultAppBaseUrl(url: string, port: string): boolean {
+    return url === `http://localhost:${port}`;
+  }
+
+  function generateDefaultWebhookUrl(baseUrl: string): string {
+    // Remove trailing slash if present
+    const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+    return `${cleanBaseUrl}/api/intake-emails/ingest`;
+  }
+
+  function isDefaultWebhookUrl(webhookUrl: string, baseUrl: string): boolean {
+    return webhookUrl === generateDefaultWebhookUrl(baseUrl);
+  }
+
+  function refreshIsWebhookUrlCustomized() {
+    const currentBaseUrl = appBaseUrlInput.value.trim();
+    const currentWebhookUrl = owlrelayWebhookUrlInput.value.trim();
+
+    if (isDefaultWebhookUrl(currentWebhookUrl, currentBaseUrl)) {
+      isWebhookUrlCustomized = false;
+    } else {
+      isWebhookUrlCustomized = true;
     }
   }
-}
 
-function updateAppBaseUrlFromPort() {
-  if (!isAppBaseUrlCustomized) {
-    const port = portInput.value;
-    appBaseUrlInput.value = `http://localhost:${port}`;
-    // Also update webhook URL when app base URL changes
+  function refreshIsAppBaseUrlCustomized() {
+    const currentPort = portInput.value;
+    const currentUrl = appBaseUrlInput.value.trim();
+
+    if (isDefaultAppBaseUrl(currentUrl, currentPort)) {
+      isAppBaseUrlCustomized = false;
+    } else {
+      isAppBaseUrlCustomized = true;
+    }
+  }
+
+  function updateWebhookUrlFromBaseUrl() {
+    if (!isWebhookUrlCustomized) {
+      const baseUrl = appBaseUrlInput.value.trim();
+      if (baseUrl) {
+        owlrelayWebhookUrlInput.value = generateDefaultWebhookUrl(baseUrl);
+      }
+    }
+  }
+
+  function updateAppBaseUrlFromPort() {
+    if (!isAppBaseUrlCustomized) {
+      const port = portInput.value;
+      appBaseUrlInput.value = `http://localhost:${port}`;
+      // Also update webhook URL when app base URL changes
+      updateWebhookUrlFromBaseUrl();
+    }
+  }
+
+  function handlePortChange() {
+    updateAppBaseUrlFromPort();
+    updateDockerCompose();
+  }
+
+  function handleAppBaseUrlChange() {
+    refreshIsAppBaseUrlCustomized();
     updateWebhookUrlFromBaseUrl();
+    updateDockerCompose();
   }
-}
 
-function handlePortChange() {
-  updateAppBaseUrlFromPort();
-  updateDockerCompose();
-}
+  function handleWebhookUrlChange() {
+    refreshIsWebhookUrlCustomized();
+    updateDockerCompose();
+  }
 
-function handleAppBaseUrlChange() {
-  refreshIsAppBaseUrlCustomized();
-  updateWebhookUrlFromBaseUrl();
-  updateDockerCompose();
-}
+  function getDockerComposeYml() {
+    const serviceName = serviceNameInput.value;
+    const isRootless = privilegedModeSelect.value === 'false';
+    const image = sourceSelect.value;
+    const port = portInput.value;
+    const authSecret = authSecretInput.value;
+    const volumePath = volumePathInput.value;
+    const isIngestionEnabled = ingestionEnabledSelect.value === 'true';
+    const ingestionPath = ingestionPathInput.value;
+    const intakeEmailEnabled = intakeEmailEnabledSelect.value === 'true';
+    const intakeDriver = intakeDriverSelect.value;
+    const webhookSecret = webhookSecretInput.value;
+    const appBaseUrl = appBaseUrlInput.value.trim() || `http://localhost:${port}`;
 
-function handleWebhookUrlChange() {
-  refreshIsWebhookUrlCustomized();
-  updateDockerCompose();
-}
+    const version = isRootless ? 'latest' : 'latest-root';
+    const fullImage = `${image}:${version}`;
 
-function getDockerComposeYml() {
-  const serviceName = serviceNameInput.value;
-  const isRootless = privilegedModeSelect.value === 'false';
-  const image = sourceSelect.value;
-  const port = portInput.value;
-  const authSecret = authSecretInput.value;
-  const volumePath = volumePathInput.value;
-  const isIngestionEnabled = ingestionEnabledSelect.value === 'true';
-  const ingestionPath = ingestionPathInput.value;
-  const intakeEmailEnabled = intakeEmailEnabledSelect.value === 'true';
-  const intakeDriver = intakeDriverSelect.value;
-  const webhookSecret = webhookSecretInput.value;
-  const appBaseUrl = appBaseUrlInput.value.trim() || `http://localhost:${port}`;
+    const environment = [
+      `AUTH_SECRET=${authSecret}`,
+      `APP_BASE_URL=${appBaseUrl}`,
+      isIngestionEnabled && 'INGESTION_FOLDER_IS_ENABLED=true',
+      intakeEmailEnabled && 'INTAKE_EMAILS_IS_ENABLED=true',
+      intakeEmailEnabled && `INTAKE_EMAILS_DRIVER=${intakeDriver}`,
+      intakeEmailEnabled && `INTAKE_EMAILS_WEBHOOK_SECRET=${webhookSecret}`,
+      intakeEmailEnabled &&
+        intakeDriver === 'owlrelay' &&
+        owlrelayApiKeyInput.value &&
+        `OWLRELAY_API_KEY=${owlrelayApiKeyInput.value}`,
+      intakeEmailEnabled &&
+        intakeDriver === 'owlrelay' &&
+        owlrelayWebhookUrlInput.value &&
+        `OWLRELAY_WEBHOOK_URL=${owlrelayWebhookUrlInput.value}`,
+      intakeEmailEnabled &&
+        intakeDriver === 'catch-all' &&
+        cfEmailDomainInput.value &&
+        `INTAKE_EMAILS_CATCH_ALL_DOMAIN=${cfEmailDomainInput.value}`,
+    ]
+      .flat()
+      .filter(Boolean);
 
-  const version = isRootless ? 'latest' : 'latest-root';
-  const fullImage = `${image}:${version}`;
+    const volumes = [
+      `${volumePath}:/app/app-data`,
+      isIngestionEnabled && `${ingestionPath}:/app/ingestion`,
+    ].filter(Boolean);
 
-  const environment = [
-    `AUTH_SECRET=${authSecret}`,
-    `APP_BASE_URL=${appBaseUrl}`,
-    isIngestionEnabled && 'INGESTION_FOLDER_IS_ENABLED=true',
-    intakeEmailEnabled && 'INTAKE_EMAILS_IS_ENABLED=true',
-    intakeEmailEnabled && `INTAKE_EMAILS_DRIVER=${intakeDriver}`,
-    intakeEmailEnabled && `INTAKE_EMAILS_WEBHOOK_SECRET=${webhookSecret}`,
-    intakeEmailEnabled && intakeDriver === 'owlrelay' && owlrelayApiKeyInput.value && `OWLRELAY_API_KEY=${owlrelayApiKeyInput.value}`,
-    intakeEmailEnabled && intakeDriver === 'owlrelay' && owlrelayWebhookUrlInput.value && `OWLRELAY_WEBHOOK_URL=${owlrelayWebhookUrlInput.value}`,
-    intakeEmailEnabled && intakeDriver === 'catch-all' && cfEmailDomainInput.value && `INTAKE_EMAILS_CATCH_ALL_DOMAIN=${cfEmailDomainInput.value}`,
-  ].flat().filter(Boolean);
-
-  const volumes = [
-    `${volumePath}:/app/app-data`,
-    isIngestionEnabled && `${ingestionPath}:/app/ingestion`,
-  ].filter(Boolean);
-
-  const dc = {
-    services: {
-      [serviceName]: {
-        image: fullImage,
-        container_name: serviceName,
-        restart: 'unless-stopped',
-        ports: [`${port}:1221`],
-        environment,
-        volumes,
-        ...(isRootless && {
-          user: '1000:1000',
-        }),
+    const dc = {
+      services: {
+        [serviceName]: {
+          image: fullImage,
+          container_name: serviceName,
+          restart: 'unless-stopped',
+          ports: [`${port}:1221`],
+          environment,
+          volumes,
+          ...(isRootless && {
+            user: '1000:1000',
+          }),
+        },
       },
-    },
-  };
+    };
 
-  return stringify(dc);
-}
-
-function getStartCommand() {
-  const volumePath = volumePathInput.value;
-  const volumePathNormalized = volumePath.replace(/\/$/, '');
-  const volumeWithSubdirs = `${volumePathNormalized}/{db,documents}`;
-
-  const mkdirCommand = `mkdir -p ${volumeWithSubdirs}`;
-
-  const dockerCommand = 'docker compose up -d';
-
-  return `${mkdirCommand} && ${dockerCommand}`;
-}
-
-async function updateDockerCompose() {
-  const dockerCompose = getDockerComposeYml();
-  const command = getStartCommand();
-
-  const html = await codeToHtml(dockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
-
-  if (dockerComposeOutput) {
-    dockerComposeOutput.innerHTML = html;
+    return stringify(dc);
   }
 
-  if (commandOutput) {
-    commandOutput.textContent = command;
-  }
-}
+  function getStartCommand() {
+    const volumePath = volumePathInput.value;
+    const volumePathNormalized = volumePath.replace(/\/$/, '');
+    const volumeWithSubdirs = `${volumePathNormalized}/{db,documents}`;
 
-function handleCopy() {
-  const dockerCompose = getDockerComposeYml();
+    const mkdirCommand = `mkdir -p ${volumeWithSubdirs}`;
 
-  copyToClipboard(dockerCompose);
+    const dockerCommand = 'docker compose up -d';
 
-  if (copyButton) {
-    copyButton.textContent = 'Copied!';
+    return `${mkdirCommand} && ${dockerCommand}`;
   }
 
-  setTimeout(() => {
-    if (copyButton) {
-      copyButton.textContent = 'Copy to clipboard';
+  async function updateDockerCompose() {
+    const dockerCompose = getDockerComposeYml();
+    const command = getStartCommand();
+
+    const html = await codeToHtml(dockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
+
+    if (dockerComposeOutput) {
+      dockerComposeOutput.innerHTML = html;
     }
-  }, 1000);
-}
 
-function handleRefreshSecret() {
-  authSecretInput.value = getRandomString();
-  updateDockerCompose();
-}
-
-function handleDownload() {
-  const dockerCompose = getDockerComposeYml();
-
-  const blob = new Blob([dockerCompose], { type: 'text/yaml' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'docker-compose.yml';
-  a.click();
-}
-
-function handleIngestionEnabledChange() {
-  const isEnabled = ingestionEnabledSelect.value === 'true';
-  ingestionPathContainer.style.display = isEnabled ? 'flex' : 'none';
-  updateDockerCompose();
-}
-
-function handleIntakeEmailEnabledChange() {
-  const isEnabled = intakeEmailEnabledSelect.value === 'true';
-  const driverContainer = document.getElementById('intake-email-driver-container');
-  const webhookSecretContainer = document.getElementById('intake-email-webhook-secret-container');
-
-  if (driverContainer) {
-    driverContainer.style.display = isEnabled ? 'flex' : 'none';
-  }
-  if (webhookSecretContainer) {
-    webhookSecretContainer.style.display = isEnabled ? 'flex' : 'none';
+    if (commandOutput) {
+      commandOutput.textContent = command;
+    }
   }
 
-  if (!isEnabled) {
-    // Reset driver-specific configs when disabled
+  function handleCopy() {
+    const dockerCompose = getDockerComposeYml();
+
+    copyToClipboard(dockerCompose);
+
+    if (copyButton) {
+      copyButton.textContent = 'Copied!';
+    }
+
+    setTimeout(() => {
+      if (copyButton) {
+        copyButton.textContent = 'Copy to clipboard';
+      }
+    }, 1000);
+  }
+
+  function handleRefreshSecret() {
+    authSecretInput.value = getRandomString();
+    updateDockerCompose();
+  }
+
+  function handleDownload() {
+    const dockerCompose = getDockerComposeYml();
+
+    const blob = new Blob([dockerCompose], { type: 'text/yaml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'docker-compose.yml';
+    a.click();
+  }
+
+  function handleIngestionEnabledChange() {
+    const isEnabled = ingestionEnabledSelect.value === 'true';
+    ingestionPathContainer.style.display = isEnabled ? 'flex' : 'none';
+    updateDockerCompose();
+  }
+
+  function handleIntakeEmailEnabledChange() {
+    const isEnabled = intakeEmailEnabledSelect.value === 'true';
+    const driverContainer = document.getElementById('intake-email-driver-container');
+    const webhookSecretContainer = document.getElementById('intake-email-webhook-secret-container');
+
+    if (driverContainer) {
+      driverContainer.style.display = isEnabled ? 'flex' : 'none';
+    }
+    if (webhookSecretContainer) {
+      webhookSecretContainer.style.display = isEnabled ? 'flex' : 'none';
+    }
+
+    if (!isEnabled) {
+      // Reset driver-specific configs when disabled
+      if (owlrelayConfig) {
+        owlrelayConfig.style.display = 'none';
+      }
+      if (cfWorkerConfig) {
+        cfWorkerConfig.style.display = 'none';
+      }
+    } else {
+      // Show the appropriate driver config
+      handleIntakeDriverChange();
+    }
+
+    updateDockerCompose();
+  }
+
+  function handleIntakeDriverChange() {
+    const driver = intakeDriverSelect.value;
+    const isEnabled = intakeEmailEnabledSelect.value === 'true';
+
+    if (!isEnabled) {
+      return;
+    }
+
     if (owlrelayConfig) {
-      owlrelayConfig.style.display = 'none';
+      owlrelayConfig.style.display = driver === 'owlrelay' ? 'block' : 'none';
     }
     if (cfWorkerConfig) {
-      cfWorkerConfig.style.display = 'none';
+      cfWorkerConfig.style.display = driver === 'catch-all' ? 'block' : 'none';
     }
-  } else {
-    // Show the appropriate driver config
-    handleIntakeDriverChange();
+
+    updateDockerCompose();
   }
 
-  updateDockerCompose();
-}
-
-function handleIntakeDriverChange() {
-  const driver = intakeDriverSelect.value;
-  const isEnabled = intakeEmailEnabledSelect.value === 'true';
-
-  if (!isEnabled) {
-    return;
+  function handleRefreshWebhookSecret() {
+    webhookSecretInput.value = getRandomString();
+    updateDockerCompose();
   }
 
-  if (owlrelayConfig) {
-    owlrelayConfig.style.display = driver === 'owlrelay' ? 'block' : 'none';
-  }
-  if (cfWorkerConfig) {
-    cfWorkerConfig.style.display = driver === 'catch-all' ? 'block' : 'none';
-  }
+  function handleCopyCommand() {
+    const command = getStartCommand();
 
-  updateDockerCompose();
-}
+    copyToClipboard(command);
 
-function handleRefreshWebhookSecret() {
-  webhookSecretInput.value = getRandomString();
-  updateDockerCompose();
-}
-
-function handleCopyCommand() {
-  const command = getStartCommand();
-
-  copyToClipboard(command);
-
-  if (copyCommandButton) {
-    copyCommandButton.textContent = 'Copied!';
-  }
-
-  setTimeout(() => {
     if (copyCommandButton) {
-      copyCommandButton.textContent = 'Copy command';
+      copyCommandButton.textContent = 'Copied!';
     }
-  }, 1000);
-}
 
-// Add event listeners
-portInput.addEventListener('input', handlePortChange);
-sourceSelect.addEventListener('change', updateDockerCompose);
-serviceNameInput.addEventListener('input', updateDockerCompose);
-authSecretInput.addEventListener('input', updateDockerCompose);
-appBaseUrlInput.addEventListener('input', handleAppBaseUrlChange);
-refreshSecretButton?.addEventListener('click', handleRefreshSecret);
-copyButton?.addEventListener('click', handleCopy);
-downloadButton?.addEventListener('click', handleDownload);
-volumePathInput.addEventListener('input', updateDockerCompose);
-privilegedModeSelect.addEventListener('change', updateDockerCompose);
-ingestionEnabledSelect.addEventListener('change', handleIngestionEnabledChange);
-ingestionPathInput.addEventListener('input', updateDockerCompose);
-intakeEmailEnabledSelect.addEventListener('change', handleIntakeEmailEnabledChange);
-intakeDriverSelect.addEventListener('change', handleIntakeDriverChange);
-owlrelayApiKeyInput.addEventListener('input', updateDockerCompose);
-owlrelayWebhookUrlInput.addEventListener('input', handleWebhookUrlChange);
-cfEmailDomainInput.addEventListener('input', updateDockerCompose);
-webhookSecretInput.addEventListener('input', updateDockerCompose);
-refreshWebhookSecretButton?.addEventListener('click', handleRefreshWebhookSecret);
-copyCommandButton?.addEventListener('click', handleCopyCommand);
+    setTimeout(() => {
+      if (copyCommandButton) {
+        copyCommandButton.textContent = 'Copy command';
+      }
+    }, 1000);
+  }
 
-authSecretInput.value = getRandomString();
+  // Add event listeners
+  portInput.addEventListener('input', handlePortChange);
+  sourceSelect.addEventListener('change', updateDockerCompose);
+  serviceNameInput.addEventListener('input', updateDockerCompose);
+  authSecretInput.addEventListener('input', updateDockerCompose);
+  appBaseUrlInput.addEventListener('input', handleAppBaseUrlChange);
+  refreshSecretButton?.addEventListener('click', handleRefreshSecret);
+  copyButton?.addEventListener('click', handleCopy);
+  downloadButton?.addEventListener('click', handleDownload);
+  volumePathInput.addEventListener('input', updateDockerCompose);
+  privilegedModeSelect.addEventListener('change', updateDockerCompose);
+  ingestionEnabledSelect.addEventListener('change', handleIngestionEnabledChange);
+  ingestionPathInput.addEventListener('input', updateDockerCompose);
+  intakeEmailEnabledSelect.addEventListener('change', handleIntakeEmailEnabledChange);
+  intakeDriverSelect.addEventListener('change', handleIntakeDriverChange);
+  owlrelayApiKeyInput.addEventListener('input', updateDockerCompose);
+  owlrelayWebhookUrlInput.addEventListener('input', handleWebhookUrlChange);
+  cfEmailDomainInput.addEventListener('input', updateDockerCompose);
+  webhookSecretInput.addEventListener('input', updateDockerCompose);
+  refreshWebhookSecretButton?.addEventListener('click', handleRefreshWebhookSecret);
+  copyCommandButton?.addEventListener('click', handleCopyCommand);
 
-// Initial render
-updateDockerCompose();
+  authSecretInput.value = getRandomString();
 
-// Initial setup
-handleIngestionEnabledChange();
-handleIntakeEmailEnabledChange();
-webhookSecretInput.value = getRandomString();
+  // Initial render
+  updateDockerCompose();
+
+  // Initial setup
+  handleIngestionEnabledChange();
+  handleIntakeEmailEnabledChange();
+  webhookSecretInput.value = getRandomString();
 </script>

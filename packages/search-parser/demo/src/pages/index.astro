@@ -3,10 +3,11 @@ import { ParserDemo } from '../components/parser-demo';
 
 const meta = {
   title: 'Search Parser - Advanced search query parser for TypeScript',
-  description: 'A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.',
-  keywords: 'search parser, query parser, typescript, ast parser, search syntax, logical operators, filters, search query',
+  description:
+    'A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.',
+  keywords:
+    'search parser, query parser, typescript, ast parser, search syntax, logical operators, filters, search query',
 };
-
 ---
 
 <!doctype html>
@@ -31,7 +32,10 @@ const meta = {
     <meta property="og:image" content="https://search-parser.papra.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Papra Search Parser - Advanced query parser for TypeScript" />
+    <meta
+      property="og:image:alt"
+      content="Papra Search Parser - Advanced query parser for TypeScript"
+    />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -40,7 +44,10 @@ const meta = {
     <meta name="twitter:description" content={meta.description} />
     <meta name="twitter:creator" content="@cthmsst" />
     <meta name="twitter:image" content="https://search-parser.papra.app/og-image.png" />
-    <meta name="twitter:image:alt" content="Papra Search Parser - Advanced query parser for TypeScript" />
+    <meta
+      name="twitter:image:alt"
+      content="Papra Search Parser - Advanced query parser for TypeScript"
+    />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -66,18 +73,38 @@ const meta = {
   <body class="bg-background font-sans text-foreground min-h-screen pt-12 sm:pt-18 flex flex-col">
     <main class="mx-auto max-w-3xl px-6 flex-1">
       <div class="flex items-center gap-2 justify-between flex-wrap">
-        <h1 class="text-3xl sm:text-4xl font-light">@papra/<span class="text-primary font-semibold">search-parser</span></h1>
+        <h1 class="text-3xl sm:text-4xl font-light">
+          @papra/<span class="text-primary font-semibold">search-parser</span>
+        </h1>
 
         <div class="flex items-center gap-2">
-          <a class="transition-colors hover:text-primary" href="https://github.com/papra-hq/papra/tree/main/packages/search-parser" target="_blank" rel="noopener noreferrer" title="GitHub Repository">
+          <a
+            class="transition-colors hover:text-primary"
+            href="https://github.com/papra-hq/papra/tree/main/packages/search-parser"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="GitHub Repository"
+          >
             <div class="i-tabler-brand-github size-7" aria-label="GitHub"></div>
           </a>
 
-          <a class="transition-colors hover:text-primary" href="https://github.com/sponsors/papra-hq" target="_blank" rel="noopener noreferrer" title="Sponsor the project">
+          <a
+            class="transition-colors hover:text-primary"
+            href="https://github.com/sponsors/papra-hq"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Sponsor the project"
+          >
             <div class="i-tabler-pig-money size-7" aria-label="Sponsor"></div>
           </a>
 
-          <a class="transition-colors hover:text-primary" href="https://www.npmjs.com/package/@papra/search-parser" target="_blank" rel="noopener noreferrer" title="NPM Package">
+          <a
+            class="transition-colors hover:text-primary"
+            href="https://www.npmjs.com/package/@papra/search-parser"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="NPM Package"
+          >
             <div class="i-tabler-brand-npm size-7" aria-label="NPM"></div>
           </a>
         </div>
@@ -91,30 +118,46 @@ const meta = {
     <div class="bg-#171717 text-background mt-12 sm:mt-20">
       <div class="mx-auto max-w-3xl px-6 py-12">
         <p class="text-base max-w-xl lh-normal">
-          Made with <span class="i-tabler-heart size-5 text-primary inline-block align-middle"></span> by <a
+          Made with{' '}
+          <span class="i-tabler-heart size-5 text-primary inline-block align-middle"></span> by{' '}
+          <a
             class="text-primary hover:underline"
             href="https://corentin.tech"
             target="_blank"
             rel="noopener noreferrer"
-                                                                                                          >
+          >
             Corentin Thomasset
-          </a> initially for <a class="text-primary hover:underline" href="https://papra.app" target="_blank" rel="noopener noreferrer">Papra</a>.
+          </a>{' '}
+          initially for{' '}
+          <a
+            class="text-primary hover:underline"
+            href="https://papra.app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Papra
+          </a>
+          .
         </p>
 
         <p>
-          Use it in your project, it's <a
+          Use it in your project, it's{' '}
+          <a
             class="text-primary hover:underline"
             href="https://github.com/papra-hq/papra/tree/main/packages/search-parser/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-                                       >MIT licensed</a
-          >: <span class="bg-background/10 font-mono px-2 py-1 rounded-md text-sm">pnpm i @papra/search-parser</span>
+          >
+            MIT licensed
+          </a>
+          :{' '}
+          <span class="bg-background/10 font-mono px-2 py-1 rounded-md text-sm">
+            pnpm i @papra/search-parser
+          </span>
         </p>
 
         <hr class="border-muted my-6" />
-        <p>
-          © {new Date().getFullYear()} Corentin Thomasset. All rights reserved.
-        </p>
+        <p>© {new Date().getFullYear()} Corentin Thomasset. All rights reserved.</p>
       </div>
     </div>
   </body>

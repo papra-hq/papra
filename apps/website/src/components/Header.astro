@@ -6,7 +6,7 @@ import { cn } from '../utils/cn';
 
 const { t } = useI18n({ locale: Astro.currentLocale });
 
-const socials = getSocials({ t }).filter(social => social.inHeader);
+const socials = getSocials({ t }).filter((social) => social.inHeader);
 
 const navigation = [
   {
@@ -39,35 +39,47 @@ const { class: className } = Astro.props;
 ---
 
 <header
-  class={cn('z-100 fixed top-0 left-0 right-0 border-b bg-background/80 backdrop-blur-sm', className)}
+  class={cn(
+    'z-100 fixed top-0 left-0 right-0 border-b bg-background/80 backdrop-blur-sm',
+    className,
+  )}
 >
   <nav class="max-w-1200px mx-auto px-6 h-16 flex items-center justify-between">
     <div class="flex items-center gap-8">
-      <a href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })} class="text-lg font-bold flex items-center group">
+      <a
+        href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })}
+        class="text-lg font-bold flex items-center group"
+      >
         <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
         <span class="ml-2">Papra</span>
       </a>
 
       <div class="items-center gap-6 hidden md:flex">
-        {
-          navigation.map(nav => (
-            <a href={nav.url} class="text-sm font-semibold hover:text-primary transition" {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>
-              {nav.name}
-            </a>
-          ))
-        }
+        {navigation.map((nav) => (
+          <a
+            href={nav.url}
+            class="text-sm font-semibold hover:text-primary transition"
+            {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+          >
+            {nav.name}
+          </a>
+        ))}
       </div>
     </div>
 
     <div class="flex items-center gap-4">
       <div class="items-center gap-3 hidden md:flex">
-        {
-          socials.map(social => (
-            <a href={social.url} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition" aria-label={social.name}>
-              <div class={cn('size-5', social.icon)} />
-            </a>
-          ))
-        }
+        {socials.map((social) => (
+          <a
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-primary transition"
+            aria-label={social.name}
+          >
+            <div class={cn('size-5', social.icon)} />
+          </a>
+        ))}
       </div>
 
       <a
@@ -94,18 +106,17 @@ const { class: className } = Astro.props;
     </div>
   </nav>
 
-  <div
-    id="mobile-menu"
-    class="md:hidden hidden border-t bg-background/95 backdrop-blur-sm"
-  >
+  <div id="mobile-menu" class="md:hidden hidden border-t bg-background/95 backdrop-blur-sm">
     <nav class="max-w-5xl mx-auto px-6 py-4 flex flex-col gap-1" aria-label="Mobile">
-      {
-        navigation.map(nav => (
-          <a href={nav.url} class="text-base font-semibold py-2 hover:text-primary transition" {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>
-            {nav.name}
-          </a>
-        ))
-      }
+      {navigation.map((nav) => (
+        <a
+          href={nav.url}
+          class="text-base font-semibold py-2 hover:text-primary transition"
+          {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+        >
+          {nav.name}
+        </a>
+      ))}
 
       <a
         class="flex gap-1.5 items-center justify-center bg-primary font-bold rounded-xl py-2 px-3 mt-3 text-primary-foreground text-sm transition hover:bg-primary/80"
@@ -118,13 +129,17 @@ const { class: className } = Astro.props;
       </a>
 
       <div class="flex items-center gap-4 mt-4 pt-4 border-t">
-        {
-          socials.map(social => (
-            <a href={social.url} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition" aria-label={social.name}>
-              <div class={cn('size-5', social.icon)} />
-            </a>
-          ))
-        }
+        {socials.map((social) => (
+          <a
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-primary transition"
+            aria-label={social.name}
+          >
+            <div class={cn('size-5', social.icon)} />
+          </a>
+        ))}
       </div>
     </nav>
   </div>
@@ -152,8 +167,12 @@ const { class: className } = Astro.props;
   });
 
   // Close the menu when a link is clicked or the viewport grows to desktop.
-  menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenuOpen(false)));
-  window.matchMedia('(min-width: 768px)').addEventListener('change', event => event.matches && setMenuOpen(false));
+  menu
+    ?.querySelectorAll('a')
+    .forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+  window
+    .matchMedia('(min-width: 768px)')
+    .addEventListener('change', (event) => event.matches && setMenuOpen(false));
 
   // Close on Escape and return focus to the toggle for keyboard users.
   document.addEventListener('keydown', (event) => {
