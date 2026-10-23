@@ -7,7 +7,6 @@ import PosthogAnalytics from './PosthogAnalytics.astro';
 
 const { t } = useI18n({ locale: Astro.currentLocale });
 
-
 export type Props = {
   title?: string;
   rawTitle?: string;
@@ -45,7 +44,15 @@ const organizationLd = {
   },
 };
 
-const { rawTitle, description = siteInfo.description, image = siteInfo.image, canonicalUrl: rawCanonicalUrl, pageType = 'website', locale = Astro.currentLocale ?? DEFAULT_LOCALE, jsonLd = organizationLd } = Astro.props;
+const {
+  rawTitle,
+  description = siteInfo.description,
+  image = siteInfo.image,
+  canonicalUrl: rawCanonicalUrl,
+  pageType = 'website',
+  locale = Astro.currentLocale ?? DEFAULT_LOCALE,
+  jsonLd = organizationLd,
+} = Astro.props;
 const canonicalUrl = formatCanonicalUrl(rawCanonicalUrl ?? new URL(Astro.request.url, Astro.site));
 
 const title = rawTitle ?? [Astro.props.title, siteInfo.title].filter(Boolean).join(' - ');
@@ -110,16 +117,21 @@ const alternateLinks = isMultiLangPage
   <link rel="author" href="humans.txt" />
   <link rel="canonical" href={canonicalUrl} />
 
-  {
-    alternateLinks.length > 0 && (
-      <>
-        <link rel="alternate" hreflang="x-default" href={new URL(`/${DEFAULT_LOCALE}${getPathWithoutLocale(Astro.url)}`, Astro.site).toString()} />
-        {alternateLinks.map(({ hreflang, href }) => (
-          <link rel="alternate" hreflang={hreflang} href={href} />
-        ))}
-      </>
-    )
-  }
+  {alternateLinks.length > 0 && (
+    <>
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL(
+          `/${DEFAULT_LOCALE}${getPathWithoutLocale(Astro.url)}`,
+          Astro.site,
+        ).toString()}
+      />
+      {alternateLinks.map(({ hreflang, href }) => (
+        <link rel="alternate" hreflang={hreflang} href={href} />
+      ))}
+    </>
+  )}
 
   <!-- OpenGraph Tags -->
   <meta property="og:title" content={og.title} />
@@ -144,7 +156,12 @@ const alternateLinks = isMultiLangPage
   <PosthogAnalytics />
 
   <meta name="robots" content="max-image-preview:large" />
-  <link rel="alternate" type="application/rss+xml" title="Papra Blog" href={new URL('rss.xml', Astro.site)} />
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="Papra Blog"
+    href={new URL('rss.xml', Astro.site)}
+  />
 
   <meta name="fediverse:creator" content="@papra@mastodon.social" />
 

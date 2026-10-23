@@ -8,7 +8,7 @@ import { DISCORD_INVITE_URL, getSocials, GITHUB_ISSUES_URL } from '../../socials
 import { cn } from '../../utils/cn';
 
 export async function getStaticPaths() {
-  return LOCALES.map(locale => ({ params: { locale } }));
+  return LOCALES.map((locale) => ({ params: { locale } }));
 }
 
 const { t } = useI18n({ locale: Astro.currentLocale });
@@ -58,45 +58,41 @@ const socials = getSocials({ t });
     <div class="w-full bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px] bg-background border-b pt-24 md:pt-32 pb-8 md:pb-18">
       <div class="max-w-700px mx-auto p-6 md:text-center">
         <h1 class="text-3xl md:text-5xl mb-4 font-bold">{t('contact.title')}</h1>
-        <p class="text-base md:text-xl leading-tight text-muted-foreground text-pretty">{t('contact.subtitle')}</p>
+        <p class="text-base md:text-xl leading-tight text-muted-foreground text-pretty">
+          {t('contact.subtitle')}
+        </p>
       </div>
     </div>
 
     <div class="max-w-4xl mx-auto px-6 py-8 md:py-24">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {
-          generalCards.map(card => (
-            <div class={cn('border border-border rounded-lg p-6 bg-background/50')}>
-              <div class="size-14 flex items-center justify-center bg-primary/10 rounded-xl">
-                <div class={`${card.icon} size-8 text-primary`} aria-hidden="true" />
-              </div>
-              <h2 class="text-2xl font-semibold mt-4 mb-3">{card.title}</h2>
-              <p class="text-base text-muted-foreground mb-4">{card.description}</p>
-              {card.email
-? (
-                <a
-                  href={`mailto:${card.email}`}
-                  class="text-base font-semibold text-primary hover:underline"
-                >
-                  {card.email}
-                </a>
-              )
-: card.button
-? (
-                <a
-                  href={card.button.url}
-                  class="text-base font-semibold bg-primary rounded-lg py-2 px-4 text-primary-foreground transition hover:bg-primary/80 inline-flex items-center"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <div class={`${card.button.icon} size-6 inline-block mr-2`} aria-hidden="true" />
-                  {card.button.label}
-                </a>
-              )
-: null}
+        {generalCards.map((card) => (
+          <div class={cn('border border-border rounded-lg p-6 bg-background/50')}>
+            <div class="size-14 flex items-center justify-center bg-primary/10 rounded-xl">
+              <div class={`${card.icon} size-8 text-primary`} aria-hidden="true" />
             </div>
-          ))
-        }
+            <h2 class="text-2xl font-semibold mt-4 mb-3">{card.title}</h2>
+            <p class="text-base text-muted-foreground mb-4">{card.description}</p>
+            {card.email ? (
+              <a
+                href={`mailto:${card.email}`}
+                class="text-base font-semibold text-primary hover:underline"
+              >
+                {card.email}
+              </a>
+            ) : card.button ? (
+              <a
+                href={card.button.url}
+                class="text-base font-semibold bg-primary rounded-lg py-2 px-4 text-primary-foreground transition hover:bg-primary/80 inline-flex items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div class={`${card.button.icon} size-6 inline-block mr-2`} aria-hidden="true" />
+                {card.button.label}
+              </a>
+            ) : null}
+          </div>
+        ))}
       </div>
 
       <div class="flex flex-col md:flex-row justify-between items-center gap-8 border rounded-lg mt-8 p-6 bg-background/50">
@@ -106,20 +102,18 @@ const socials = getSocials({ t });
         </div>
 
         <div class="flex items-center gap-4 flex-wrap md:flex-nowrap">
-          {
-            socials.map(social => (
-              <a
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.name}
-                class="size-12 text-primary bg-primary/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition"
-                title={social.name}
-              >
-                <div class={cn('size-6', social.icon)} aria-hidden="true" />
-              </a>
-            ))
-          }
+          {socials.map((social) => (
+            <a
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={social.name}
+              class="size-12 text-primary bg-primary/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition"
+              title={social.name}
+            >
+              <div class={cn('size-6', social.icon)} aria-hidden="true" />
+            </a>
+          ))}
         </div>
       </div>
     </div>

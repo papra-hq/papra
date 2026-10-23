@@ -9,14 +9,15 @@ const { t } = useI18n({ locale: Astro.currentLocale });
     {t('home.intake-emails.eyebrow')}
   </div>
   <h2 class="text-center text-3xl font-bold mb-4">{t('home.intake-emails.title')}</h2>
-  <p class="text-center text-base text-muted-foreground max-w-600px mx-auto">{t('home.intake-emails.subtitle')}</p>
+  <p class="text-center text-base text-muted-foreground max-w-600px mx-auto">
+    {t('home.intake-emails.subtitle')}
+  </p>
 
   <div class="relative">
     <div class="absolute z-1 h-full w-3px top-0 left-30px bg-border md:hidden" />
     <div class="absolute z-1 h-3px w-full top-35px left-0 bg-border hidden md:block" />
 
     <div class="mt-12 grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3 z-10 relative">
-
       <div class="bg-card border rounded-2xl p-6">
         <span class="font-mono text-primary">01</span>
         <h3 class="text-lg font-semibold my-2">{t('home.intake-emails.step-1.title')}</h3>

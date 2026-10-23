@@ -1,5 +1,4 @@
 ---
-
 import Cta from '../../components/Cta.astro';
 import FaqAccordion from '../../components/FaqAccordion.astro';
 import FeaturesBento from '../../components/FeaturesBento.astro';
@@ -13,17 +12,13 @@ import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
 import IntakeEmails from '../../components/IntakeEmails.astro';
 
-
 export async function getStaticPaths() {
-    return LOCALES.map(locale => ({ params: { locale } }));
+  return LOCALES.map((locale) => ({ params: { locale } }));
 }
 const { t } = useI18n({ locale: Astro.currentLocale });
 ---
 
-<Layout
-  rawTitle={t('site.title')}
-  description={t('site.description')}
->
+<Layout rawTitle={t('site.title')} description={t('site.description')}>
   <Header />
 
   <Hero />
@@ -45,5 +40,4 @@ const { t } = useI18n({ locale: Astro.currentLocale });
   <Cta />
 
   <Footer />
-
 </Layout>

@@ -39,13 +39,13 @@ const InvitationStatusBadge: Component<{ status: OrganizationInvitationStatus }>
   const getStatus = () => t(`organizations.invitations.status.${props.status}`);
   const getVariant = () =>
     (
-      ({
+      {
         [ORGANIZATION_INVITATION_STATUS.PENDING]: 'default',
         [ORGANIZATION_INVITATION_STATUS.ACCEPTED]: 'default',
         [ORGANIZATION_INVITATION_STATUS.REJECTED]: 'destructive',
         [ORGANIZATION_INVITATION_STATUS.EXPIRED]: 'destructive',
         [ORGANIZATION_INVITATION_STATUS.CANCELLED]: 'destructive',
-      }) as const
+      } as const
     )[props.status] ?? 'default';
 
   return <Badge variant={getVariant()}>{getStatus()}</Badge>;

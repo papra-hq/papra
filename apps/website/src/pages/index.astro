@@ -5,10 +5,13 @@ export const prerender = false;
 
 const preferredLocales = Astro.preferredLocaleList ?? [];
 
-const locale = preferredLocales.find(locale => (LOCALES as readonly string[]).includes(locale)) ?? DEFAULT_LOCALE;
+const locale =
+  preferredLocales.find((locale) => (LOCALES as readonly string[]).includes(locale)) ??
+  DEFAULT_LOCALE;
 
 Astro.response.headers.set('Vary', 'Accept-Language');
 
 return Astro.redirect(`/${locale}/`, 302);
 ---
+
 

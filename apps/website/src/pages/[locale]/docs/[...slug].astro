@@ -27,9 +27,7 @@ const { previous, next } = getDocPagination(docId);
   headings={headings}
 >
   {isFallback && (
-    <p class="mb-6 rounded-lg border p-4 text-muted-foreground">
-      {t('docs.translation-fallback')}
-    </p>
+    <p class="mb-6 rounded-lg border p-4 text-muted-foreground">{t('docs.translation-fallback')}</p>
   )}
 
   <div class="doc prose dark:prose-invert max-w-none" lang={contentLocale} data-pagefind-body>
@@ -37,7 +35,12 @@ const { previous, next } = getDocPagination(docId);
     <Content />
   </div>
 
-  <DocFooter editUrl={getDocEditUrl(entry)} previous={previous} next={next} locale={requestedLocale} />
+  <DocFooter
+    editUrl={getDocEditUrl(entry)}
+    previous={previous}
+    next={next}
+    locale={requestedLocale}
+  />
 </DocsLayout>
 
 <style is:global>

@@ -108,19 +108,26 @@ const sections: {
   <div class="max-w-1200px mx-auto p-4">
     <div class="flex justify-between flex-col md:flex-row gap-10">
       <div class="">
-        <a href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })} class="text-xl font-bold flex items-center group mb-2">
+        <a
+          href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })}
+          class="text-xl font-bold flex items-center group mb-2"
+        >
           <div class="i-tabler-file-text size-7 text-primary group-hover:(rotate-25deg) transition transform rotate-12deg"></div>
           <span class="ml-2 text-foreground group-hover:text-foreground/80 transition">Papra</span>
         </a>
 
         <div class="flex gap-2">
-          {
-            socials.map(social => (
-              <a href={social.url} class="hover:text-primary transition" target="_blank" rel="noopener noreferrer" aria-label={social.label}>
-                <div class={`${social.icon} text-2xl`} aria-hidden="true" />
-              </a>
-            ))
-          }
+          {socials.map((social) => (
+            <a
+              href={social.url}
+              class="hover:text-primary transition"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={social.label}
+            >
+              <div class={`${social.icon} text-2xl`} aria-hidden="true" />
+            </a>
+          ))}
         </div>
 
         <p class="mt-4 text-sm max-w-250px" set:html={t('footer.made-in-europe')} />
@@ -131,23 +138,29 @@ const sections: {
       </div>
 
       <div class={cn('grid gap-6 grid-cols-1', `sm:grid-cols-${sections.length}`)}>
-        {
-          sections.map(section => (
-            <div>
-              <div class="text-foreground font-semibold">{section.title}</div>
-              <div class="mt-2">
-                {section.links.map(link => (
-                  <a href={link.url} class="block hover:text-primary transition py-0.75 font-medium" target={link.target} rel={link.rel}>
-                    {link.label}
-                  </a>
-                ))}
-              </div>
+        {sections.map((section) => (
+          <div>
+            <div class="text-foreground font-semibold">{section.title}</div>
+            <div class="mt-2">
+              {section.links.map((link) => (
+                <a
+                  href={link.url}
+                  class="block hover:text-primary transition py-0.75 font-medium"
+                  target={link.target}
+                  rel={link.rel}
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
-          ))
-        }
+          </div>
+        ))}
       </div>
     </div>
 
-    <div class="mt-8 border-t border-border pt-4" set:html={t('footer.copyright', { year: new Date().getFullYear() })} />
+    <div
+      class="mt-8 border-t border-border pt-4"
+      set:html={t('footer.copyright', { year: new Date().getFullYear() })}
+    />
   </div>
 </footer>

@@ -12,36 +12,52 @@ const copiedIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${iconSize}" 
 ---
 
 <div class="key-generator" data-byte-length={byteLength}>
-    <div class="key-row">
-        <input type="text" class="key-input" readonly />
-        <button class="cbtn btn-refresh" title="Generate new key">
-            <span set:html={refreshIcon} aria-label="Refresh" />
-        </button>
-        <button class="cbtn btn-copy" title="Copy to clipboard">
-            <span set:html={copyIcon} aria-label="Copy" class="icon-copy" />
-            <span set:html={copiedIcon} aria-label="Copied" class="icon-copied hidden" />
-        </button>
-    </div>
-    <div class="info-text">
-        Generated locally in your browser - no network or server involved
-    </div>
+  <div class="key-row">
+    <input type="text" class="key-input" readonly />
+    <button class="cbtn btn-refresh" title="Generate new key">
+      <span set:html={refreshIcon} aria-label="Refresh" />
+    </button>
+    <button class="cbtn btn-copy" title="Copy to clipboard">
+      <span set:html={copyIcon} aria-label="Copy" class="icon-copy" />
+      <span set:html={copiedIcon} aria-label="Copied" class="icon-copied hidden" />
+    </button>
+  </div>
+  <div class="info-text">Generated locally in your browser - no network or server involved</div>
 </div>
 
 <script>
-    function generateKey({ keyInputElement, byteLength }: { keyInputElement: HTMLInputElement; byteLength: number }) {
-      const array = new Uint8Array(byteLength);
-      crypto.getRandomValues(array);
+  function generateKey({
+    keyInputElement,
+    byteLength,
+  }: {
+    keyInputElement: HTMLInputElement;
+    byteLength: number;
+  }) {
+    const array = new Uint8Array(byteLength);
+    crypto.getRandomValues(array);
 
-      // Convert to hex format
-      const key = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-      keyInputElement.value = key;
-    }
+    // Convert to hex format
+    const key = Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    keyInputElement.value = key;
+  }
 
-    function copyToClipboard({ keyInputElement, copyButtonElement, iconCopyElement, iconCopiedElement }: { keyInputElement: HTMLInputElement; copyButtonElement: HTMLButtonElement; iconCopyElement: HTMLSpanElement; iconCopiedElement: HTMLSpanElement }) {
-      keyInputElement.select();
-      keyInputElement.setSelectionRange(0, keyInputElement.value.length); // For mobile devices
+  function copyToClipboard({
+    keyInputElement,
+    copyButtonElement,
+    iconCopyElement,
+    iconCopiedElement,
+  }: {
+    keyInputElement: HTMLInputElement;
+    copyButtonElement: HTMLButtonElement;
+    iconCopyElement: HTMLSpanElement;
+    iconCopiedElement: HTMLSpanElement;
+  }) {
+    keyInputElement.select();
+    keyInputElement.setSelectionRange(0, keyInputElement.value.length); // For mobile devices
 
-      navigator.clipboard.writeText(keyInputElement.value).then(() => {
+    navigator.clipboard
+      .writeText(keyInputElement.value)
+      .then(() => {
         iconCopyElement.classList.add('hidden');
         iconCopiedElement.classList.remove('hidden');
         copyButtonElement.disabled = true;
@@ -51,110 +67,114 @@ const copiedIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${iconSize}" 
           iconCopiedElement.classList.add('hidden');
           copyButtonElement.disabled = false;
         }, 1_000);
-      }).catch(() => {
+      })
+      .catch(() => {
         // Fallback for older browsers
         document.execCommand('copy');
       });
-    }
+  }
 
-    const keyGenerators = document.querySelectorAll('.key-generator');
+  const keyGenerators = document.querySelectorAll('.key-generator');
 
-    keyGenerators.forEach((keyGenerator) => {
-      const refreshButtonElement = keyGenerator.querySelector('.btn-refresh')!;
-      const copyButtonElement = keyGenerator.querySelector<HTMLButtonElement>('.btn-copy')!;
-      const keyInputElement = keyGenerator.querySelector<HTMLInputElement>('.key-input')!;
-      const iconCopyElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copy')!;
-      const iconCopiedElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copied')!;
-      const byteLength = Number.parseInt(keyGenerator.getAttribute('data-byte-length') ?? '32', 10);
+  keyGenerators.forEach((keyGenerator) => {
+    const refreshButtonElement = keyGenerator.querySelector('.btn-refresh')!;
+    const copyButtonElement = keyGenerator.querySelector<HTMLButtonElement>('.btn-copy')!;
+    const keyInputElement = keyGenerator.querySelector<HTMLInputElement>('.key-input')!;
+    const iconCopyElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copy')!;
+    const iconCopiedElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copied')!;
+    const byteLength = Number.parseInt(keyGenerator.getAttribute('data-byte-length') ?? '32', 10);
 
-      generateKey({ keyInputElement, byteLength });
+    generateKey({ keyInputElement, byteLength });
 
-      refreshButtonElement.addEventListener('click', () => generateKey({ keyInputElement, byteLength }));
-      copyButtonElement.addEventListener('click', () => copyToClipboard({ copyButtonElement, keyInputElement, iconCopyElement, iconCopiedElement }));
-    });
+    refreshButtonElement.addEventListener('click', () =>
+      generateKey({ keyInputElement, byteLength }),
+    );
+    copyButtonElement.addEventListener('click', () =>
+      copyToClipboard({ copyButtonElement, keyInputElement, iconCopyElement, iconCopiedElement }),
+    );
+  });
 </script>
 
 <style>
-    .key-generator {
-        /* background-color: var(--ec-frm-trmBg);
-        border-radius: var(--ec-brdRad);
-        border: 1px solid var(--ec-brdCol);
-        font-family: monospace;
-        max-width: 100%; */
-    }
+  .key-generator {
+    /* background-color: var(--ec-frm-trmBg);
+      border-radius: var(--ec-brdRad);
+      border: 1px solid var(--ec-brdCol);
+      font-family: monospace;
+      max-width: 100%; */
+  }
 
-    .key-row {
-        display: flex;
-        align-items: center;
-    }
+  .key-row {
+    display: flex;
+    align-items: center;
+  }
 
-    .key-input {
-        flex: 1;
-        background-color: var(--sl-color-black);
-        border: 1px solid var(--sl-color-gray-5);
-        border-radius: 4px 0 0 4px;
-        padding: 8px 12px;
-        font-family: var(--__sl-font-mono, monospace);
-        font-size: 14px;
-        color: var(--sl-color-gray-2);
-        min-width: 0; /* Allow input to shrink */
-        border-right: none;
-    }
+  .key-input {
+    flex: 1;
+    background-color: var(--sl-color-black);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 4px 0 0 4px;
+    padding: 8px 12px;
+    font-family: var(--__sl-font-mono, monospace);
+    font-size: 14px;
+    color: var(--sl-color-gray-2);
+    min-width: 0; /* Allow input to shrink */
+    border-right: none;
+  }
 
-    .key-input:focus {
-        outline: none;
-        border-color: var(--ec-frm-inpBrd, #4a9eff);
-        box-shadow: 0 0 0 2px var(--ec-frm-inpBrd, #4a9eff)33;
-    }
+  .key-input:focus {
+    outline: none;
+    border-color: var(--ec-frm-inpBrd, #4a9eff);
+    box-shadow: 0 0 0 2px var(--ec-frm-inpBrd, #4a9eff) 33;
+  }
 
-    .cbtn {
-        background-color: var(--ec-frm-btnBg);
-        border: 1px solid var(--ec-brdCol);
-        padding: 10px 12px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.2s ease;
-        min-width: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 0;
-    }
+  .cbtn {
+    background-color: var(--ec-frm-btnBg);
+    border: 1px solid var(--ec-brdCol);
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+  }
 
-    .cbtn.btn-copy {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-        border-left: none;
-    }
+  .cbtn.btn-copy {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-left: none;
+  }
 
-    .cbtn.btn-refresh {
-        border-radius: 0;
-    }
+  .cbtn.btn-refresh {
+    border-radius: 0;
+  }
 
-    .cbtn:hover {
-        background-color: var(--sl-color-gray-6)!important;
-    }
+  .cbtn:hover {
+    background-color: var(--sl-color-gray-6) !important;
+  }
 
-    .cbtn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
+  .cbtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
 
-    .btn-refresh:hover:not(:disabled) {
-        background-color: var(--ec-frm-btnBgHover, #3a3a3a);
-    }
+  .btn-refresh:hover:not(:disabled) {
+    background-color: var(--ec-frm-btnBgHover, #3a3a3a);
+  }
 
-    .btn-copy:hover:not(:disabled) {
-        background-color: var(--ec-frm-btnBgHover, #3a3a3a);
-    }
+  .btn-copy:hover:not(:disabled) {
+    background-color: var(--ec-frm-btnBgHover, #3a3a3a);
+  }
 
-    .info-text {
-        color: var(--ec-frm-txtSecondary, #888888);
-        font-style: italic;
-        margin-top: 0;
-    }
-
+  .info-text {
+    color: var(--ec-frm-txtSecondary, #888888);
+    font-style: italic;
+    margin-top: 0;
+  }
 </style>
