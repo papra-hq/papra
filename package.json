@@ -20,11 +20,12 @@
     "lint:fix": "pnpm run check:fix"
   },
   "devDependencies": {
+    "@astrojs/compiler-rs": "0.5.2",
     "@changesets/changelog-github": "1.0.0",
     "@changesets/cli": "3.0.1",
-    "oxfmt": "0.68.0",
-    "oxlint": "1.83.0",
-    "oxlint-tsgolint": "7.0.2001",
+    "oxfmt": "0.74.0",
+    "oxlint": "1.89.0",
+    "oxlint-tsgolint": "7.0.2004",
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@12.4.2"
