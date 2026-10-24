@@ -53,6 +53,7 @@ describe('demo search services', () => {
         content: 'Consider visiting the beach or mountains.',
         tags: [],
         createdAt: new Date('2023-06-15'),
+        documentDate: '2023-06-15',
       },
       {
         id: 'doc_7',
@@ -60,7 +61,10 @@ describe('demo search services', () => {
         content: 'Invoice for services.',
         tags: [tags.work],
         createdAt: new Date('2023-07-01'),
-        customProperties: [{ key: 'invoicenumber', type: 'text', value: 'INV-001' }],
+        customProperties: [
+          { key: 'invoicenumber', type: 'text', value: 'INV-001' },
+          { key: 'invoicedate', type: 'date', value: '2023-07-01' },
+        ],
       },
       {
         id: 'doc_8',
@@ -114,11 +118,23 @@ describe('demo search services', () => {
       { query: 'labels:urgent', expectedIds: ['doc_8'] },
       { query: 'labels:review', expectedIds: ['doc_8'] },
       { query: 'labels:missing', expectedIds: [] },
+      // Dynamic date query filters
+      { query: 'created:>now.year', expectedIds: ['doc_2', 'doc_3', 'doc_4', 'doc_5', 'doc_6', 'doc_7', 'doc_8'] },
+      { query: 'created:>=now.month', expectedIds: ['doc_8'] },
+      { query: 'created:>now-2m', expectedIds: ['doc_7', 'doc_8'] },
+      { query: 'date:>=now.minusMonths(2)', expectedIds: ['doc_6'] },
+      { query: 'invoicedate:>=now.minusMonths(2)', expectedIds: ['doc_7'] },
     ];
 
     for (const { query, expectedIds } of queries) {
       test(`search query "${query}"`, () => {
-        expect(searchDemoDocuments({ query, documents }).map((doc) => doc.id)).toEqual(expectedIds);
+        expect(
+          searchDemoDocuments({
+            query,
+            documents,
+            now: new Date('2023-08-15T00:00:00Z'),
+          }).map((doc) => doc.id),
+        ).toEqual(expectedIds);
       });
     }
   });
