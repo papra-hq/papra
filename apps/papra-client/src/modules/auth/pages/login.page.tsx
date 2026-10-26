@@ -197,7 +197,7 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
   const { config } = useConfig();
   const { t } = useI18n();
   const { createI18nApiError } = useI18nApiErrors({ t });
-  const { getPathWithRedirect } = useAuthRedirect();
+  const { getPathWithRedirect, getPostAuthRedirect } = useAuthRedirect();
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
@@ -205,10 +205,14 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         email,
         password,
         rememberMe,
-        callbackURL: buildUrl({
-          baseUrl: config.baseUrl,
-          path: getPathWithRedirect(authPagesPaths.emailVerification),
-        }),
+        ...(config.auth.isEmailVerificationRequired
+          ? {
+              callbackURL: buildUrl({
+                baseUrl: config.baseUrl,
+                path: getPathWithRedirect(authPagesPaths.emailVerification),
+              }),
+            }
+          : {}),
       });
 
       if (loginResult && 'twoFactorRedirect' in loginResult && loginResult.twoFactorRedirect) {
@@ -224,7 +228,7 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         throw createI18nApiError({ error });
       }
 
-      // If all good guard will redirect to dashboard
+      navigate(getPostAuthRedirect());
     },
     schema: v.object({
       email: v.pipe(
