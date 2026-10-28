@@ -6,6 +6,7 @@ import { buildConfigApiRoutes } from '../config/config.api.routes';
 import { buildOrganizationsApiRoutes } from '../organizations/organizations.api.routes';
 import { buildUserApiRoutes } from '../users/users.api.routes';
 import { buildTagsApiRoutes } from '../tags/tags.api.routes';
+import { buildDocumentEnrichmentApiRoutes } from '../document-enrichment/document-enrichment.api.routes';
 import { buildHealthCheckApiRoutes } from './health-check/health-check.api.routes';
 import {
   buildGetApiKey,
@@ -21,6 +22,7 @@ function buildApiRoutes(deps: ApiDependencies) {
     ...buildUserApiRoutes(deps),
     ...buildOrganizationsApiRoutes(deps),
     ...buildTagsApiRoutes(deps),
+    ...buildDocumentEnrichmentApiRoutes(deps),
   ];
 }
 
