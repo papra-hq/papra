@@ -132,6 +132,20 @@ describe('document enrichment task', () => {
     expect(await deps.db.select().from(documentsTagsTable)).toEqual([]);
   });
 
+  test('a job that does not select auto-tagging does not run it even when enabled', async () => {
+    const deps = await createTestDeps();
+    await deps.organizationSettingsRepository.createOrUpdateOrganizationSettings({
+      organizationId: 'org_1',
+      settings: { aiAutoTaggingEnabled: true },
+    });
+    const { taskDefinition } = deps.taskRegistry.getTaskOrThrow({ taskName: 'enrich-document' });
+
+    await taskDefinition.handler({ data: { ...documentIds, capabilities: [] }, context });
+
+    expect(deps.generateStructuredData).not.toHaveBeenCalled();
+    expect(await deps.db.select().from(documentsTagsTable)).toEqual([]);
+  });
+
   test('disabling AI prevents enrichment registration and scheduling without preventing text extraction', async () => {
     const deps = await createTestDeps({ aiEnabled: false });
 

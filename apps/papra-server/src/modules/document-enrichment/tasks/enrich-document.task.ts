@@ -14,6 +14,7 @@ import { createDocumentsRepository } from '../../documents/documents.repository'
 import type { EventServices } from '../../app/events/events.services';
 import type { AiServices } from '../../ai/ai.services';
 import { buildEnrichDocument } from '../document-enrichment.usecases';
+import type { DocumentEnrichmentCapability } from '../document-enrichment.schemas';
 
 export async function registerEnrichDocumentTask({
   taskServices,
@@ -42,9 +43,10 @@ export async function registerEnrichDocumentTask({
       const organizationSettingsRepository = createOrganizationSettingsRepository({ db });
 
       // TODO: remove type cast
-      const { documentId, organizationId } = data as {
+      const { documentId, organizationId, capabilities } = data as {
         documentId: string;
         organizationId: string;
+        capabilities?: DocumentEnrichmentCapability[];
       };
 
       const logger = createLogger({ namespace: 'documentEnrichment' });
@@ -64,7 +66,7 @@ export async function registerEnrichDocumentTask({
         }),
       });
 
-      await enrichDocument({ documentId, organizationId });
+      await enrichDocument({ documentId, organizationId, capabilities });
     },
   });
 }
