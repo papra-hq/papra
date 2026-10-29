@@ -27,7 +27,7 @@
     "unocss-preset-animations": "catalog:",
     "valibot": "catalog:",
     "yaml": "^2.8.0",
-    "zod": "3.25.76"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@iconify-json/tabler": "catalog:",
