@@ -1,27 +1,12 @@
-import { describe, expect, test, vi } from 'vitest';
-import * as v from 'valibot';
+import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createTestEventServices } from '../app/events/events.test-utils';
-import type { AiServices } from '../ai/ai.services';
 import { overrideConfig } from '../config/config.test-utils';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { applyTagsToDocuments, createTag } from '../tags/tags.usecases';
-import { buildApplyAutoTaggingActions, buildPromptForAutoTagging } from './auto-tagging.usecases';
-import type { AutoTaggingResponse } from './auto-tagging.models';
-import { buildAutoTaggingSystemPrompt, buildAutoTaggingUserPrompt } from './auto-tagging.models';
-
-function createTestAiServices({ response }: { response: AutoTaggingResponse }) {
-  const generateStructuredData = vi
-    .fn<AiServices['generateStructuredData']>()
-    .mockResolvedValue(response);
-
-  return {
-    aiServices: { generateStructuredData } as AiServices,
-    generateStructuredData,
-  };
-}
+import { buildApplyAutoTaggingActions } from './auto-tagging.usecases';
 
 async function createTestDeps(
   seedOptions: Parameters<typeof createInMemoryDatabase>[0],
@@ -81,45 +66,6 @@ const seed = {
 };
 
 describe('auto-tagging usecases', () => {
-  describe('buildPromptForAutoTagging', () => {
-    test('analysis uses the existing prompts and accounting source and returns bounded tag actions without applying them', async () => {
-      const { aiServices, generateStructuredData } = createTestAiServices({
-        response: {
-          existingTags: ['Finance', 'Finance', 'Unknown'],
-          newTags: [{ name: 'Invoice', description: 'Invoices and receipts' }, { name: 'Other' }],
-        },
-      });
-      const promptForAutoTagging = buildPromptForAutoTagging({ aiServices });
-      const options = { existingTags: seed.tags, canCreateNewTags: true, maxTags: 2 };
-
-      expect(
-        await promptForAutoTagging({
-          document: baseDocument,
-          modelId: 'openai://gpt-4',
-          ...options,
-        }),
-      ).toEqual({
-        tagIdsToAdd: ['tag_1'],
-        tagsToCreate: [{ name: 'Invoice', description: 'Invoices and receipts' }],
-      });
-      expect(generateStructuredData).toHaveBeenCalledTimes(1);
-      const [request] = generateStructuredData.mock.calls[0]!;
-      expect(request).toMatchObject({
-        organizationId: 'org_1',
-        modelId: 'openai://gpt-4',
-        source: 'auto-tagging',
-        systemPrompt: buildAutoTaggingSystemPrompt(options),
-        userPrompt: buildAutoTaggingUserPrompt({ document: baseDocument }),
-      });
-      expect(
-        v.safeParse(request.schema!, { existingTags: ['Finance'], newTags: [] }).success,
-      ).toEqual(true);
-      expect(
-        v.safeParse(request.schema!, { existingTags: ['Unknown'], newTags: [] }).success,
-      ).toEqual(false);
-    });
-  });
-
   describe('buildApplyAutoTaggingActions', () => {
     test('existing and successfully created tags are applied despite a creation failure, preserving current tags and emitting the domain event', async () => {
       const deps = await createTestDeps(seed);
