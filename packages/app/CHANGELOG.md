@@ -1,5 +1,15 @@
 # @papra/app
 
+## 26.8.0
+
+### Minor Changes
+
+- [#1580](https://github.com/papra-hq/papra/pull/1580) [`d0638d1`](https://github.com/papra-hq/papra/commit/d0638d11e1ca3795600b7baa68afed1d5b1daabb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Admins can now delete organizations from their details page in the admin panel.
+
+### Patch Changes
+
+- [#1590](https://github.com/papra-hq/papra/pull/1590) [`648c223`](https://github.com/papra-hq/papra/commit/648c223b807500f0258c822e0321d6ef4964f064) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Refactor AI auto-tagging to use a capability-based document enrichment pipeline, preparing for additional enrichment features.
+
 ## 26.7.1
 
 ### Patch Changes
