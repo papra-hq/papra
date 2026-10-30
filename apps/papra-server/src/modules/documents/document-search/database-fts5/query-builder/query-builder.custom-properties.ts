@@ -6,7 +6,7 @@ import { and, eq, inArray, isNotNull, or } from 'drizzle-orm';
 import { generatePropertyKey } from '../../../../custom-properties/custom-properties.repository.models';
 import { documentCustomPropertyValuesTable } from '../../../../custom-properties/custom-properties.table';
 import { customPropertySelectOptionsTable } from '../../../../custom-properties/options/custom-properties-options.table';
-import { isValidDate } from '../../../../shared/date';
+import { getDateValue as sharedGetDateValue, isValidDate } from '../../../../shared/date';
 import { usersTable } from '../../../../users/users.table';
 import { documentsTable } from '../../../documents.table';
 import {
@@ -149,11 +149,7 @@ function handleNumberPropertyFilter({
 }
 
 function getDateValue({ value, now }: { value: string; now: Date }): Date {
-  if (value === 'now') {
-    return now;
-  }
-
-  return new Date(value);
+  return sharedGetDateValue(value, now);
 }
 
 function handleDatePropertyFilter({
