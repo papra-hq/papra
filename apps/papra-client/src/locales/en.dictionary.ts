@@ -375,6 +375,17 @@ export const translations = {
   'documents.list.table.headers.deleted': 'Deleted',
   'documents.list.table.headers.actions': 'Actions',
   'documents.list.table.headers.tags': 'Tags',
+  'documents.list.columns.button': 'Columns',
+  'documents.list.columns.title': 'Table columns',
+  'documents.list.columns.description':
+    'Choose which optional columns appear in the table and arrange their order.',
+  'documents.list.columns.load-error':
+    'Could not load custom properties. Your saved column choices are preserved.',
+  'documents.list.columns.retry': 'Retry',
+  'documents.list.columns.move-earlier': 'Move {{ name }} earlier',
+  'documents.list.columns.move-later': 'Move {{ name }} later',
+  'documents.list.columns.boolean.true': 'Yes',
+  'documents.list.columns.boolean.false': 'No',
   'documents.list.search.placeholder': 'Search documents...',
   'documents.list.search.total-count-with-query':
     '{{ count }} {{ count, =1:document, documents }} matching this query',
