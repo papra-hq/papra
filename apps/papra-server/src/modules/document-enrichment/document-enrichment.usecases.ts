@@ -1,9 +1,5 @@
 import type { Logger } from '@crowlog/logger';
 import { ensureModelId } from '../ai/ai.models';
-import type {
-  buildApplyAutoTaggingActions,
-  buildPromptForAutoTagging,
-} from '../auto-tagging/auto-tagging.usecases';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { ResolveOrganizationSettingsUsecase } from '../organizations/organization-settings/organization-settings.usecases';
@@ -16,6 +12,10 @@ import {
   createDocumentEnrichmentContentRequiredError,
   createDocumentEnrichmentDisabledError,
 } from './document-enrichment.errors';
+import type { GenericObjectSchema } from '../shared/schemas/objects.schemas';
+import type { DocumentEnrichmentCapabilityDefinition } from './enrichment-capabilities/enrichment-capabilities-definition';
+import type { AiServices } from '../ai/ai.services';
+import * as v from 'valibot';
 
 export function buildScheduleDocumentEnrichment({
   config,
@@ -67,19 +67,22 @@ export function buildScheduleDocumentEnrichment({
   };
 }
 
-export function buildEnrichDocument({
-  promptForAutoTagging,
-  applyAutoTaggingActions,
+export function buildEnrichDocument<ResponseSchema extends GenericObjectSchema>({
+  capabilityDefinitions,
   documentsRepository,
   tagsRepository,
   resolveOrganizationSettings,
+  aiServices,
   logger = createLogger({ namespace: 'documentEnrichment' }),
 }: {
-  promptForAutoTagging: ReturnType<typeof buildPromptForAutoTagging>;
-  applyAutoTaggingActions: ReturnType<typeof buildApplyAutoTaggingActions>;
+  capabilityDefinitions: DocumentEnrichmentCapabilityDefinition<
+    DocumentEnrichmentCapability,
+    ResponseSchema
+  >[];
   documentsRepository: Pick<DocumentsRepository, 'getDocumentById'>;
   tagsRepository: Pick<TagsRepository, 'getOrganizationTags'>;
   resolveOrganizationSettings: ResolveOrganizationSettingsUsecase;
+  aiServices: AiServices;
   logger?: Logger;
 }) {
   return async ({
@@ -91,8 +94,15 @@ export function buildEnrichDocument({
     organizationId: string;
     capabilities?: DocumentEnrichmentCapability[];
   }) => {
-    // Automatic and previously queued jobs without a selection retain auto-tagging.
-    if (!capabilities.includes('auto-tagging')) {
+    const selectedCapabilities = capabilityDefinitions.filter((capability) =>
+      capabilities.includes(capability.name),
+    );
+
+    if (selectedCapabilities.length === 0) {
+      logger.info(
+        { documentId, organizationId, capabilities },
+        'No valid enrichment capabilities selected. Skipping enrichment.',
+      );
       return;
     }
 
@@ -102,44 +112,118 @@ export function buildEnrichDocument({
       resolveOrganizationSettings({ organizationId }),
     ]);
 
-    const orgHasNoExistingTags = existingTags.length === 0;
-    const {
-      canCreateNewTags,
-      maxTags,
-      isEnabled: isAutoTaggingEnabled,
-    } = organizationSettings.ai.autoTagging;
-
-    if (orgHasNoExistingTags && !canCreateNewTags) {
-      logger.info(
-        { documentId, organizationId },
-        'No tags available and cannot create new tags. Skipping auto-tagging.',
-      );
-      return;
-    }
-
-    if (!isAutoTaggingEnabled) {
-      logger.info(
-        { documentId, organizationId },
-        'Auto-tagging is disabled in organization settings. Skipping auto-tagging.',
-      );
-      return;
-    }
-
     if (!document || document.isDeleted) {
       throw createDocumentNotFoundError();
     }
 
-    const startedAt = Date.now();
-    const actions = await promptForAutoTagging({
-      document,
-      existingTags,
-      canCreateNewTags,
-      maxTags,
-      modelId: ensureModelId(organizationSettings.ai.autoTagging.modelId),
-    });
-    const durationMs = Date.now() - startedAt;
-    logger.info({ documentId, organizationId, durationMs }, 'Auto-tagging completed');
+    const availableCapabilities = selectedCapabilities.filter((capability) =>
+      capability.isAvailable({ organizationSettings, tags: existingTags }),
+    );
 
-    await applyAutoTaggingActions({ documentId, organizationId, ...actions });
+    if (availableCapabilities.length === 0) {
+      logger.info(
+        { documentId, organizationId, capabilities },
+        'No enrichment capabilities are enabled for this organization or instance. Skipping enrichment.',
+      );
+      return;
+    }
+
+    const promptContext = availableCapabilities.map((capability) => ({
+      capability,
+      systemPromptFragments: capability.buildSystemPromptFragments({
+        organizationSettings,
+        tags: existingTags,
+      }),
+      responseSchema: capability.getResponseSchema({
+        organizationSettings,
+        tags: existingTags,
+      }),
+    }));
+
+    const systemPromptSpecifics = promptContext
+      .map((context) => context.systemPromptFragments.fragment)
+      .join('\n\n');
+
+    const systemPrompt = [
+      'You enrich documents for an archiving application.',
+      'Given extracted document text, an original filename, return:',
+
+      systemPromptSpecifics,
+    ].join('\n\n');
+
+    const requireTags = availableCapabilities.some((capability) =>
+      capability.documentInfoRequirements?.includes('tags'),
+    );
+
+    const userPrompt = JSON.stringify({
+      document: {
+        name: document?.originalName,
+        content: document?.content,
+      },
+      ...(requireTags
+        ? {
+            existingTags: existingTags.map((tag) => ({
+              name: tag.name,
+              description: tag.description,
+            })),
+          }
+        : {}),
+    });
+
+    const schemaEntries = promptContext.reduce<v.ObjectEntries>(
+      (acc, { responseSchema }) => ({ ...acc, ...responseSchema.entries }),
+      {},
+    );
+
+    const enrichmentResponse = await aiServices.generateStructuredData({
+      modelId: ensureModelId(organizationSettings.ai.autoTagging.modelId),
+      organizationId: document.organizationId,
+      source: 'document-enrichment',
+      schema: v.object(schemaEntries),
+      systemPrompt,
+      userPrompt,
+    });
+
+    const enrichmentResults = await Promise.allSettled(
+      promptContext.map(async ({ capability, responseSchema }) =>
+        capability.apply({
+          response: enrichmentResponse as v.InferOutput<typeof responseSchema>,
+          documentId,
+          organizationId,
+          tags: existingTags,
+          organizationSettings,
+        }),
+      ),
+    );
+
+    const failures = enrichmentResults.filter(
+      (result): result is PromiseRejectedResult => result.status === 'rejected',
+    );
+
+    if (failures.length > 0) {
+      logger.error(
+        {
+          documentId,
+          organizationId,
+          capabilities: availableCapabilities.map((capability) => capability.name),
+          failures: failures.map((failure) => failure.reason),
+        },
+        'One or more document enrichment capabilities failed to apply.',
+      );
+
+      throw new AggregateError(
+        failures.map((failure) => failure.reason),
+        'One or more document enrichment capabilities failed to apply.',
+      );
+    }
+
+    logger.info(
+      {
+        documentId,
+        organizationId,
+        capabilities: availableCapabilities.map((capability) => capability.name),
+      },
+      'Document enrichment completed.',
+    );
   };
 }

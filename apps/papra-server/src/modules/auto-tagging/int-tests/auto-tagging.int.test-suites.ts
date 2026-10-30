@@ -1,7 +1,12 @@
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import type { Config } from '../../config/config.types';
 import { createAiServices } from '../../ai/ai.services';
-import { buildPromptForAutoTagging } from '../auto-tagging.usecases';
+import type { buildApplyAutoTaggingActions } from '../auto-tagging.usecases';
+import { buildEnrichDocument } from '../../document-enrichment/document-enrichment.usecases';
+import { buildTagsEnrichmentCapability } from '../../document-enrichment/enrichment-capabilities/tags/tags.enrichment-capability';
+import { createDocumentsRepository } from '../../documents/documents.repository';
+import { createTagsRepository } from '../../tags/tags.repository';
+import { createTestLogger } from '../../shared/logger/logger.test-utils';
 import type { Logger } from '@crowlog/logger';
 import { createAiCreditsRepository } from '../../ai-credits/ai-credits.repository';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
@@ -31,14 +36,36 @@ const existingTags = [
 
 export async function runAutoTaggingTestSuite({
   modelId,
-  config,
+  config: providerConfig,
   timeout = 20_000,
 }: {
   modelId: string;
   config: Config;
   timeout?: number;
 }) {
-  const { db } = await createInMemoryDatabase();
+  const config = {
+    ...providerConfig,
+    ai: { ...providerConfig.ai, isEnabled: true },
+  };
+  const { db } = await createInMemoryDatabase({
+    organizations: [{ id: document.organizationId, name: 'Test organization' }],
+    documents: [
+      {
+        ...document,
+        id: 'doc_1',
+        originalName: document.name,
+        originalStorageKey: 'doc_1',
+        originalSha256Hash: 'doc_1',
+        mimeType: 'application/pdf',
+      },
+    ],
+    tags: existingTags.map((tag) => ({
+      ...tag,
+      organizationId: document.organizationId,
+      normalizedName: tag.name,
+      color: '#000000',
+    })),
+  });
 
   const aiServices = createAiServices({
     config,
@@ -51,17 +78,30 @@ export async function runAutoTaggingTestSuite({
     planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
   });
 
-  const promptForAutoTagging = buildPromptForAutoTagging({ aiServices });
+  const applyAutoTaggingActions = vi
+    .fn<ReturnType<typeof buildApplyAutoTaggingActions>>()
+    .mockResolvedValue();
+  const { logger } = createTestLogger();
+  const enrichDocument = buildEnrichDocument({
+    aiServices,
+    documentsRepository: createDocumentsRepository({ db }),
+    tagsRepository: createTagsRepository({ db }),
+    capabilityDefinitions: [buildTagsEnrichmentCapability({ config, applyAutoTaggingActions })],
+    resolveOrganizationSettings: async () => ({
+      organizationSettings: {
+        ai: {
+          autoTagging: { isEnabled: true, canCreateNewTags: false, maxTags: 3, modelId },
+        },
+      },
+    }),
+    logger,
+  });
 
-  test('auto-tagging should correctly identify tags for a document', { timeout }, async () => {
-    const { tagIdsToAdd, tagsToCreate } = await promptForAutoTagging({
-      existingTags,
-      modelId,
-      canCreateNewTags: false,
-      document,
-      maxTags: 3,
-    });
+  test('document enrichment identifies relevant tags for an invoice', { timeout }, async () => {
+    await enrichDocument({ documentId: 'doc_1', organizationId: document.organizationId });
 
+    expect(applyAutoTaggingActions).toHaveBeenCalledTimes(1);
+    const [{ tagIdsToAdd, tagsToCreate }] = applyAutoTaggingActions.mock.calls[0]!;
     expect(tagsToCreate).toEqual([]);
     expect(tagIdsToAdd.length).toBeLessThanOrEqual(3);
     expect(tagIdsToAdd).toContain('tag_1'); // the document is unambiguously an invoice
