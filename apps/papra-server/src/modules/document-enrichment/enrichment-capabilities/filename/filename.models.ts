@@ -35,8 +35,21 @@ export function normalizeGeneratedFilename({
     // eslint-disable-next-line no-control-regex -- Filenames must not contain control characters.
     .replace(/[\x00-\x1f\x7f-\x9f\p{Bidi_Control}\u200b/\\:*?"<>|]/gu, '_')
     .replace(/\s+/g, '_');
-  while (extension && base.toLowerCase().endsWith(extension.toLowerCase())) {
-    base = base.slice(0, -extension.length);
+  if (extension) {
+    const lowerBase = base.toLowerCase();
+    const lowerExtension = extension.toLowerCase();
+    let baseEnd = base.length;
+    let lowerBaseEnd = lowerBase.length;
+    // Lowercasing can change Unicode string lengths, so track both offsets.
+    while (
+      baseEnd >= extension.length &&
+      lowerBaseEnd >= lowerExtension.length &&
+      lowerBase.startsWith(lowerExtension, lowerBaseEnd - lowerExtension.length)
+    ) {
+      baseEnd -= extension.length;
+      lowerBaseEnd -= lowerExtension.length;
+    }
+    base = base.slice(0, baseEnd);
   }
   base = base.replace(/_+/g, '_').replace(/^[._ -]+|[._ -]+$/g, '');
   if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(base)) {

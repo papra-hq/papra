@@ -17,6 +17,16 @@ describe('generated filenames', () => {
     expect(normalizeGeneratedFilename({ filename, originalName })).toBe(expected);
   });
   test.each([
+    ['Invoice' + '.pDf'.repeat(50_000), 'input.pdf', 'Invoice.pdf'],
+    ['Invoice' + '.pdf'.repeat(50_000) + 'x', 'input.pdf', 'Invoice' + '.pdf'.repeat(58)],
+    ['İnvoice.PDF.pdf', 'input.pdf', 'İnvoice.pdf'],
+    ['Invoice.İ.İ', 'input.İ', 'Invoice.İ'],
+    ['.PDF.pdf', 'input.pdf', undefined],
+    ['Invoice', 'input', 'Invoice'],
+  ])('removes repeated extensions for case %#', (filename, originalName, expected) => {
+    expect(normalizeGeneratedFilename({ filename, originalName })).toBe(expected);
+  });
+  test.each([
     0x80, 0x85, 0x9f, 0x061c, 0x200b, 0x200e, 0x200f, 0x202a, 0x202b, 0x202c, 0x202d, 0x202e,
     0x2066, 0x2067, 0x2068, 0x2069,
   ])('replaces invisible control character U+%s', (codePoint) => {
