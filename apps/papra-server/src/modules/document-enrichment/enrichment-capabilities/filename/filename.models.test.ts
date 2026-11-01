@@ -21,6 +21,8 @@ describe('generated filenames', () => {
     ['Invoice' + '.pdf'.repeat(50_000) + 'x', 'input.pdf', 'Invoice' + '.pdf'.repeat(58)],
     ['İnvoice.PDF.pdf', 'input.pdf', 'İnvoice.pdf'],
     ['Invoice.İ.İ', 'input.İ', 'Invoice.İ'],
+    ['Invoice.i\u0307.i\u0307', 'input.İ', 'Invoice.İ'],
+    ['Invoice.İ.i\u0307.İ', 'input.İ', 'Invoice.İ'],
     ['.PDF.pdf', 'input.pdf', undefined],
     ['Invoice', 'input', 'Invoice'],
   ])('removes repeated extensions for case %#', (filename, originalName, expected) => {

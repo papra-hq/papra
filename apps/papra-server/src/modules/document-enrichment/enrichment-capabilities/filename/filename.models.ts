@@ -36,18 +36,15 @@ export function normalizeGeneratedFilename({
     .replace(/[\x00-\x1f\x7f-\x9f\p{Bidi_Control}\u200b/\\:*?"<>|]/gu, '_')
     .replace(/\s+/g, '_');
   if (extension) {
-    const lowerBase = base.toLowerCase();
     const lowerExtension = extension.toLowerCase();
     let baseEnd = base.length;
-    let lowerBaseEnd = lowerBase.length;
-    // Lowercasing can change Unicode string lengths, so track both offsets.
-    while (
-      baseEnd >= extension.length &&
-      lowerBaseEnd >= lowerExtension.length &&
-      lowerBase.startsWith(lowerExtension, lowerBaseEnd - lowerExtension.length)
-    ) {
-      baseEnd -= extension.length;
-      lowerBaseEnd -= lowerExtension.length;
+    // Compare one suffix at a time, retaining its original Unicode boundaries.
+    while (baseEnd > 0) {
+      const suffixStart = base.lastIndexOf('.', baseEnd - 1);
+      if (suffixStart < 0 || base.slice(suffixStart, baseEnd).toLowerCase() !== lowerExtension) {
+        break;
+      }
+      baseEnd = suffixStart;
     }
     base = base.slice(0, baseEnd);
   }
