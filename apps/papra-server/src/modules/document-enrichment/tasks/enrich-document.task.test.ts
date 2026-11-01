@@ -191,3 +191,28 @@ describe('document enrichment task', () => {
     expect(deps.generateStructuredData).not.toHaveBeenCalled();
   });
 });
+
+test('automatic enrichment generates a filename and tags together after extraction', async () => {
+  const deps = await createTestDeps();
+  await deps.organizationSettingsRepository.createOrUpdateOrganizationSettings({
+    organizationId: 'org_1',
+    settings: { aiAutoTaggingEnabled: true, aiAutoNamingEnabled: true },
+  });
+  deps.generateStructuredData.mockResolvedValue({
+    existingTags: ['Finance'],
+    filename: 'undated_Supplier_Invoice_Office_supplies.txt',
+  });
+  await deps.extractDocumentContent();
+  const { job } = await deps.taskServices
+    .getDriver()
+    .getNextJobAndMarkAsProcessing({ abortSignal: AbortSignal.timeout(1_000) });
+  const { taskDefinition } = deps.taskRegistry.getTaskOrThrow({ taskName: job.taskName });
+  await taskDefinition.handler({ data: job.data, context });
+  expect(deps.generateStructuredData).toHaveBeenCalledTimes(1);
+  expect((await deps.documentsRepository.getDocumentById(documentIds)).document?.name).toBe(
+    'undated_Supplier_Invoice_Office_supplies.txt',
+  );
+  expect(await deps.db.select().from(documentsTagsTable)).toEqual([
+    { documentId: 'doc_1', tagId: 'tag_1' },
+  ]);
+});

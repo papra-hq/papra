@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-export const documentEnrichmentCapabilitySchema = v.picklist(['auto-tagging']);
+export const documentEnrichmentCapabilitySchema = v.picklist(['auto-tagging', 'filename']);
 
 export type DocumentEnrichmentCapability = v.InferOutput<typeof documentEnrichmentCapabilitySchema>;
 

@@ -7,6 +7,10 @@ export type OrganizationSettings = {
       canCreateNewTags: boolean;
       maxTags: number;
       modelId?: string;
+      namingEnabled?: boolean;
+      separateNamingRequest?: boolean;
+      filenamePrompt?: string;
+      taggingPrompt?: string;
     };
   };
 };
@@ -17,4 +21,8 @@ export type DbUpdatableOrganizationSettings = Pick<
   | 'aiAutoTaggingCanCreateNewTags'
   | 'aiAutoTaggingMaxTags'
   | 'aiAutoTaggingModelId'
+  | 'aiAutoNamingEnabled'
+  | 'aiSeparateNamingRequest'
+  | 'aiFilenamePrompt'
+  | 'aiTaggingPrompt'
 >;
