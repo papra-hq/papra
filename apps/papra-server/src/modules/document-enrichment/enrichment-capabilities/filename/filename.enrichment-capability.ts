@@ -27,7 +27,7 @@ export const buildFilenameEnrichmentCapability = defineDocumentEnrichmentCapabil
     }),
     getResponseSchema: () =>
       v.object({
-        filename: v.pipe(v.string(), v.minLength(1), v.maxLength(1024)),
+        filename: v.string(),
       }),
     apply: async ({ document, documentId, organizationId, response }) => {
       const name = normalizeGeneratedFilename({

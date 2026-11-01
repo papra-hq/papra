@@ -31,8 +31,9 @@ export function normalizeGeneratedFilename({
   let base = filename
     .normalize('NFC')
     .trim()
+    // Remove control and direction-changing characters, but preserve ZWJ and ZWNJ.
     // eslint-disable-next-line no-control-regex -- Filenames must not contain control characters.
-    .replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g, '_')
+    .replace(/[\x00-\x1f\x7f-\x9f\p{Bidi_Control}\u200b/\\:*?"<>|]/gu, '_')
     .replace(/\s+/g, '_');
   while (extension && base.toLowerCase().endsWith(extension.toLowerCase())) {
     base = base.slice(0, -extension.length);
@@ -42,9 +43,14 @@ export function normalizeGeneratedFilename({
     base = `_${base}`;
   }
   // Reserve space for the extension within common filesystem byte limits.
-  while (Buffer.byteLength(base + extension, 'utf8') > 240) {
-    base = Array.from(base).slice(0, -1).join('');
+  let remainingBytes = 240 - Buffer.byteLength(extension, 'utf8');
+  let truncatedBase = '';
+  for (const character of base) {
+    remainingBytes -= Buffer.byteLength(character, 'utf8');
+    if (remainingBytes < 0) break;
+    truncatedBase += character;
   }
+  base = truncatedBase;
   base = base.replace(/[._ -]+$/g, '');
   if (!base) {
     return undefined;

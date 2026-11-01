@@ -204,8 +204,10 @@ const AutoTaggingSettingsCard: Component<{
           onChange={async (namingEnabled) => updateSettings({ namingEnabled })}
         >
           <div class="flex flex-col gap-0.5">
-            <SwitchLabel>{t('organization.settings.auto-tagging.naming.label')}</SwitchLabel>
-            <SwitchDescription>
+            <SwitchLabel class={textfieldLabel({ label: true })}>
+              {t('organization.settings.auto-tagging.naming.label')}
+            </SwitchLabel>
+            <SwitchDescription class={textfieldLabel({ label: false, description: true })}>
               {t('organization.settings.auto-tagging.naming.description')}
             </SwitchDescription>
           </div>
@@ -220,10 +222,10 @@ const AutoTaggingSettingsCard: Component<{
           onChange={async (separateNamingRequest) => updateSettings({ separateNamingRequest })}
         >
           <div class="flex flex-col gap-0.5">
-            <SwitchLabel>
+            <SwitchLabel class={textfieldLabel({ label: true })}>
               {t('organization.settings.auto-tagging.separate-naming.label')}
             </SwitchLabel>
-            <SwitchDescription>
+            <SwitchDescription class={textfieldLabel({ label: false, description: true })}>
               {t('organization.settings.auto-tagging.separate-naming.description')}
             </SwitchDescription>
           </div>

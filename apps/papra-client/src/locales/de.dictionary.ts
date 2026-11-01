@@ -281,13 +281,13 @@ export const translations: Partial<TranslationsDictionary> = {
     'Dateinamen getrennt von Tags generieren. Das kann Modellen helfen, die Anweisungen bei beiden Aufgaben zusammen nicht zuverlässig befolgen. Die Anfragen laufen nacheinander und können länger dauern oder mehr kosten. Andernfalls nutzen beide Aufgaben eine gemeinsame Anfrage.',
   'organization.settings.auto-tagging.tagging-prompt.label': 'Anweisungen für Tags',
   'organization.settings.auto-tagging.tagging-prompt.description':
-    'Passe die Tag-Auswahl oder Sprache an. Ohne Eingabe gelten die ursprünglichen Regeln. Tag-Limit, Erlaubnis zum Erstellen neuer Tags, verfügbare Tags und Antwortformat werden weiterhin von Papra gesteuert.',
+    'Passen Sie die Tag-Auswahl oder Sprache an. Ohne Eingabe gelten die ursprünglichen Regeln. Tag-Limit, Erlaubnis zum Erstellen neuer Tags, verfügbare Tags und Antwortformat werden weiterhin von Papra gesteuert.',
   'organization.settings.auto-tagging.naming.label': 'Dateinamen generieren',
   'organization.settings.auto-tagging.naming.description':
     'Nach der Texterkennung aussagekräftige Dateinamen generieren. Bei aktiviertem automatischem Tagging nutzen beide Aufgaben standardmäßig eine gemeinsame KI-Anfrage.',
   'organization.settings.auto-tagging.filename-prompt.label': 'Anweisungen für Dateinamen',
   'organization.settings.auto-tagging.filename-prompt.description':
-    'Beschreibe die Regeln für Sprache, Datumsformat und Betrefflänge. Dokumenttext, Dateiendung und Antwortformat werden automatisch ergänzt. Ohne Eingabe gelten die Standardregeln.',
+    'Beschreiben Sie die Regeln für Sprache, Datumsformat und Betrefflänge. Dokumenttext, Dateiendung und Antwortformat werden automatisch ergänzt. Ohne Eingabe gelten die Standardregeln.',
   'organization.settings.auto-tagging.prompts.save': 'KI-Anweisungen speichern',
   'organization.settings.auto-tagging.prompts.saved': 'KI-Anweisungen gespeichert',
 

@@ -400,6 +400,41 @@ describe('filename enrichment', () => {
     );
   });
 
+  test.each([
+    { label: 'empty', filename: '', expectedName: baseDocument.name },
+    {
+      label: 'oversized',
+      filename: 'a'.repeat(2048) + '.pdf',
+      expectedName: 'a'.repeat(236) + '.pdf',
+    },
+  ])(
+    'a $label filename does not prevent applying valid tags',
+    async ({ filename, expectedName }) => {
+      const deps = await createTestDeps(seed);
+      const { aiServices } = createTestAiServices({
+        response: { existingTags: ['Finance'], filename },
+      });
+      await buildEnrichDocument({
+        ...deps,
+        aiServices,
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({ namingEnabled: true }),
+      })(documentIds);
+      expect((await deps.documentsRepository.getDocumentById(documentIds)).document?.name).toBe(
+        expectedName,
+      );
+      expect(await deps.db.select().from(documentsTagsTable)).toEqual([
+        { documentId: 'doc_1', tagId: 'tag_1' },
+      ]);
+      if (!filename) {
+        expect(
+          deps.eventServices
+            .getEmittedEvents()
+            .filter((event) => event.eventName === 'document.updated'),
+        ).toEqual([]);
+      }
+    },
+  );
+
   test('naming works without tags and with automatic tagging disabled', async () => {
     const deps = await createTestDeps({
       organizations: seed.organizations,
@@ -453,7 +488,6 @@ describe('filename enrichment', () => {
   test.each([
     { existingTags: ['Finance'] },
     { existingTags: ['Invented'], filename: 'Notice.pdf' },
-    { existingTags: ['Finance'], filename: '' },
   ])('invalid combined responses do not change tags or filename: %j', async (response) => {
     const deps = await createTestDeps(seed);
     const { aiServices } = createTestAiServices({ response });
