@@ -1,6 +1,6 @@
 ---
-title: Document auto tagging
-description: Automatically tag your documents based on their content using AI.
+title: Document auto tagging and filenames
+description: Generate tags and descriptive filenames from document text in one AI request.
 slug: guides/auto-tagging
 ---
 
@@ -14,6 +14,8 @@ The configuration lives per-organization, so each organization can independently
 - Enable or disable auto tagging
 - Choose whether to create new tags
 - Limit the number of tags applied to each document
+- Generate descriptive filenames, with or without auto tagging
+- Customize filename and tagging instructions
 
 ## Prerequisites
 
@@ -60,6 +62,40 @@ Once enabled, every time a document is added to Papra its extracted content is s
 :::tip
 Tag descriptions matter. The LLM uses each tag's name **and** description to decide what is relevant, so adding clear descriptions to your tags significantly improves the quality of the suggestions.
 :::
+
+## Generating filenames
+
+Enable **Generate filenames** in the organization settings. It is disabled by default and works independently of auto tagging. Both features use the same model and require `AI_IS_ENABLED` and `AUTO_TAGGING_ENABLED` on the server.
+
+After text extraction, Papra generates tags and a filename in one request. Enable **Use a separate request for filenames** if your model struggles to follow both sets of instructions together. This makes two sequential requests and may take longer or cost more. Failed jobs may be retried.
+
+The default filename format is:
+
+```text
+YYYY-MM-DD_Sender_DocumentType_ShortSubject.ext
+```
+
+The instructions use the document's language and issue date, with `undated` for an unknown date. Naming requests include the original extension, but not the original filename. Papra removes unsafe characters and preserves the extension. Documents without extracted text are skipped, as are renames when the document changes during generation.
+
+Renames appear in document history and follow [storage pattern synchronization](/guides/storage-key-patterns). They do not change the document date. Disable other automatic renaming workflows to avoid conflicting changes.
+
+### Customizing instructions
+
+Organization owners can edit **Filename instructions** and **Tagging instructions**, then click **Save AI instructions**. Each field accepts up to 8,000 characters. Leave it blank to use the defaults. Editors are disabled when their feature is off; saved instructions are retained.
+
+Describe the desired filename format or tagging guidance. Papra supplies the document text and response schema, along with the available tags, tag descriptions and tag limit when tagging. The default tagging instructions preserve the existing prompt. Custom tagging instructions do not override the tag limit or permission to create new tags.
+
+Settings changes apply to future processing. Reprocess an existing document to apply them, or use the enrichment API with its already-extracted text:
+
+```http
+POST /api/organizations/{organizationId}/documents/{documentId}/enrich
+Content-Type: application/json
+Authorization: Bearer YOUR_API_KEY
+
+{"capabilities":["auto-tagging","filename"]}
+```
+
+Use `["filename"]` for naming alone. Requested features must be enabled. The API requires document update permission and returns a task ID with status `202`. Reprocessing can replace an existing filename.
 
 ## Troubleshooting
 

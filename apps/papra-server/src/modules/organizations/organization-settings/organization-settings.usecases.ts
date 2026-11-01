@@ -1,3 +1,5 @@
+import { DEFAULT_TAGGING_PROMPT } from '../../document-enrichment/enrichment-capabilities/tags/tags.models';
+import { DEFAULT_FILENAME_PROMPT } from '../../document-enrichment/enrichment-capabilities/filename/filename.models';
 import type { Config } from '../../config/config.types';
 import type { OrganizationSettingsRepository } from './organization-settings.repository';
 import type { OrganizationSettings } from './organization-settings.types';
@@ -48,6 +50,11 @@ export async function resolveOrganizationSettings({
       ai: {
         autoTagging: {
           isEnabled: organizationRawSettings?.aiAutoTaggingEnabled ?? false,
+
+          namingEnabled: organizationRawSettings?.aiAutoNamingEnabled ?? false,
+          separateNamingRequest: organizationRawSettings?.aiSeparateNamingRequest ?? false,
+          filenamePrompt: organizationRawSettings?.aiFilenamePrompt ?? DEFAULT_FILENAME_PROMPT,
+          taggingPrompt: organizationRawSettings?.aiTaggingPrompt ?? DEFAULT_TAGGING_PROMPT,
 
           canCreateNewTags: organizationRawSettings?.aiAutoTaggingCanCreateNewTags ?? false,
 

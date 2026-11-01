@@ -262,6 +262,21 @@ export const translations = {
   'organization.settings.delete.has-active-subscription':
     'Cannot delete organization with an active subscription, please cancel your subscription above first.',
 
+  'organization.settings.auto-tagging.separate-naming.label':
+    'Use a separate request for filenames',
+  'organization.settings.auto-tagging.separate-naming.description':
+    'Generate filenames separately from tags. This can improve instruction-following for models that struggle with both tasks together. Requests run sequentially and may take longer or cost more. When off, naming and tagging share one request.',
+  'organization.settings.auto-tagging.tagging-prompt.label': 'Tagging instructions',
+  'organization.settings.auto-tagging.tagging-prompt.description':
+    'Customize tag selection or language. Leave blank to use the original rules. Tag limits, permission to create tags, available tags and response format remain application-controlled.',
+  'organization.settings.auto-tagging.naming.label': 'Generate filenames',
+  'organization.settings.auto-tagging.naming.description':
+    'Generate descriptive filenames after text extraction. When auto tagging is enabled, both tasks share one AI request by default.',
+  'organization.settings.auto-tagging.filename-prompt.label': 'Filename instructions',
+  'organization.settings.auto-tagging.filename-prompt.description':
+    'Describe your naming rules, such as language, date format and subject length. Document text, file extension and response format are supplied automatically. Leave blank to use the default rules.',
+  'organization.settings.auto-tagging.prompts.save': 'Save AI instructions',
+  'organization.settings.auto-tagging.prompts.saved': 'AI instructions saved',
   'organization.settings.auto-tagging.page.title': 'Auto Tagging Settings',
   'organization.settings.auto-tagging.page.description':
     'Auto tagging settings for your organization. This feature allows you to automatically tag content based on AI predictions.',

@@ -1,3 +1,8 @@
+import {
+  DEFAULT_TAGGING_PROMPT,
+  DEFAULT_TAGGING_RELEVANCE_INSTRUCTION,
+  DEFAULT_TAGGING_DUPLICATES_INSTRUCTION,
+} from './tags.models';
 import * as v from 'valibot';
 import { defineDocumentEnrichmentCapabilityFactory } from '../enrichment-capabilities-definition';
 import type { buildApplyAutoTaggingActions } from '../../../auto-tagging/auto-tagging.usecases';
@@ -24,20 +29,23 @@ export const buildTagsEnrichmentCapability = defineDocumentEnrichmentCapabilityF
         (organizationSettings.ai.autoTagging.canCreateNewTags || tags.length > 0),
 
       buildSystemPromptFragments: ({ organizationSettings }) => {
-        const { canCreateNewTags, maxTags } = organizationSettings.ai.autoTagging;
+        const { canCreateNewTags, maxTags, taggingPrompt } = organizationSettings.ai.autoTagging;
+        const customPrompt = taggingPrompt?.trim();
+        const useDefault = !customPrompt || customPrompt === DEFAULT_TAGGING_PROMPT;
+        // Preserve the original wording, ordering and conditional guidance for defaults.
 
         return {
           fragment: [
             'DOCUMENT TAGS',
             '',
-            '- Suggest tags that are relevant to the document content.',
+            useDefault ? DEFAULT_TAGGING_RELEVANCE_INSTRUCTION : customPrompt,
             `- Select at most ${maxTags} tags.`,
 
             ...(canCreateNewTags
               ? [
                   '- You may suggest new tags that do not exist yet.',
                   '- If you suggest new tags, provide an optional description for each new tag.',
-                  '- Do not suggest new tags that are too similar to existing tags.',
+                  ...(useDefault ? [DEFAULT_TAGGING_DUPLICATES_INSTRUCTION] : []),
                 ]
               : [
                   '- You may only suggest existing tags.',

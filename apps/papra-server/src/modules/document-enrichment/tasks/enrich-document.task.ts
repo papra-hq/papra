@@ -12,6 +12,7 @@ import type { EventServices } from '../../app/events/events.services';
 import type { AiServices } from '../../ai/ai.services';
 import { buildEnrichDocument } from '../document-enrichment.usecases';
 import type { DocumentEnrichmentCapability } from '../document-enrichment.schemas';
+import { buildFilenameEnrichmentCapability } from '../enrichment-capabilities/filename/filename.enrichment-capability';
 import { buildTagsEnrichmentCapability } from '../enrichment-capabilities/tags/tags.enrichment-capability';
 
 export async function registerEnrichDocumentTask({
@@ -53,6 +54,7 @@ export async function registerEnrichDocumentTask({
         tagsRepository,
         logger,
         capabilityDefinitions: [
+          buildFilenameEnrichmentCapability({ config, documentsRepository, eventServices }),
           buildTagsEnrichmentCapability({
             config,
             applyAutoTaggingActions: buildApplyAutoTaggingActions({

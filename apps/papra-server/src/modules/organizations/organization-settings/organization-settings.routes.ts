@@ -65,6 +65,10 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
             autoTagging: v.optional(
               v.strictObject({
                 isEnabled: v.optional(v.boolean()),
+                namingEnabled: v.optional(v.boolean()),
+                separateNamingRequest: v.optional(v.boolean()),
+                filenamePrompt: v.optional(v.pipe(v.string(), v.maxLength(8000))),
+                taggingPrompt: v.optional(v.pipe(v.string(), v.maxLength(8000))),
                 canCreateNewTags: v.optional(v.boolean()),
                 maxTags: v.optional(
                   v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100)),
@@ -91,6 +95,11 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
           aiAutoTaggingCanCreateNewTags:
             organizationSettingsPartials.ai?.autoTagging?.canCreateNewTags,
           aiAutoTaggingEnabled: organizationSettingsPartials.ai?.autoTagging?.isEnabled,
+          aiAutoNamingEnabled: organizationSettingsPartials.ai?.autoTagging?.namingEnabled,
+          aiSeparateNamingRequest:
+            organizationSettingsPartials.ai?.autoTagging?.separateNamingRequest,
+          aiFilenamePrompt: organizationSettingsPartials.ai?.autoTagging?.filenamePrompt,
+          aiTaggingPrompt: organizationSettingsPartials.ai?.autoTagging?.taggingPrompt,
           aiAutoTaggingMaxTags: organizationSettingsPartials.ai?.autoTagging?.maxTags,
         },
       });
