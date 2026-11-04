@@ -301,7 +301,7 @@ function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
 function setupRestoreDocumentRoute({ app, db, eventServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
     validateParams(
       v.strictObject({
         organizationId: organizationIdSchema,
@@ -487,7 +487,7 @@ function setupDeleteTrashDocumentRoute({
 }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
     validateParams(
       v.strictObject({
         organizationId: organizationIdSchema,
@@ -527,7 +527,7 @@ function setupDeleteAllTrashDocumentsRoute({
 }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
     validateParams(
       v.strictObject({
         organizationId: organizationIdSchema,
