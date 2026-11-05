@@ -1,19 +1,20 @@
-import type { Issue, Operator } from './parser.types';
+import type { OperatorMatcher } from './operators';
+import type { Issue } from './parser.types';
 import { ERROR_CODES } from './errors';
 import { isWhitespace } from './string';
 
-export type Token =
+export type Token<TOperator extends string> =
   | { type: 'LPAREN' }
   | { type: 'RPAREN' }
   | { type: 'AND' }
   | { type: 'OR' }
   | { type: 'NOT' }
-  | { type: 'FILTER'; field: string; operator: Operator; value: string }
+  | { type: 'FILTER'; field: string; operator: TOperator; value: string }
   | { type: 'TEXT'; value: string }
   | { type: 'EOF' };
 
-export type TokenizeResult = {
-  tokens: Token[];
+export type TokenizeResult<TOperator extends string> = {
+  tokens: Token<TOperator>[];
   issues: Issue[];
 };
 
@@ -27,14 +28,16 @@ function isWhitespaceOrParen(char: string): boolean {
   return isWhitespace(char) || char === '(' || char === ')';
 }
 
-export function tokenize({
+export function tokenize<TOperator extends string>({
   query,
   maxTokens,
+  operatorMatcher,
 }: {
   query: string;
   maxTokens: number;
-}): TokenizeResult {
-  const tokens: Token[] = [];
+  operatorMatcher: OperatorMatcher<TOperator>;
+}): TokenizeResult<TOperator> {
+  const tokens: Token<TOperator>[] = [];
   const issues: Issue[] = [];
   let pos = 0;
 
@@ -153,25 +156,10 @@ export function tokenize({
     return unescapeColons(value);
   };
 
-  const readFilterOperatorAndValue = (): { operator: Operator; value: string } => {
-    let operator: Operator = '=';
-
-    if (query.startsWith('>=', pos)) {
-      operator = '>=';
-      pos += 2;
-    } else if (query.startsWith('<=', pos)) {
-      operator = '<=';
-      pos += 2;
-    } else if (peek() === '>') {
-      operator = '>';
-      pos++;
-    } else if (peek() === '<') {
-      operator = '<';
-      pos++;
-    } else if (peek() === '=') {
-      operator = '=';
-      pos++;
-    }
+  const readFilterOperatorAndValue = (): { operator: TOperator; value: string } => {
+    const match = operatorMatcher.matchAt(query, pos);
+    const operator = match?.operator ?? operatorMatcher.defaultOperator;
+    pos += match?.length ?? 0;
 
     const value = readFilterValue();
 
@@ -187,7 +175,7 @@ export function tokenize({
     return false;
   };
 
-  const parseFilter = (token: string): Token | undefined => {
+  const parseFilter = (token: string): Token<TOperator> | undefined => {
     // Check for unescaped colons
     if (!hasUnescapedColon(token)) {
       return undefined;
@@ -210,25 +198,9 @@ export function tokenize({
     const afterColon = token.slice(firstColonIndex + 1);
 
     // Check for operator at the start
-    let operator: Operator = '=';
-    let operatorLength = 0;
-
-    if (afterColon.startsWith('>=')) {
-      operator = '>=';
-      operatorLength = 2;
-    } else if (afterColon.startsWith('<=')) {
-      operator = '<=';
-      operatorLength = 2;
-    } else if (afterColon.startsWith('>')) {
-      operator = '>';
-      operatorLength = 1;
-    } else if (afterColon.startsWith('<')) {
-      operator = '<';
-      operatorLength = 1;
-    } else if (afterColon.startsWith('=')) {
-      operator = '=';
-      operatorLength = 1;
-    }
+    const match = operatorMatcher.matchAt(afterColon, 0);
+    const operator = match?.operator ?? operatorMatcher.defaultOperator;
+    const operatorLength = match?.length ?? 0;
 
     // If there's nothing after the operator in the token, read the value from input
     let value = unescapeColons(afterColon.slice(operatorLength));
