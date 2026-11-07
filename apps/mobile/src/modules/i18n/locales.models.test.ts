@@ -12,11 +12,11 @@ describe('locales.models', () => {
 
     test('it uses the first device language even when translations use a later one', () => {
       const userLocales = [
-        { languageCode: 'it', languageTag: 'it-IT' },
+        { languageCode: 'pt', languageTag: 'pt-BR' },
         { languageCode: 'fr', languageTag: 'fr-CA' },
       ];
 
-      expect(getDeviceLanguageTag(userLocales)).to.eql('it-IT');
+      expect(getDeviceLanguageTag(userLocales)).to.eql('pt-BR');
       expect(resolveUserLocale(userLocales)).to.eql('fr');
     });
 
