@@ -24,6 +24,19 @@ Here is the complete list of configuration variables that you can use to configu
 <Fragment set:html={sectionsHtml} />
 
 
+## Loading environment variables from files
+
+Any of the environment variables listed above can also be provided through a file, by suffixing its name with `_FILE` and setting it to the path of the file. The content of the file (without its trailing newline) is then used as the value of the variable. This is useful with [Docker secrets](https://docs.docker.com/engine/swarm/secrets/) or Kubernetes secrets.
+
+```bash
+docker run -d \
+  --env AUTH_SECRET_FILE=/run/secrets/papra_auth_secret \
+  --volume ./auth_secret.txt:/run/secrets/papra_auth_secret:ro \
+  ghcr.io/papra-hq/papra:latest
+```
+
+Setting both `AUTH_SECRET` and `AUTH_SECRET_FILE` is an error, and Papra will refuse to start if the file cannot be read.
+
 ## Configuration files
 
 You can configure Papra using standard environment variables or use some configuration files.
