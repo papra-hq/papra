@@ -1,6 +1,6 @@
 import type { AppConfigDefinition } from './config.types';
 import process from 'node:process';
-import { memoizeOnce, safelySync } from '@corentinth/chisels';
+import { memoizeOnce, safely, safelySync } from '@corentinth/chisels';
 import { loadConfig } from 'c12';
 import { defineConfig } from 'figue';
 import * as v from 'valibot';
@@ -32,7 +32,7 @@ import { tagsConfig } from '../tags/tags.config';
 import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
 import { webhookConfig } from '../webhooks/webhooks.config';
-import { exitProcessDueToConfigError, validateParsedConfig } from './config.models';
+import { exitProcessDueToConfigError, resolveEnvVarsFromFiles, validateParsedConfig } from './config.models';
 import {
   appSchemeSchema,
   booleanishSchema,
@@ -212,9 +212,15 @@ export async function parseConfig({
 
   const { gitCommitSha, gitCommitDate } = await getCommitInfo();
 
+  const [resolvedEnvResult, envFilesError] = await safely(resolveEnvVarsFromFiles({ env, configDefinition }));
+
+  if (envFilesError) {
+    exitProcessDueToConfigError({ error: envFilesError, logger });
+  }
+
   const [configResult, configError] = safelySync(() =>
     defineConfig(configDefinition, {
-      envSource: env,
+      envSource: resolvedEnvResult.env,
       defaults: [{ gitCommitSha, gitCommitDate }, configFromFile],
     }),
   );
