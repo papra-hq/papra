@@ -277,6 +277,14 @@ export function tokenize({
       advance();
       skipWhitespace();
 
+      // "-(" negates a group the same way "NOT (" does: emit only NOT and let
+      // the parser hand the parenthesized expression to it. Reading a token
+      // here would find none and turn the group into "NOT '' AND (...)".
+      if (peek() === '(') {
+        tokens.push({ type: 'NOT' });
+        continue;
+      }
+
       // Read the next token (could be quoted or unquoted)
       const quotedValue = readQuotedString();
 
