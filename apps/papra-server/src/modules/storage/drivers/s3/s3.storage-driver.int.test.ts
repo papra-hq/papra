@@ -1,10 +1,11 @@
+import type { StartedLocalStackContainer } from '@testcontainers/localstack';
 import { Buffer } from 'node:buffer';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import { LocalstackContainer } from '@testcontainers/localstack';
 import { S3mini } from 's3mini';
 import { request } from 'undici';
-import { describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { TEST_CONTAINER_IMAGES } from '../../../../../test/containers/images';
 import { IN_BYTES } from '../../../shared/units';
 import { runDriverTestSuites } from '../drivers.test-suite';
@@ -14,16 +15,23 @@ import {
   s3StorageDriverFactory,
 } from './s3.storage-driver';
 
-async function createDriver() {
-  const localstackContainer = await new LocalstackContainer(
-    TEST_CONTAINER_IMAGES.LOCALSTACK,
-  ).start();
+describe('s3 storage-driver', () => {
+  let localstackContainer: StartedLocalStackContainer | undefined;
 
-  try {
+  beforeAll(async () => {
+    localstackContainer = await new LocalstackContainer(TEST_CONTAINER_IMAGES.LOCALSTACK).start();
+  }, 120_000);
+
+  afterAll(async () => {
+    await localstackContainer?.stop();
+  }, 30_000);
+
+  async function createDriver() {
+    expect.assert(localstackContainer);
     const driver = s3StorageDriverFactory({
       accessKeyId: 'test',
       secretAccessKey: 'test',
-      bucketName: 'test-bucket',
+      bucketName: `test-${randomUUID()}`,
       region: 'eu-central-1',
       endpoint: localstackContainer.getConnectionUri(),
       forcePathStyle: true,
@@ -32,20 +40,13 @@ async function createDriver() {
 
     return {
       driver,
-      [Symbol.asyncDispose]: async () => {
-        await localstackContainer.stop();
-      },
+      // Buckets (including leftovers from failed tests) are removed with the shared emulator.
+      [Symbol.asyncDispose]: async () => {},
     };
-  } catch (error) {
-    await localstackContainer.stop();
-    throw error;
   }
-}
 
-describe('s3 storage-driver', () => {
   describe('s3StorageDriver', () => {
     runDriverTestSuites({
-      // In the ci it take more than 30 seconds to pull images
       timeout: 40_000,
       retry: 3,
       createDriver,
