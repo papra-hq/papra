@@ -40,6 +40,9 @@ jobs:
       - name: Check lint, formatting and types
         run: pnpm check:quiet
 
+      - name: Pull integration test images
+        run: pnpm --filter @papra/app-server test:int:pull-images
+
       # Tests are run using vitest projects
       - name: Run tests
         run: pnpm test
