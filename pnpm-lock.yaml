@@ -737,7 +737,7 @@ importers:
         version: 4.21.0
       undici:
         specifier: ^8.2.0
-        version: 8.5.0
+        version: 8.12.2
       valibot:
         specifier: 'catalog:'
         version: 1.4.2(typescript@7.0.2)
@@ -10597,8 +10597,8 @@ packages:
     resolution: {integrity: sha512-cRZYrTDwWznlnRiPjggAGxZXanty6M8RV1ff8Wm4LWXBp7/IG8v5DnOm74DtUBp9OONpK75YlPnIjQqX0dBDtA==}
     engines: {node: '>=20.18.1'}
 
-  undici@8.5.0:
-    resolution: {integrity: sha512-xamtWoB1EshgjpmlXd7GGm2VfdDtw1+rD8uhry8pSNW3If6S8E0m2T2+orSKeZXEn/aPJMviCpDBA65WJt8zhg==}
+  undici@8.12.2:
+    resolution: {integrity: sha512-XtuDWVdqTLr3NAxm2ly9/hU6kUsJOgGh1RASzMBbsw6aWCOaQzHdW+QQDfdERjfJ2V5vL5pRPa4RetO9UfivDg==}
     engines: {node: '>=22.19.0'}
 
   unenv@2.0.0-rc.24:
@@ -15777,7 +15777,7 @@ snapshots:
       s3mini: 0.9.5
       stripe: 17.7.0
       tsx: 4.21.0
-      undici: 8.5.0
+      undici: 8.12.2
       valibot: 1.4.2(typescript@7.0.2)
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -24028,7 +24028,7 @@ snapshots:
 
   undici@7.28.0: {}
 
-  undici@8.5.0: {}
+  undici@8.12.2: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
@@ -24059,7 +24059,7 @@ snapshots:
     dependencies:
       css-tree: 3.1.0
       ohash: 2.0.11
-      undici: 8.5.0
+      undici: 8.12.2
 
   unique-string@2.0.0:
     dependencies:
