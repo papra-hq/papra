@@ -623,7 +623,7 @@ importers:
         version: 2.2.2
       '@hono/node-server':
         specifier: ^2.0.2
-        version: 2.1.6(hono@4.13.5)
+        version: 2.1.6(hono@4.13.16)
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
@@ -692,7 +692,7 @@ importers:
         version: 7.0.3
       hono:
         specifier: ^4.12.18
-        version: 4.13.5
+        version: 4.13.16
       mime-types:
         specifier: ^3.0.1
         version: 3.0.2
@@ -7838,8 +7838,8 @@ packages:
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
-  hono@4.13.5:
-    resolution: {integrity: sha512-O6+/eCYRkzzzy0rPWwKLiGBR1nFuUPZynnwjxN1MBA62NNqbT0wQEzQyK2gSO5yDIDB336sXQleAhOHrzlYyKw==}
+  hono@4.13.16:
+    resolution: {integrity: sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A==}
     engines: {node: '>=16.9.0'}
 
   hookable@6.1.1:
@@ -14876,9 +14876,9 @@ snapshots:
     dependencies:
       '@hapi/hoek': 9.3.0
 
-  '@hono/node-server@2.1.6(hono@4.13.5)':
+  '@hono/node-server@2.1.6(hono@4.13.16)':
     dependencies:
-      hono: 4.13.5
+      hono: 4.13.16
 
   '@iconify-json/tabler@1.2.35':
     dependencies:
@@ -15751,7 +15751,7 @@ snapshots:
       '@corentinth/friendly-ids': 0.0.1
       '@crowlog/async-context-plugin': 2.1.1
       '@crowlog/logger': 2.2.2
-      '@hono/node-server': 2.1.6(hono@4.13.5)
+      '@hono/node-server': 2.1.6(hono@4.13.16)
       '@libsql/client': 0.14.0
       '@owlrelay/api-sdk': 0.0.4
       '@owlrelay/webhook': 0.0.4
@@ -15774,7 +15774,7 @@ snapshots:
       figue: 3.3.0
       file-type: 21.3.4(supports-color@10.2.2)
       filenamify: 7.0.3
-      hono: 4.13.5
+      hono: 4.13.16
       mime-types: 3.0.2
       nanoid: 5.1.16
       node-cron: 3.0.3
@@ -20306,7 +20306,7 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
-  hono@4.13.5: {}
+  hono@4.13.16: {}
 
   hookable@6.1.1: {}
 
