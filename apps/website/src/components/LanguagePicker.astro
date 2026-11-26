@@ -13,7 +13,7 @@ const languages = LOCALES.map((locale) => {
   };
 });
 
-const currentLanguage = languages.find(lang => lang.isActive);
+const currentLanguage = languages.find((lang) => lang.isActive);
 ---
 
 <div class="relative language-picker">
@@ -24,76 +24,77 @@ const currentLanguage = languages.find(lang => lang.isActive);
   >
     <div class="i-tabler-language size-5" role="img" aria-hidden="true"></div>
     <span>{currentLanguage?.name}</span>
-    <div class="i-tabler-chevron-down size-4 transition-transform language-picker-chevron" aria-hidden="true"></div>
+    <div
+      class="i-tabler-chevron-down size-4 transition-transform language-picker-chevron"
+      aria-hidden="true"
+    ></div>
   </button>
 
   <div class="language-picker-menu absolute bottom-full left-0 mb-2 hidden bg-background border border-border rounded-md shadow-lg overflow-hidden min-w-full">
-    {
-      languages.map(lang => (
-        <a
-          href={lang.url}
-          class={cn(
-            'block px-3 py-2 text-sm hover:bg-muted transition outline-none focus:bg-muted focus:ring-2 focus:ring-primary focus:ring-inset',
-            lang.isActive && 'bg-primary/10 text-primary font-semibold',
-          )}
-          aria-current={lang.isActive ? 'page' : undefined}
-        >
-          {lang.name}
-        </a>
-      ))
-    }
+    {languages.map((lang) => (
+      <a
+        href={lang.url}
+        class={cn(
+          'block px-3 py-2 text-sm hover:bg-muted transition outline-none focus:bg-muted focus:ring-2 focus:ring-primary focus:ring-inset',
+          lang.isActive && 'bg-primary/10 text-primary font-semibold',
+        )}
+        aria-current={lang.isActive ? 'page' : undefined}
+      >
+        {lang.name}
+      </a>
+    ))}
   </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const pickers = document.querySelectorAll('.language-picker');
+  document.addEventListener('DOMContentLoaded', () => {
+    const pickers = document.querySelectorAll('.language-picker');
 
-  pickers.forEach((picker) => {
-    const button = picker.querySelector('button');
-    const menu = picker.querySelector('.language-picker-menu');
-    const chevron = picker.querySelector('.language-picker-chevron');
+    pickers.forEach((picker) => {
+      const button = picker.querySelector('button');
+      const menu = picker.querySelector('.language-picker-menu');
+      const chevron = picker.querySelector('.language-picker-chevron');
 
-    if (!button || !menu || !chevron) {
-      return;
-    }
-
-    let isOpen = false;
-
-    const toggle = () => {
-      isOpen = !isOpen;
-      menu.classList.toggle('hidden', !isOpen);
-      chevron.classList.toggle('rotate-180', isOpen);
-      button.setAttribute('aria-expanded', String(isOpen));
-    };
-
-    const close = () => {
-      if (isOpen) {
-        isOpen = false;
-        menu.classList.add('hidden');
-        chevron.classList.remove('rotate-180');
-        button.setAttribute('aria-expanded', 'false');
+      if (!button || !menu || !chevron) {
+        return;
       }
-    };
 
-    button.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggle();
-    });
+      let isOpen = false;
 
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!picker.contains(e.target as Node)) {
-        close();
-      }
-    });
+      const toggle = () => {
+        isOpen = !isOpen;
+        menu.classList.toggle('hidden', !isOpen);
+        chevron.classList.toggle('rotate-180', isOpen);
+        button.setAttribute('aria-expanded', String(isOpen));
+      };
 
-    // Close on escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        close();
-      }
+      const close = () => {
+        if (isOpen) {
+          isOpen = false;
+          menu.classList.add('hidden');
+          chevron.classList.remove('rotate-180');
+          button.setAttribute('aria-expanded', 'false');
+        }
+      };
+
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggle();
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!picker.contains(e.target as Node)) {
+          close();
+        }
+      });
+
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          close();
+        }
+      });
     });
   });
-});
 </script>

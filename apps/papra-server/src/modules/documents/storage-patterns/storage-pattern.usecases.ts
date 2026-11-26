@@ -1,62 +1,56 @@
-import type { StoragePatternInterpolationContext } from './storage-pattern.types';
+import type { OrganizationsRepository } from '../../organizations/organizations.repository';
+import type {
+  ResolveStoragePatternContext,
+  StoragePatternInterpolationContext,
+} from './storage-pattern.types';
 import { castError } from '@corentinth/chisels';
-import { isNil, isNilOrEmptyString } from '../../shared/utils';
+import { createOrganizationNotFoundError } from '../../organizations/organizations.errors';
 import { DUMMY_DOCUMENT_ID, DUMMY_ORGANIZATION_ID } from './storage-pattern.constants';
-import { expressionsDefinitions, expressionTransformers } from './storage-pattern.definitions';
-import { tokenizeStringArguments } from './storage-pattern.models';
+import { expressionsDefinitions } from './storage-pattern.definitions';
+import { evaluateStoragePatternExpression, parseStoragePattern } from './storage-pattern.models';
+
+export function buildResolveStoragePatternContext({
+  organizationsRepository,
+}: {
+  organizationsRepository: Pick<OrganizationsRepository, 'getOrganizationById'>;
+}): ResolveStoragePatternContext {
+  return async ({ storageKeyPattern, ...context }) => {
+    const { expressionIds } = parseStoragePattern({ storageKeyPattern });
+
+    if (!expressionIds.has('organization.name')) {
+      return context;
+    }
+
+    const { organization } = await organizationsRepository.getOrganizationById({
+      organizationId: context.organizationId,
+    });
+
+    if (!organization) {
+      throw createOrganizationNotFoundError();
+    }
+
+    return { ...context, organizationName: organization.name };
+  };
+}
 
 export function buildStorageKey({
   storageKeyPattern,
   ...context
 }: { storageKeyPattern: string } & StoragePatternInterpolationContext) {
-  const storageKey = storageKeyPattern.replace(/\{\{(.*?)\}\}(?!\})/g, (_match, rawExpression) => {
-    if (isNil(rawExpression) || typeof rawExpression !== 'string') {
-      throw new Error('Expression cannot be empty');
-    }
-
-    const [expression, ...transformerParts] = rawExpression.split('|').map((part) => part.trim());
-
-    if (isNilOrEmptyString(expression)) {
-      throw new Error('Expression cannot be empty');
-    }
-
-    const expressionExists = expression in expressionsDefinitions;
-
-    if (!expressionExists) {
-      throw new Error(`Unknown expression: ${expression}`);
-    }
-
-    const expressionBuilder = expressionsDefinitions[expression];
-
-    if (!expressionBuilder) {
-      // This should never happen because of the check above, but for type safety
-      throw new Error(`No builder found for expression: ${expression}`);
-    }
-
-    const baseValue = expressionBuilder(context);
-
-    if (transformerParts.length === 0) {
-      return String(baseValue);
-    }
-
-    return transformerParts.reduce((value, transformerPart) => {
-      const [transformerRawName, ...transformerArgsParts] = transformerPart.split(' ');
-
-      const transformerName = transformerRawName?.trim();
-      const argumentsString = transformerArgsParts.join(' ').trim();
-
-      const transformer =
-        expressionTransformers[transformerName as keyof typeof expressionTransformers];
-
-      if (!transformer) {
-        throw new Error(`Unknown transformer: ${transformerName}`);
+  const { parts } = parseStoragePattern({ storageKeyPattern });
+  const storageKey = parts
+    .map((part) => {
+      if (typeof part === 'string') {
+        return part;
       }
 
-      const transformerArguments = tokenizeStringArguments({ argumentsString });
-
-      return transformer({ value, args: transformerArguments });
-    }, baseValue);
-  });
+      return evaluateStoragePatternExpression({
+        expressionDefinition: expressionsDefinitions[part.expressionId]!,
+        context,
+        transformerParts: part.transformerParts,
+      });
+    })
+    .join('');
 
   return { storageKey };
 }
@@ -80,7 +74,10 @@ export function isStoragePatternValid({
       storageKeyPattern,
       documentId: DUMMY_DOCUMENT_ID,
       documentName: 'my-document.pdf',
+      documentDate: new Date(),
+      documentCreatedAt: new Date(),
       organizationId: DUMMY_ORGANIZATION_ID,
+      organizationName: 'My Organization',
       now: new Date(),
     });
 

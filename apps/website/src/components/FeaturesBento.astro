@@ -49,7 +49,9 @@ curl -X POST https://api.papra.ai/v1/documents \\
         icon="i-tabler-archive"
       >
         <div class="grid grid-cols-8 grid-rows-2 gap-4 p-6 overflow-hidden mb--150px">
-          {Array.from({ length: 24 }).map(() => <div class={cn('size-8 sm:size-10 text-muted text-center', getRandomIcon())} />)}
+          {Array.from({ length: 24 }).map(() => (
+            <div class={cn('size-8 sm:size-10 text-muted text-center', getRandomIcon())} />
+          ))}
         </div>
       </BentoCard>
 
@@ -92,7 +94,11 @@ curl -X POST https://api.papra.ai/v1/documents \\
         description={t('features.search.description')}
         icon="i-tabler-search"
       >
-        <div class="mb--180px flex items-start justify-center pt-6 relative" role="img" aria-label="Search feature illustration">
+        <div
+          class="mb--180px flex items-start justify-center pt-6 relative"
+          role="img"
+          aria-label="Search feature illustration"
+        >
           <div class="bg-background sm:min-w-64 border rounded-lg">
             <div class="px-4 py-2 flex items-center gap-2">
               <span class="i-tabler-search size-4 text-primary"></span>
@@ -130,7 +136,13 @@ curl -X POST https://api.papra.ai/v1/documents \\
         icon="i-tabler-code"
       >
         <div class="flex justify-center p-6">
-          <Code code={codeSnippet} lang="bash" theme="vitesse-dark" class="text-xs bg-transparent!" role="presentation" />
+          <Code
+            code={codeSnippet}
+            lang="bash"
+            theme="vitesse-dark"
+            class="text-xs bg-transparent!"
+            role="presentation"
+          />
         </div>
       </BentoCard>
 

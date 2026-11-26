@@ -1,30 +1,19 @@
 import type { DeepPartial } from '@corentinth/chisels';
 import type { Config } from './config.types';
 import { describe, expect, test } from 'vitest';
+import * as v from 'valibot';
+import { publicConfigSchema } from './config.api.contracts';
 import { getClientBaseUrl, getPublicConfig, getServerBaseUrl } from './config.models';
 import { overrideConfig } from './config.test-utils';
 
 describe('config models', () => {
   describe('getPublicConfig', () => {
-    test(`the public config only contains the followings info:
-        - auth.isEmailVerificationRequired Whether email verification is required
-        - auth.isPasswordResetEnabled Whether password reset is enabled
-        - auth.isRegistrationEnabled Whether registration is enabled
-        - auth.showLegalLinksOnAuthPage Whether to show Papra legal links on the auth pages
-        - auth.providers.*.isEnabled Wether a oauth provider is enabled
-        - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
-        - documents.isReprocessingEnabled Whether existing documents can be reprocessed
-        - intakeEmails.isEnabled Whether intake emails are enabled
-        - intakeEmails.address.canCustomizeUsername Whether intake email usernames can be customized
-        - intakeEmails.address.domains The domains available for intake email creation
-        - auth.providers.email.isEnabled Whether email/password authentication is enabled
-        - organizations.deletedOrganizationsPurgeDaysDelay The delay in days before a soft-deleted organization is permanently purged
-
-        Any other config should not be exposed.`, () => {
+    test('only public fields are exposed, without authentication secrets or OAuth credentials', () => {
       const config = overrideConfig({
         foo: 'bar',
         auth: {
           bar: 'baz',
+          secret: 'private-auth-secret',
           isEmailVerificationRequired: true,
           isPasswordResetEnabled: true,
           isRegistrationEnabled: true,
@@ -32,11 +21,28 @@ describe('config models', () => {
           providers: {
             github: {
               isEnabled: true,
+              clientId: 'private-github-client-id',
+              clientSecret: 'private-github-client-secret',
             },
             google: {
               isEnabled: false,
             },
-            customs: [],
+            customs: [
+              {
+                providerId: 'with-icon',
+                providerName: 'With icon',
+                providerIconUrl: 'https://example.com/icon.svg',
+                clientId: 'private-client-id',
+                clientSecret: 'private-client-secret',
+                discoveryUrl: 'https://example.com/.well-known/openid-configuration',
+              },
+              {
+                providerId: 'without-icon',
+                providerName: 'Without icon',
+                clientId: 'another-private-client-id',
+                clientSecret: 'another-private-client-secret',
+              },
+            ],
           },
         },
         documents: {
@@ -60,12 +66,12 @@ describe('config models', () => {
         },
       } as DeepPartial<Config>);
 
-      expect(
-        getPublicConfig({
-          config,
-          intakeEmailsServices: { getDomains: () => ['example.com'] },
-        }),
-      ).to.eql({
+      const result = getPublicConfig({
+        config,
+        intakeEmailsServices: { getDomains: () => ['example.com'] },
+      });
+
+      expect(result).toEqual({
         publicConfig: {
           version: 'dev',
           gitCommitSha: 'unknown',
@@ -82,7 +88,17 @@ describe('config models', () => {
               google: {
                 isEnabled: false,
               },
-              customs: [],
+              customs: [
+                {
+                  providerId: 'with-icon',
+                  providerName: 'With icon',
+                  providerIconUrl: 'https://example.com/icon.svg',
+                },
+                {
+                  providerId: 'without-icon',
+                  providerName: 'Without icon',
+                },
+              ],
               email: {
                 isEnabled: true,
               },
@@ -107,6 +123,9 @@ describe('config models', () => {
           },
         },
       });
+      expect(v.parse(publicConfigSchema, JSON.parse(JSON.stringify(result.publicConfig)))).toEqual(
+        result.publicConfig,
+      );
     });
 
     test('exposes an empty domain list when the intake email driver has no selectable domains', () => {

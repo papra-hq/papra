@@ -10,7 +10,7 @@ export type Props = {
   excludeFromSearch?: boolean;
 } & HeaddProps;
 
-const { class: className, excludeFromSearch = false, ...headProps  } = Astro.props;
+const { class: className, excludeFromSearch = false, ...headProps } = Astro.props;
 
 const locale = Astro.currentLocale ?? DEFAULT_LOCALE;
 ---
@@ -18,7 +18,12 @@ const locale = Astro.currentLocale ?? DEFAULT_LOCALE;
 <!doctype html>
 <html lang={locale} data-pagefind-ignore={excludeFromSearch ? 'all' : undefined}>
   <Head {...headProps} />
-  <body class={cn(`bg-background font-sans antialiased min-h-screen text-foreground text-sm ${className}`)} data-kb-theme="dark">
+  <body
+    class={cn(
+      `bg-background font-sans antialiased min-h-screen text-foreground text-sm ${className}`,
+    )}
+    data-kb-theme="dark"
+  >
     <slot />
   </body>
 </html>

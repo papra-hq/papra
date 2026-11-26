@@ -79,7 +79,18 @@ DOCLING_BASE_URL=http://docling:5001
 | `DOCLING_BASE_URL` | `http://localhost:5001` | Base URL of the Docling service. |
 | `DOCLING_API_KEY` | – | Optional API key, sent as the `X-API-Key` header. On the Docling side this maps to `DOCLING_SERVE_API_KEY`. |
 | `DOCLING_REQUEST_TIMEOUT_MS` | `300000` | Request timeout in milliseconds. |
+| `DOCLING_OPTIONS` | `{}` | Conversion options as a JSON object, sent with every Docling request. |
 | `DOCLING_MIME_TYPES_ALLOW_LIST` | `*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
+
+Use `DOCLING_OPTIONS` to configure OCR languages and other [Docling conversion options](https://github.com/docling-project/docling-serve/blob/main/docs/usage.md#common-parameters). For example, to use English and French OCR and force OCR over existing text:
+
+```bash
+DOCLING_OPTIONS='{"ocr_lang":["en","fr"],"force_ocr":true}'
+```
+
+The value must be a JSON object. Papra sends strings, numbers, and booleans as form fields, arrays as repeated fields, and nested objects as JSON-encoded fields. Top-level `null` values and empty arrays are omitted so Docling uses its defaults. Docling validates individual options; available settings and language support depend on your Docling version and OCR engine.
+
+Papra manages `files`, `to_formats`, `image_export_mode`, and `target` to upload your document and read its Markdown content from a JSON response. Setting any of these fields in `DOCLING_OPTIONS` causes a configuration error at startup.
 
 ### Azure Document Intelligence
 

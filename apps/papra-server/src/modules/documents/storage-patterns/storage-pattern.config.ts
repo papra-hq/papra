@@ -4,6 +4,12 @@ import { coercedPositiveIntegerSchema } from '../../shared/schemas/number.schema
 import { storagePatternSchema } from './storage-pattern.schemas';
 
 export const storagePatternConfig = {
+  isStorageKeySyncEnabled: {
+    doc: 'Synchronize document storage keys with the configured pattern on subsequent document updates. Requires pattern-based storage. Date and random expressions are re-evaluated on every update. Existing documents are not migrated automatically.',
+    schema: booleanishSchema,
+    default: false,
+    env: 'DOCUMENT_STORAGE_KEY_SYNC_ENABLED',
+  },
   useLegacyStorageKeyDefinitionSystem: {
     doc: 'Whether to use the legacy storage key definition system, which generates storage keys in the format: {{organization.id}}/originals/{{document.id}}. When set to true, no storage key pattern will be used, nor will the incremental suffix or random suffix fallback mechanisms be enabled, as the storage key will be generated using the legacy system.',
     schema: booleanishSchema,

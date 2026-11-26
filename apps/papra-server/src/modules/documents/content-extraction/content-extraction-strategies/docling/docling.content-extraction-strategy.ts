@@ -1,15 +1,24 @@
+import { ofetch } from 'ofetch';
 import type { Config } from '../../../../config/config.types';
 import type { ContentExtractionStrategy } from '../content-extraction-strategies.types';
 import { isMimeTypeAllowed } from '../../../../shared/mime-types/mime-types.models';
-import { extractTextWithDoclingServer } from './docling.content-extraction-strategy.usecases';
+import { buildExtractTextWithDoclingServer } from './docling.content-extraction-strategy.usecases';
 
 export function buildDoclingContentExtractionStrategy({
   config,
 }: {
   config: Config;
 }): ContentExtractionStrategy {
-  const { baseUrl, apiKey, mimeTypesAllowList, timeoutMs } =
+  const { baseUrl, apiKey, mimeTypesAllowList, timeoutMs, options } =
     config.documentContentExtraction.strategy.docling;
+
+  const extractTextWithDoclingServer = buildExtractTextWithDoclingServer({
+    baseUrl,
+    apiKey,
+    timeoutMs,
+    options,
+    request: ofetch,
+  });
 
   return {
     canExtractTextFromDocument: async ({ file }) => {
@@ -19,15 +28,6 @@ export function buildDoclingContentExtractionStrategy({
       });
     },
 
-    extractTextFromDocument: async ({ file }) => {
-      const { text } = await extractTextWithDoclingServer({
-        file,
-        baseUrl,
-        apiKey,
-        timeoutMs,
-      });
-
-      return { text };
-    },
+    extractTextFromDocument: extractTextWithDoclingServer,
   };
 }

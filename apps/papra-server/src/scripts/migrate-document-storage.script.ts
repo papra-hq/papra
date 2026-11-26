@@ -9,7 +9,9 @@ import { count, eq } from 'drizzle-orm';
 import { createIterator } from '../modules/app/database/database.usecases';
 import { parseConfig } from '../modules/config/config';
 import { documentsTable } from '../modules/documents/documents.table';
-import { createDocumentStorageKey } from '../modules/documents/document-storage.usecases';
+import { buildCreateDocumentStorageKey } from '../modules/documents/document-storage.usecases';
+import { buildResolveStoragePatternContext } from '../modules/documents/storage-patterns/storage-pattern.usecases';
+import { createOrganizationsRepository } from '../modules/organizations/organizations.repository';
 import { createStorageService } from '../modules/storage/storage.services';
 import { ensureBooleanArg } from './commons/args.utils';
 import { runScriptWithDb } from './commons/run-script';
@@ -52,6 +54,15 @@ export async function migrateDocumentStorage({
 
   prompts?.intro('Document Storage Migration');
 
+  const createDocumentStorageKey = buildCreateDocumentStorageKey({
+    storagePatternConfig: toConfig.documentsStorage.pattern,
+    documentsStorageService: toStorageService,
+    resolveStoragePatternContext: buildResolveStoragePatternContext({
+      organizationsRepository: createOrganizationsRepository({ db }),
+    }),
+    logger: createNoopLogger(),
+  });
+
   if (isDryRun) {
     prompts?.log.info(
       'This is a dry run, no actual migration will be performed.\nJust logging the documents that would be migrated.',
@@ -81,6 +92,8 @@ export async function migrateDocumentStorage({
       originalStorageKey: documentsTable.originalStorageKey,
       organizationId: documentsTable.organizationId,
       originalName: documentsTable.originalName,
+      documentDate: documentsTable.documentDate,
+      createdAt: documentsTable.createdAt,
       mimeType: documentsTable.mimeType,
       fileEncryptionKeyWrapped: documentsTable.fileEncryptionKeyWrapped,
       fileEncryptionKekVersion: documentsTable.fileEncryptionKekVersion,
@@ -127,12 +140,11 @@ export async function migrateDocumentStorage({
       });
 
       const { storageKey: newStorageKey } = await createDocumentStorageKey({
-        storagePatternConfig: toConfig.documentsStorage.pattern,
         documentId: id,
         organizationId,
         documentName: originalName,
-        documentsStorageService: toStorageService,
-        logger: createNoopLogger(),
+        documentDate: document.documentDate,
+        documentCreatedAt: document.createdAt,
       });
 
       const encryptionFields = await toStorageService.saveFile({

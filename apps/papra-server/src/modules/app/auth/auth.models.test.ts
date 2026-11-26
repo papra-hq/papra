@@ -247,7 +247,7 @@ describe('auth models', () => {
   });
 
   describe('isEmailDomainAllowed', () => {
-    test('when no forbidden domains are configured, all email domains are allowed', () => {
+    test('when no domain restrictions are configured, all email domains are allowed', () => {
       expect(
         isEmailDomainAllowed({
           email: 'user@example.com',
@@ -261,6 +261,100 @@ describe('auth models', () => {
           forbiddenEmailDomains: new Set(),
         }),
       ).to.eql(true);
+    });
+
+    test('an empty allowlist imposes no restriction but still respects forbidden domains', () => {
+      const allowedEmailDomains = new Set<string>();
+      const forbiddenEmailDomains = new Set(['tempmail.com']);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@example.com',
+          allowedEmailDomains,
+          forbiddenEmailDomains,
+        }),
+      ).toEqual(true);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@tempmail.com',
+          allowedEmailDomains,
+          forbiddenEmailDomains,
+        }),
+      ).toEqual(false);
+    });
+
+    test('a non-empty allowlist only permits listed domains', () => {
+      const allowedEmailDomains = new Set(['example.com', 'test.com']);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@example.com',
+          allowedEmailDomains,
+        }),
+      ).toEqual(true);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@test.com',
+          allowedEmailDomains,
+          forbiddenEmailDomains: new Set(['tempmail.com']),
+        }),
+      ).toEqual(true);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@other.com',
+          allowedEmailDomains,
+          forbiddenEmailDomains: new Set(),
+        }),
+      ).toEqual(false);
+    });
+
+    test('forbidden domains take precedence over allowed domains', () => {
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@example.com',
+          allowedEmailDomains: new Set(['example.com']),
+          forbiddenEmailDomains: new Set(['example.com']),
+        }),
+      ).toEqual(false);
+    });
+
+    test('an allowed domain does not implicitly allow its subdomains', () => {
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@sub.example.com',
+          allowedEmailDomains: new Set(['example.com']),
+        }),
+      ).toEqual(false);
+    });
+
+    test('allowlist matching ignores case and surrounding domain whitespace', () => {
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@  EXAMPLE.COM  ',
+          allowedEmailDomains: new Set(['example.com']),
+        }),
+      ).toEqual(true);
+    });
+
+    test('emails without a domain are rejected when only an allowlist is configured', () => {
+      const allowedEmailDomains = new Set(['example.com']);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'notanemail',
+          allowedEmailDomains,
+        }),
+      ).toEqual(false);
+
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@',
+          allowedEmailDomains,
+        }),
+      ).toEqual(false);
     });
 
     test('when an email domain is in the forbidden list, the email is rejected', () => {

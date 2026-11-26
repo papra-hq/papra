@@ -26,7 +26,7 @@ catalog:
   '@paralleldrive/cuid2': ^3.3.0
 
 catalogs:
-  # Astro's checker still uses the legacy TypeScript compiler API removed in TS 7.
+  # Astro's checker and Expo's config loader still use the legacy TypeScript compiler API removed in TS 7.
   typescript-legacy:
     typescript: ^6.0.3
 

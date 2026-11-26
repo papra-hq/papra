@@ -37,7 +37,11 @@ const categories = docCategories.filter((category) =>
       {categories.map((category) => (
         <section class="pt-4">
           <h2 class="px-4 text-sm font-semibold text-primary">{t(category.titleKey)}</h2>
-          <DocNavSections sections={category.sections} currentDocId={currentDocId} locale={locale} />
+          <DocNavSections
+            sections={category.sections}
+            currentDocId={currentDocId}
+            locale={locale}
+          />
         </section>
       ))}
     </nav>
@@ -57,26 +61,38 @@ const categories = docCategories.filter((category) =>
       const nav = this.querySelector('nav')!;
       const desktop = window.matchMedia('(min-width: 768px)');
 
-      this.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && details.open) {
-          event.preventDefault();
-          details.open = false;
-          summary.focus();
-        }
-      }, { signal });
+      this.addEventListener(
+        'keydown',
+        (event) => {
+          if (event.key === 'Escape' && details.open) {
+            event.preventDefault();
+            details.open = false;
+            summary.focus();
+          }
+        },
+        { signal },
+      );
 
       // Don't leave the panel covering page content when keyboard focus moves on.
-      this.addEventListener('focusout', (event) => {
-        if (!(event.relatedTarget instanceof Node) || !this.contains(event.relatedTarget)) {
-          details.open = false;
-        }
-      }, { signal });
+      this.addEventListener(
+        'focusout',
+        (event) => {
+          if (!(event.relatedTarget instanceof Node) || !this.contains(event.relatedTarget)) {
+            details.open = false;
+          }
+        },
+        { signal },
+      );
 
-      nav.addEventListener('click', (event) => {
-        if (event.target instanceof Element && event.target.closest('a[href]')) {
-          details.open = false;
-        }
-      }, { signal });
+      nav.addEventListener(
+        'click',
+        (event) => {
+          if (event.target instanceof Element && event.target.closest('a[href]')) {
+            details.open = false;
+          }
+        },
+        { signal },
+      );
 
       const closeOnDesktop = () => {
         if (desktop.matches) {

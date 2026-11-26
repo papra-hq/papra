@@ -1,19 +1,24 @@
 import type { Component } from 'solid-js';
 import { formatBytes } from '@corentinth/chisels';
-import { A, useParams } from '@solidjs/router';
-import { useQuery } from '@tanstack/solid-query';
+import { A, useNavigate, useParams } from '@solidjs/router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/solid-query';
 import { For, Show, Suspense } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { useConfirmModal } from '@/modules/shared/confirm';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
+import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/modules/ui/components/card';
+import { createToast } from '@/modules/ui/components/sonner';
 import {
   Table,
   TableBody,
@@ -24,6 +29,7 @@ import {
 } from '@/modules/ui/components/table';
 import { UserListDetail } from '../../users/components/user-list-detail.component';
 import {
+  deleteOrganization,
   getOrganizationBasicInfo,
   getOrganizationIntakeEmails,
   getOrganizationMembers,
@@ -345,6 +351,80 @@ const OrganizationStats: Component<{ organizationId: string }> = (props) => {
   );
 };
 
+const DeleteOrganizationCard: Component<{ organizationId: string }> = (props) => {
+  const { t } = useI18n();
+  const { confirm } = useConfirmModal();
+  const { getErrorMessage } = useI18nApiErrors({ t });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const query = useQuery(() => ({
+    queryKey: ['admin', 'organizations', props.organizationId, 'basic'],
+    queryFn: async () => getOrganizationBasicInfo({ organizationId: props.organizationId }),
+  }));
+
+  const deleteMutation = useMutation(() => ({
+    mutationFn: deleteOrganization,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin', 'organizations'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin', 'users'] }),
+        queryClient.invalidateQueries({ queryKey: ['organizations'] }),
+      ]);
+      createToast({ type: 'success', message: t('admin.organization-detail.delete.success') });
+      navigate('/admin/organizations');
+    },
+    onError: (error) => {
+      createToast({
+        type: 'error',
+        message: isHttpErrorWithCode({ error, code: 'organization.has_active_subscription' })
+          ? t('admin.organization-detail.delete.has-active-subscription')
+          : getErrorMessage({ error }),
+      });
+    },
+  }));
+
+  const handleDelete = async () => {
+    const organization = query.data?.organization;
+
+    if (!organization || organization.deletedAt || deleteMutation.isPending) {
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: t('admin.organization-detail.delete.confirm.title'),
+      message: t('admin.organization-detail.delete.confirm.message', { name: organization.name }),
+      confirmButton: {
+        text: t('admin.organization-detail.delete.button'),
+        variant: 'destructive',
+      },
+      cancelButton: {
+        text: t('admin.organization-detail.delete.confirm.cancel-button'),
+      },
+    });
+
+    if (confirmed) {
+      deleteMutation.mutate({ organizationId: organization.id });
+    }
+  };
+
+  return (
+    <Show when={query.data?.organization && !query.data.organization.deletedAt}>
+      <Card class="border-destructive">
+        <CardHeader>
+          <CardTitle>{t('admin.organization-detail.delete.title')}</CardTitle>
+          <CardDescription>{t('admin.organization-detail.delete.description')}</CardDescription>
+        </CardHeader>
+        <CardFooter>
+          <Button variant="destructive" onClick={handleDelete} isLoading={deleteMutation.isPending}>
+            {t('admin.organization-detail.delete.button')}
+          </Button>
+        </CardFooter>
+      </Card>
+    </Show>
+  );
+};
+
 export const AdminOrganizationDetailPage: Component = () => {
   const { t } = useI18n();
   const params = useParams<{ organizationId: string }>();
@@ -414,6 +494,10 @@ export const AdminOrganizationDetailPage: Component = () => {
           }
         >
           <OrganizationMembers organizationId={params.organizationId} />
+        </Suspense>
+
+        <Suspense>
+          <DeleteOrganizationCard organizationId={params.organizationId} />
         </Suspense>
       </div>
     </div>

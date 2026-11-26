@@ -12,6 +12,7 @@ export default defineConfig({
   tabWidth: 2,
   useTabs: false,
   quoteProps: 'consistent',
+  astro: true,
   ignorePatterns: [
     // MDX with markdown inside JSX component children gets mangled by the formatter
     // (the markdown/JSX boundary is ambiguous and indentation-sensitive). Plain .md is fine.

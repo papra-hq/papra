@@ -2,6 +2,8 @@
 
 This is the server for [Papra](https://papra.app).
 
+For API changes, see the [API route migration guide](./src/modules/api/README.md).
+
 ## Development
 
 To start the development server, run:

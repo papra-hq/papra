@@ -59,7 +59,7 @@ export async function registerExtractDocumentFileContentTask({
       }
 
       await taskServices.scheduleJob({
-        taskName: 'auto-tag-document',
+        taskName: 'enrich-document',
         data: { documentId, organizationId },
       });
     },

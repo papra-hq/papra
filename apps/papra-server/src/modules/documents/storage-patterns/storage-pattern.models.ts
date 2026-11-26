@@ -1,4 +1,81 @@
+import type {
+  StoragePatternExpressionDefinition,
+  StoragePatternInterpolationContext,
+  StoragePatternPart,
+} from './storage-pattern.types';
 import { isNilOrEmptyString } from '../../shared/utils';
+import { expressionsDefinitions, expressionTransformers } from './storage-pattern.definitions';
+
+export function parseStoragePattern({ storageKeyPattern }: { storageKeyPattern: string }) {
+  const parts: StoragePatternPart[] = [];
+  const expressionIds = new Set<string>();
+  let position = 0;
+
+  for (const match of storageKeyPattern.matchAll(/\{\{(.*?)\}\}(?!\})/g)) {
+    const [expressionId, ...transformerParts] = match[1]!.split('|').map((part) => part.trim());
+
+    if (isNilOrEmptyString(expressionId)) {
+      throw new Error('Expression cannot be empty');
+    }
+
+    if (!Object.hasOwn(expressionsDefinitions, expressionId)) {
+      throw new Error(`Unknown expression: ${expressionId}`);
+    }
+
+    parts.push(storageKeyPattern.slice(position, match.index), { expressionId, transformerParts });
+    expressionIds.add(expressionId);
+    position = match.index + match[0].length;
+  }
+
+  parts.push(storageKeyPattern.slice(position));
+
+  return { parts, expressionIds };
+}
+
+export function evaluateStoragePatternExpression({
+  expressionDefinition,
+  context,
+  transformerParts,
+}: {
+  expressionDefinition: StoragePatternExpressionDefinition;
+  context: StoragePatternInterpolationContext;
+  transformerParts: string[];
+}): string {
+  const value = transformerParts.reduce((value, transformerPart) => {
+    const [transformerRawName, ...transformerArgsParts] = transformerPart.split(' ');
+    const transformerName = transformerRawName?.trim();
+    const argumentsString = transformerArgsParts.join(' ').trim();
+
+    if (isNilOrEmptyString(transformerName)) {
+      throw new Error('Transformer name cannot be empty');
+    }
+
+    const transformer = expressionTransformers[transformerName];
+
+    if (!transformer) {
+      throw new Error(`Unknown transformer: ${transformerName}`);
+    }
+
+    // Only default handles missing values; other transformers preserve them for a later fallback.
+    if (isNilOrEmptyString(value) && transformerName !== 'default') {
+      return value;
+    }
+
+    const transformerArguments = tokenizeStringArguments({ argumentsString });
+
+    return transformer({ value, args: transformerArguments });
+  }, expressionDefinition.resolve(context));
+
+  if (isNilOrEmptyString(value)) {
+    if (expressionDefinition.fallback === undefined) {
+      throw new Error('Expression resolved to an empty value');
+    }
+
+    return expressionDefinition.fallback;
+  }
+
+  return value;
+}
 
 export function tokenizeStringArguments({
   argumentsString,

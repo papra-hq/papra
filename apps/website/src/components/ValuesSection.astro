@@ -3,7 +3,6 @@ import { useI18n } from '../i18n/i18n';
 
 const { t } = useI18n({ locale: Astro.currentLocale });
 
-
 const values = [
   {
     icon: 'i-tabler-heart-handshake',
@@ -48,15 +47,15 @@ const values = [
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {
-        values.map(value => (
-          <div class="border rounded-xl p-6 bg-card group">
-            <div class={`${value.icon} size-10 text-primary mb-4 group-hover:(scale-105 rotate-12) transition transform`} />
-            <h3 class="text-xl font-bold mb-1">{value.title}</h3>
-            <p class="text-muted-foreground">{value.description}</p>
-          </div>
-        ))
-      }
+      {values.map((value) => (
+        <div class="border rounded-xl p-6 bg-card group">
+          <div
+            class={`${value.icon} size-10 text-primary mb-4 group-hover:(scale-105 rotate-12) transition transform`}
+          />
+          <h3 class="text-xl font-bold mb-1">{value.title}</h3>
+          <p class="text-muted-foreground">{value.description}</p>
+        </div>
+      ))}
     </div>
   </div>
 </section>

@@ -61,12 +61,12 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "unocss": "catalog:",
-    "vite": "8.1.0",
+    "vite": "8.1.6",
     "vite-plugin-solid": "2.11.12",
     "vite-plugin-static-copy": "4.1.1",
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">=26.0.0"
+    "node": ">=26.13.1"
   }
 }

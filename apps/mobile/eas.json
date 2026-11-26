@@ -5,8 +5,16 @@
   },
   "build": {
     "production": {
-      "node": "26.1.0",
+      "node": "26.13.1",
       "autoIncrement": true
+    },
+    "release-apk": {
+      "extends": "production",
+      "distribution": "internal",
+      "autoIncrement": false,
+      "android": {
+        "buildType": "apk"
+      }
     },
     "preview": {
       "extends": "production",

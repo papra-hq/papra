@@ -1,18 +1,17 @@
 import type { StorageService } from '../storage/storage.services';
 import type { EmailsServices } from '../emails/emails.services';
-import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
+import type { OrganizationInvitationStatus } from './organizations.types';
 import { assert, describe, expect, test } from 'vitest';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
-import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
+import { createTestClock } from '../shared/clock/clock.test-utils';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
-import { ORGANIZATION_ROLES } from './organizations.constants';
+import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import {
   createMaxOrganizationMembersCountReachedError,
   createOrganizationHasActiveSubscriptionError,
@@ -31,14 +30,17 @@ import {
   organizationsTable,
 } from './organizations.table';
 import {
+  buildInviteMemberToOrganization,
+  buildResendOrganizationInvitation,
   checkIfUserCanCreateNewOrganization,
+  checkIfUserHasReachedOrganizationInvitationLimit,
   ensureUserIsInOrganization,
   ensureUserIsOwnerOfOrganization,
   getOrCreateOrganizationCustomerId,
-  inviteMemberToOrganization,
   purgeExpiredSoftDeletedOrganization,
   purgeExpiredSoftDeletedOrganizations,
   removeMemberFromOrganization,
+  sendOrganizationInvitationEmail,
   softDeleteOrganization,
 } from './organizations.usecases';
 
@@ -471,62 +473,40 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const sentEmails: unknown[] = [];
-      const emailsServices = {
-        sendEmail: async (args: unknown) => sentEmails.push(args),
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       // Owner can invite
       const { organizationInvitation: ownerInvitation } = await inviteMemberToOrganization({
         email: 'new-member-1@example.com',
         role: ORGANIZATION_ROLES.MEMBER,
         organizationId: 'organization-1',
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-1',
-        expirationDelayDays: 7,
-        maxInvitationsPerDay: 10,
-        emailsServices,
-        config,
       });
 
-      expect(ownerInvitation?.email).toBe('new-member-1@example.com');
+      expect(ownerInvitation?.email).toEqual('new-member-1@example.com');
 
       // Admin can invite
       const { organizationInvitation: adminInvitation } = await inviteMemberToOrganization({
         email: 'new-member-2@example.com',
         role: ORGANIZATION_ROLES.MEMBER,
         organizationId: 'organization-1',
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-2',
-        expirationDelayDays: 7,
-        maxInvitationsPerDay: 10,
-        emailsServices,
-        config,
       });
 
-      expect(adminInvitation?.email).toBe('new-member-2@example.com');
+      expect(adminInvitation?.email).toEqual('new-member-2@example.com');
 
       // Member cannot invite
       await expect(
@@ -534,17 +514,7 @@ describe('organizations usecases', () => {
           email: 'new-member-3@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-3',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createForbiddenError());
 
@@ -561,7 +531,7 @@ describe('organizations usecases', () => {
       ]);
     });
 
-    test('it is not possible to create an invitation for the owner role to prevent multiple owners in an organization', async () => {
+    test('an invitation for the owner role cannot be created to prevent multiple owners in an organization', async () => {
       const { logger, getLogs } = createTestLogger();
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'owner@example.com' }],
@@ -572,40 +542,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-owner@example.com',
           role: ORGANIZATION_ROLES.OWNER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createForbiddenError());
 
@@ -642,40 +599,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'existing-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createUserAlreadyInOrganizationError());
 
@@ -695,8 +639,288 @@ describe('organizations usecases', () => {
       ]);
     });
 
+    test('a former member can be reinvited after being removed from the organization', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'owner@example.com' },
+          { id: 'user-2', email: 'member@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { logger } = createTestLogger();
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: 100 } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+        logger,
+      });
+
+      // Invite a member to the organization
+      const { organizationInvitation: initialInvitation } = await inviteMemberToOrganization({
+        email: 'member@example.com',
+        role: ORGANIZATION_ROLES.MEMBER,
+        organizationId: 'organization-1',
+        inviterId: 'user-1',
+      });
+
+      expect.assert(initialInvitation);
+
+      // Accept the invitation to become a member
+      await organizationsRepository.updateOrganizationInvitation({
+        invitationId: initialInvitation.id,
+        status: ORGANIZATION_INVITATION_STATUS.ACCEPTED,
+      });
+      await organizationsRepository.addUserToOrganization({
+        organizationId: 'organization-1',
+        userId: 'user-2',
+        role: ORGANIZATION_ROLES.MEMBER,
+      });
+      const { member } = await organizationsRepository.getOrganizationMemberByUserId({
+        organizationId: 'organization-1',
+        userId: 'user-2',
+      });
+      assert(member);
+
+      await removeMemberFromOrganization({
+        memberId: member.id,
+        userId: 'user-1',
+        organizationId: 'organization-1',
+        organizationsRepository,
+      });
+
+      const { organizationInvitation } = await inviteMemberToOrganization({
+        email: 'member@example.com',
+        role: ORGANIZATION_ROLES.ADMIN,
+        organizationId: 'organization-1',
+        inviterId: 'user-1',
+      });
+
+      assert(organizationInvitation);
+      expect(organizationInvitation).toMatchObject({
+        email: 'member@example.com',
+        organizationId: 'organization-1',
+        status: ORGANIZATION_INVITATION_STATUS.PENDING,
+        role: ORGANIZATION_ROLES.ADMIN,
+        expiresAt: new Date('2025-10-12T12:00:00Z'),
+      });
+      expect(organizationInvitation.id).not.toEqual(initialInvitation.id);
+      expect(
+        await organizationsRepository.isUserInOrganization({
+          organizationId: 'organization-1',
+          userId: 'user-2',
+        }),
+      ).toEqual({ isInOrganization: false });
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          inviterId: 'user-1',
+        }),
+      ).rejects.toThrow(createOrganizationInvitationAlreadyExistsError());
+
+      const invitations = await db
+        .select({
+          id: organizationInvitationsTable.id,
+          status: organizationInvitationsTable.status,
+        })
+        .from(organizationInvitationsTable)
+        .orderBy(organizationInvitationsTable.status);
+
+      expect(invitations).toEqual([
+        { id: initialInvitation.id, status: 'accepted' },
+        { id: organizationInvitation.id, status: 'pending' },
+      ]);
+    });
+
+    test('a member who leaves can be reinvited repeatedly while keeping accepted invitations', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'owner', email: 'owner@example.com' },
+          { id: 'member', email: 'member@example.com' },
+        ],
+        organizations: [{ id: 'org', name: 'Organization' }],
+        organizationMembers: [{ organizationId: 'org', userId: 'owner', role: 'owner' }],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: 2 } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
+      const invitationIds: string[] = [];
+
+      for (const role of [
+        ORGANIZATION_ROLES.MEMBER,
+        ORGANIZATION_ROLES.ADMIN,
+        ORGANIZATION_ROLES.MEMBER,
+      ]) {
+        const { organizationInvitation } = await inviteMemberToOrganization({
+          email: 'member@example.com',
+          organizationId: 'org',
+          inviterId: 'owner',
+          role,
+        });
+        assert(organizationInvitation);
+        invitationIds.push(organizationInvitation.id);
+
+        await organizationsRepository.addUserToOrganization({
+          userId: 'member',
+          organizationId: 'org',
+          role: organizationInvitation.role,
+        });
+        await organizationsRepository.updateOrganizationInvitation({
+          invitationId: organizationInvitation.id,
+          status: 'accepted',
+        });
+        await organizationsRepository.removeUserFromOrganization({
+          userId: 'member',
+          organizationId: 'org',
+        });
+        clock.advanceBy({ hours: 24 });
+      }
+
+      const invitations = await db.select().from(organizationInvitationsTable);
+      expect(new Set(invitationIds).size).toEqual(3);
+      expect(invitations.map(({ status }) => status)).toEqual(['accepted', 'accepted', 'accepted']);
+    });
+
+    test('expired, cancelled and rejected invitations do not prevent a fresh invitation', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'owner', email: 'owner@example.com' }],
+        organizations: [{ id: 'org', name: 'Organization' }],
+        organizationMembers: [{ organizationId: 'org', userId: 'owner', role: 'owner' }],
+        organizationInvitations: (['expired', 'cancelled', 'rejected'] as const).map((status) => ({
+          id: status,
+          organizationId: 'org',
+          email: 'member@example.com',
+          role: 'member',
+          inviterId: 'owner',
+          status,
+          expiresAt: new Date('2025-10-01'),
+        })),
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: 2 } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
+
+      const { organizationInvitation } = await inviteMemberToOrganization({
+        email: 'member@example.com',
+        organizationId: 'org',
+        inviterId: 'owner',
+        role: 'admin',
+      });
+
+      expect(organizationInvitation).toMatchObject({
+        status: 'pending',
+        role: 'admin',
+        expiresAt: new Date('2025-10-12T12:00:00Z'),
+      });
+      expect(await db.select().from(organizationInvitationsTable)).toHaveLength(4);
+    });
+
+    test('stale pending invitations expire immediately and stop consuming organization capacity', async () => {
+      const commonInvitation = {
+        role: ORGANIZATION_ROLES.MEMBER,
+        inviterId: 'owner',
+        status: ORGANIZATION_INVITATION_STATUS.PENDING,
+        expiresAt: new Date('2025-10-05T12:00:00Z'),
+      };
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'owner', email: 'owner@example.com' }],
+        organizations: [
+          { id: 'org', name: 'Organization' },
+          { id: 'other-org', name: 'Other organization' },
+        ],
+        organizationMembers: [{ organizationId: 'org', userId: 'owner', role: 'owner' }],
+        organizationInvitations: [
+          {
+            ...commonInvitation,
+            id: 'stale-recipient',
+            organizationId: 'org',
+            email: 'member@example.com',
+          },
+          {
+            ...commonInvitation,
+            id: 'stale-other-recipient',
+            organizationId: 'org',
+            email: 'other@example.com',
+          },
+          {
+            ...commonInvitation,
+            id: 'other-org-invitation',
+            organizationId: 'other-org',
+            email: 'member@example.com',
+          },
+        ],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: 2 } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
+
+      const { organizationInvitation } = await inviteMemberToOrganization({
+        email: 'member@example.com',
+        organizationId: 'org',
+        inviterId: 'owner',
+        role: 'member',
+      });
+
+      expect(organizationInvitation?.status).toEqual('pending');
+      expect(
+        await db
+          .select({
+            id: organizationInvitationsTable.id,
+            status: organizationInvitationsTable.status,
+          })
+          .from(organizationInvitationsTable)
+          .orderBy(organizationInvitationsTable.id),
+      ).toEqual([
+        { id: organizationInvitation?.id, status: 'pending' },
+        { id: 'other-org-invitation', status: 'pending' },
+        { id: 'stale-other-recipient', status: 'expired' },
+        { id: 'stale-recipient', status: 'expired' },
+      ]);
+    });
+
     test('cannot create multiple invitations for the same email address to the same organization to prevent spam and confusion', async () => {
       const { logger, getLogs } = createTestLogger();
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'owner@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -717,40 +941,28 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+        clock,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'invited@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createOrganizationInvitationAlreadyExistsError());
 
@@ -771,6 +983,7 @@ describe('organizations usecases', () => {
 
     test('cannot invite new members when the organization has reached its maximum member count (including pending invitations) defined by the plan to enforce subscription limits', async () => {
       const { logger, getLogs } = createTestLogger();
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'owner@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -790,40 +1003,28 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 2,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+        clock,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createMaxOrganizationMembersCountReachedError());
 
@@ -872,42 +1073,95 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 2 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const { clock } = createTestClock({ now: '2025-10-05T18:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay: 2,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 2,
-          now: new Date('2025-10-05T18:00:00Z'),
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createUserOrganizationInvitationLimitReachedError());
+    });
+
+    test('daily invitation limits and expiration use the current time when the use case is reused', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationInvitations: [
+          {
+            organizationId: 'organization-1',
+            email: 'invited@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'pending',
+            expiresAt: new Date('2025-10-12T10:00:00Z'),
+            createdAt: new Date('2025-10-05T10:00:00Z'),
+          },
+        ],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { clock } = createTestClock({ now: '2025-10-05T18:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: 100 } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay: 1,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          inviterId: 'user-1',
+        }),
+      ).rejects.toThrow(createUserOrganizationInvitationLimitReachedError());
+
+      clock.advanceBy({ hours: 24 });
+
+      const { organizationInvitation } = await inviteMemberToOrganization({
+        email: 'new-member@example.com',
+        role: ORGANIZATION_ROLES.MEMBER,
+        organizationId: 'organization-1',
+        inviterId: 'user-1',
+      });
+
+      expect(organizationInvitation?.expiresAt).toEqual(new Date('2025-10-13T18:00:00Z'));
     });
 
     test('invitations are created with the correct expiration date and an email notification is sent to the invited user', async () => {
@@ -920,42 +1174,55 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
       const config = overrideConfig({
         organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
         client: { baseUrl: 'https://app.example.com' },
       });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
-          organizationPlan: {
-            limits: {
-              maxOrganizationsMembersCount: 100,
+      const sentEmails: Parameters<EmailsServices['sendEmail']>[0][] = [];
+      const emailsServices: EmailsServices = {
+        name: 'test',
+        sendEmail: async (args) => {
+          sentEmails.push(args);
+        },
+      };
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async ({ organizationId }) => {
+          expect(organizationId).toEqual('organization-1');
+
+          return {
+            organizationPlan: {
+              limits: {
+                maxOrganizationsMembersCount: 100,
+              },
             },
-          },
-        }),
-      } as unknown as PlansRepository;
+          };
+        },
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async ({ email, organizationId }) =>
+          sendOrganizationInvitationEmail({
+            email,
+            organizationId,
+            organizationsRepository,
+            emailsServices,
+            config,
+          }),
+        expirationDelayDays: config.organizations.invitationExpirationDelayDays,
+        clock,
+      });
 
-      const sentEmails: unknown[] = [];
-      const emailsServices = {
-        sendEmail: async (args: unknown) => sentEmails.push(args),
-      } as unknown as EmailsServices;
-
-      const now = new Date('2025-10-05T12:00:00Z');
       const { organizationInvitation } = await inviteMemberToOrganization({
         email: 'new-member@example.com',
         role: ORGANIZATION_ROLES.ADMIN,
         organizationId: 'organization-1',
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-1',
-        expirationDelayDays: 7,
-        maxInvitationsPerDay: 10,
-        now,
-        emailsServices,
-        config,
       });
 
       expect(organizationInvitation).toMatchObject({
@@ -1000,40 +1267,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-2',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createUserNotInOrganizationError());
 
@@ -1048,6 +1302,214 @@ describe('organizations usecases', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('resendOrganizationInvitation', () => {
+    async function setupResendTest({
+      status = 'cancelled',
+      maxMembers = 2,
+      maxInvitationsPerDay = 10,
+    }: {
+      status?: OrganizationInvitationStatus;
+      maxMembers?: number;
+      maxInvitationsPerDay?: number;
+    } = {}) {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'owner', email: 'owner@example.com' },
+          { id: 'member', email: 'member@example.com' },
+        ],
+        organizations: [{ id: 'org', name: 'Organization' }],
+        organizationMembers: [{ organizationId: 'org', userId: 'owner', role: 'owner' }],
+        organizationInvitations: [
+          {
+            id: 'invitation',
+            organizationId: 'org',
+            email: 'member@example.com',
+            role: 'admin',
+            inviterId: 'owner',
+            status,
+            expiresAt: new Date('2025-10-05T12:00:00Z'),
+            createdAt: new Date('2025-10-01'),
+          },
+        ],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const { logger } = createTestLogger();
+      const sentEmails: { email: string; organizationId: string }[] = [];
+      const resendOrganizationInvitation = buildResendOrganizationInvitation({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: maxMembers } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async (args) => {
+          sentEmails.push(args);
+        },
+        expirationDelayDays: 7,
+        clock,
+        logger,
+      });
+      return { db, organizationsRepository, clock, sentEmails, resendOrganizationInvitation };
+    }
+
+    test('an old invitation cannot be resent to a current member', async () => {
+      const { db, organizationsRepository, resendOrganizationInvitation, sentEmails } =
+        await setupResendTest();
+      await organizationsRepository.addUserToOrganization({
+        userId: 'member',
+        organizationId: 'org',
+        role: 'member',
+      });
+
+      await expect(
+        resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' }),
+      ).rejects.toThrow(createUserAlreadyInOrganizationError());
+
+      expect(sentEmails).toEqual([]);
+      expect(await db.select().from(organizationInvitationsTable)).toMatchObject([
+        { id: 'invitation', status: 'cancelled' },
+      ]);
+    });
+
+    test('an old invitation cannot be resent when another active invitation exists', async () => {
+      const { organizationsRepository, resendOrganizationInvitation, sentEmails } =
+        await setupResendTest();
+      await organizationsRepository.saveOrganizationInvitation({
+        organizationId: 'org',
+        email: 'member@example.com',
+        inviterId: 'owner',
+        role: 'member',
+        now: new Date('2025-10-05'),
+      });
+
+      await expect(
+        resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' }),
+      ).rejects.toThrow(createOrganizationInvitationAlreadyExistsError());
+      expect(sentEmails).toEqual([]);
+    });
+
+    test('resend immediately renews an expired invitation still stored as pending', async () => {
+      const { db, resendOrganizationInvitation, sentEmails } = await setupResendTest({
+        status: 'pending',
+      });
+      await db.insert(organizationInvitationsTable).values([
+        {
+          id: 'accepted',
+          organizationId: 'org',
+          email: 'member@example.com',
+          role: 'member',
+          inviterId: 'owner',
+          status: 'accepted',
+          expiresAt: new Date('2025-10-01'),
+        },
+        {
+          id: 'stale',
+          organizationId: 'org',
+          email: 'other@example.com',
+          role: 'member',
+          inviterId: 'owner',
+          status: 'pending',
+          expiresAt: new Date('2025-10-05T12:00:00Z'),
+        },
+      ]);
+
+      await resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' });
+
+      expect(
+        await db
+          .select()
+          .from(organizationInvitationsTable)
+          .orderBy(organizationInvitationsTable.id),
+      ).toMatchObject([
+        { id: 'accepted', status: 'accepted' },
+        {
+          id: 'invitation',
+          status: 'pending',
+          role: 'admin',
+          expiresAt: new Date('2025-10-12T12:00:00Z'),
+        },
+        { id: 'stale', status: 'expired' },
+      ]);
+      expect(sentEmails).toEqual([{ email: 'member@example.com', organizationId: 'org' }]);
+    });
+
+    test('a cancelled invitation can be resent after a newer invitation expires', async () => {
+      const { db, organizationsRepository, resendOrganizationInvitation, sentEmails } =
+        await setupResendTest();
+      await organizationsRepository.saveOrganizationInvitation({
+        organizationId: 'org',
+        email: 'member@example.com',
+        inviterId: 'owner',
+        role: 'member',
+        now: new Date('2025-09-01'),
+      });
+
+      await resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' });
+
+      expect(
+        await db
+          .select()
+          .from(organizationInvitationsTable)
+          .orderBy(organizationInvitationsTable.id),
+      ).toMatchObject([
+        { id: 'invitation', status: 'pending', expiresAt: new Date('2025-10-12T12:00:00Z') },
+        { status: 'expired' },
+      ]);
+      expect(sentEmails).toHaveLength(1);
+    });
+
+    test('resending an invitation respects organization capacity', async () => {
+      const { organizationsRepository, resendOrganizationInvitation, sentEmails } =
+        await setupResendTest();
+      await organizationsRepository.saveOrganizationInvitation({
+        organizationId: 'org',
+        email: 'other@example.com',
+        inviterId: 'owner',
+        role: 'member',
+        now: new Date('2025-10-05'),
+      });
+
+      await expect(
+        resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' }),
+      ).rejects.toThrow(createMaxOrganizationMembersCountReachedError());
+      expect(sentEmails).toEqual([]);
+    });
+
+    test('resending an invitation respects the senders daily invitation limit', async () => {
+      const { organizationsRepository, resendOrganizationInvitation, sentEmails } =
+        await setupResendTest({ maxMembers: 10, maxInvitationsPerDay: 1 });
+      await organizationsRepository.saveOrganizationInvitation({
+        organizationId: 'org',
+        email: 'other@example.com',
+        inviterId: 'owner',
+        role: 'member',
+        now: new Date('2025-10-05'),
+      });
+
+      await expect(
+        resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' }),
+      ).rejects.toThrow(createUserOrganizationInvitationLimitReachedError());
+      expect(sentEmails).toEqual([]);
+    });
+
+    test('accepted invitations remain historical and cannot be resent', async () => {
+      const { resendOrganizationInvitation, sentEmails } = await setupResendTest({
+        status: 'accepted',
+      });
+
+      await expect(
+        resendOrganizationInvitation({ invitationId: 'invitation', userId: 'owner' }),
+      ).rejects.toThrow(createForbiddenError());
+      expect(sentEmails).toEqual([]);
     });
   });
 

@@ -10,6 +10,7 @@ import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../docume
 import { registerInsertActivityLogOnDocumentTagsChangedHandler } from '../../documents/events/activity-log.document-tags-changed';
 import { registerInsertActivityLogOnDocumentUpdatedHandler } from '../../documents/events/activity-log.document-updated';
 import { registerInsertActivityLogOnDocumentsTrashedHandler } from '../../documents/events/activity-log.documents-trashed';
+import { registerSyncDocumentStorageKeyHandler } from '../../documents/events/storage-key.document-updated';
 import { registerTrackDocumentCreatedHandler } from '../../documents/events/tracking.document-created';
 import { registerTriggerWebhooksOnDocumentCreatedHandler } from '../../documents/events/webhooks.document-created';
 import { registerTriggerWebhooksOnDocumentTagsChangedHandler } from '../../documents/events/webhooks.document-tags-changed';
@@ -17,6 +18,7 @@ import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents
 import { registerTriggerWebhooksOnDocumentsTrashedHandler } from '../../documents/events/webhooks.documents-trashed';
 import { registerFirstUserAdminEventHandler } from '../../roles/event-handlers/first-user-admin.user-created';
 import { registerTrackingUserCreatedEventHandler } from '../../users/event-handlers/tracking.user-created';
+import type { StorageService } from '../../storage/storage.services';
 
 export function registerEventHandlers(deps: {
   trackingServices: TrackingServices;
@@ -25,6 +27,7 @@ export function registerEventHandlers(deps: {
   documentSearchServices: DocumentSearchServices;
   config: Config;
   webhookTriggerServices: WebhookTriggerServices;
+  documentsStorageService: StorageService;
 }) {
   registerFirstUserAdminEventHandler(deps);
   registerTrackingUserCreatedEventHandler(deps);
@@ -39,4 +42,5 @@ export function registerEventHandlers(deps: {
   registerTriggerWebhooksOnDocumentTagsChangedHandler(deps);
   registerInsertActivityLogOnDocumentTagsChangedHandler(deps);
   registerSyncDocumentSearchEventHandlers(deps);
+  registerSyncDocumentStorageKeyHandler(deps);
 }

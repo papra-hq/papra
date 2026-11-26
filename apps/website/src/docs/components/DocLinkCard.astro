@@ -17,6 +17,10 @@ const locale = Astro.params.locale as Locale | undefined;
   class="not-prose group block transition rounded-lg px-6 py-4 border hover:border-primary"
 >
   {icon && <div class={`${icon} size-7 text-primary`} aria-hidden="true"></div>}
-  <div class="transition group-hover:text-primary text-lg font-semibold mt-3">{title}</div>
-  <div class="text-base text-muted-foreground"><slot /></div>
+  <div class="transition text-foreground group-hover:text-primary text-lg font-semibold mt-3">
+    {title}
+  </div>
+  <div class="text-base text-muted-foreground">
+    <slot />
+  </div>
 </a>

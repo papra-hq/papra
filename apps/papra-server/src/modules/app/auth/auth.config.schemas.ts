@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-export const forbiddenEmailDomainsSchema = v.pipe(
+export const domainListSchema = v.pipe(
   v.union([
     v.pipe(
       v.string(),

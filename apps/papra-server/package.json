@@ -11,7 +11,8 @@
     "./organizations/constants": "./src/modules/organizations/organizations.constants.ts",
     "./customProperties/constants": "./src/modules/custom-properties/custom-properties.constants.ts",
     "./apiKeys/constants": "./src/modules/api-keys/api-keys.constants.ts",
-    "./plans/constants": "./src/modules/plans/plans.constants.ts"
+    "./plans/constants": "./src/modules/plans/plans.constants.ts",
+    "./api/contract": "./src/modules/api/api.contracts.registry.ts"
   },
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env  src/index.ts | crowlog-pretty",
@@ -81,13 +82,14 @@
     "mime-types": "^3.0.1",
     "nanoid": "^5.1.5",
     "node-cron": "^3.0.3",
-    "nodemailer": "^9.0.0",
+    "nodemailer": "^10.1.7",
     "ofetch": "catalog:",
     "p-limit": "catalog:",
     "p-queue": "^8.1.0",
     "picomatch": "^4.0.4",
     "posthog-node": "^5.20.0",
     "resend": "^4.6.0",
+    "rou3": "^0.12.0",
     "s3mini": "^0.9.5",
     "stripe": "^17.7.0",
     "tsx": "catalog:",
@@ -104,7 +106,6 @@
     "@types/mime-types": "2.1.4",
     "@types/node": "catalog:",
     "@types/node-cron": "3.0.11",
-    "@types/nodemailer": "8.0.1",
     "@types/picomatch": "4.0.3",
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "0.28.1",
@@ -112,7 +113,7 @@
     "memfs": "4.17.2",
     "testcontainers": "11.5.1",
     "typescript": "catalog:",
-    "vite": "8.1.0",
+    "vite": "8.1.6",
     "vitest": "catalog:"
   }
 }

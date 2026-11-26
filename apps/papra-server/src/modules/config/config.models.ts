@@ -1,20 +1,10 @@
-import type { DeepPartial } from '@corentinth/chisels';
+import type { PublicConfig } from './config.api.contracts';
 import type { Logger } from '@crowlog/logger';
 import type { IntakeEmailsServices } from '../intake-emails/drivers/intake-emails.drivers.models';
 import type { Config } from './config.types';
 import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
 import { pick } from '../shared/objects';
-
-type PublicConfig = Omit<DeepPartial<Config>, 'intakeEmails'> & {
-  intakeEmails: {
-    isEnabled: boolean;
-    address: {
-      canCustomizeUsername: boolean;
-      domains: string[];
-    };
-  };
-};
 
 export function getPublicConfig({
   config,

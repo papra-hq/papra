@@ -24,29 +24,27 @@ const augmentedSections = sections.map((section) => ({
 }));
 ---
 
-{
-  augmentedSections.map((section, index) => (
-    <div class={cn('py-4', index !== 0 ? 'border-t' : '')}>
-      <div class="text-13px font-medium mb-2 pl-4">{t(section.titleKey)}</div>
-      <ul>
-        {section.items.map((item) => (
-          <li>
-            <a
-              href={getDocUrl({ docId: item.docId, locale })}
-              aria-current={item.docId === currentDocId ? 'page' : undefined}
-              class={cn(
-                'text-sm text-muted-foreground hover:(bg-muted text-foreground) transition flex items-center min-h-11 md:min-h-0 px-4 rounded-lg py-1.2 my-1px',
-                item.docId === currentDocId ? 'bg-muted text-foreground' : '',
-              )}
-            >
-              {item.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  ))
-}
+{augmentedSections.map((section, index) => (
+  <div class={cn('py-4', index !== 0 ? 'border-t' : '')}>
+    <div class="text-13px font-medium mb-2 pl-4">{t(section.titleKey)}</div>
+    <ul>
+      {section.items.map((item) => (
+        <li>
+          <a
+            href={getDocUrl({ docId: item.docId, locale })}
+            aria-current={item.docId === currentDocId ? 'page' : undefined}
+            class={cn(
+              'text-sm text-muted-foreground hover:(bg-muted text-foreground) transition flex items-center min-h-11 md:min-h-0 px-4 rounded-lg py-1.2 my-1px',
+              item.docId === currentDocId ? 'bg-muted text-foreground' : '',
+            )}
+          >
+            {item.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+))}
 
 <style>
   a:focus-visible {

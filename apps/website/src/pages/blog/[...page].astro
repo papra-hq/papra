@@ -14,21 +14,25 @@ const { t } = useI18n({ locale: Astro.currentLocale });
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts = await getCollection('blog');
 
-  const sortedPosts = posts.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+  const sortedPosts = posts.sort(
+    (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+  );
 
   return paginate(sortedPosts, { pageSize: 12 });
 }
-
 
 const { page } = Astro.props as { page: Page<CollectionEntry<'blog'>> };
 
 // const allPages = Array.from({ length: page.lastPage }).map((_, index) => {
 //   return `/blog${index === 0 ? '' : `/${String(index + 1)}`}`;
 // });
-
 ---
 
-<Layout title="Blog" description="Stay updated with the latest news and updates from Papra." image={{ src: '/og/blog.png', alt: 'What’s new in the Papra ecosystem' }}>
+<Layout
+  title="Blog"
+  description="Stay updated with the latest news and updates from Papra."
+  image={{ src: '/og/blog.png', alt: 'What’s new in the Papra ecosystem' }}
+>
   <Header />
 
   <div class="flex flex-col min-h-screen">
@@ -41,11 +45,9 @@ const { page } = Astro.props as { page: Page<CollectionEntry<'blog'>> };
 
     <h2 class="sr-only">{t('blog.posts-heading')}</h2>
     <div class="p-6 flex-1 py-20 flex flex-col gap-8">
-      {
-        page.data.map(post => (
-          <BlogCard {...{ post }} />
-        ))
-      }
+      {page.data.map((post) => (
+        <BlogCard {...{ post }} />
+      ))}
     </div>
 
     <!-- <Pagination page={page} allPages={allPages} /> -->

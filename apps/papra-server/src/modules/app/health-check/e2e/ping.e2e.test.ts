@@ -11,9 +11,21 @@ describe('ping routes e2e', () => {
 
     const response = await app.request('/api/ping');
 
-    expect(response.status).to.eql(200);
-    expect(await response.json()).to.eql({
-      status: 'ok',
-    });
+    const body = await response.json();
+
+    expect(response.status).toEqual(200);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(body).toEqual({ status: 'ok' });
+  });
+
+  test('HEAD requests to /api/ping are public and return no body', async () => {
+    const { db } = await createInMemoryDatabase();
+    const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig() }));
+
+    const response = await app.request('/api/ping', { method: 'HEAD' });
+
+    expect(response.status).toEqual(200);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(response.body).toEqual(null);
   });
 });

@@ -1,7 +1,6 @@
 # syntax = docker/dockerfile:1@sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89
 
-ARG NODE_VERSION=26.1.0
-FROM node:${NODE_VERSION}-slim AS base
+FROM node:26.13.1-slim@sha256:e6bedef217677b276c591795e169840edd9096dbf13f29df8ef8d1856b8820bc AS base
 
 LABEL fly_launch_runtime="Node.js"
 

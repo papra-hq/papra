@@ -4,14 +4,18 @@ import type {
   OrganizationInvitationStatus,
   OrganizationRole,
 } from './organizations.types';
-import { injectArguments } from '@corentinth/chisels';
+import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, gte, isNotNull, isNull, lte } from 'drizzle-orm';
 import { addDays, startOfDay } from '../shared/date';
+import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
 import { omitUndefined } from '../shared/objects';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
-import { createOrganizationNotFoundError } from './organizations.errors';
+import {
+  createOrganizationInvitationAlreadyExistsError,
+  createOrganizationNotFoundError,
+} from './organizations.errors';
 import {
   createSearchOrganizationWhereClause,
   ensureInvitationStatus,
@@ -50,7 +54,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getOrganizationInvitationById,
       updateOrganizationInvitation,
       getPendingInvitationsCount,
-      getInvitationForEmailAndOrganization,
+      getPendingInvitationForEmailAndOrganization,
       getOrganizationMemberByEmail,
       getOrganizationInvitations,
       updateExpiredPendingInvitationsStatus,
@@ -401,17 +405,29 @@ async function saveOrganizationInvitation({
   expirationDelayDays?: number;
   now?: Date;
 }) {
-  const [organizationInvitation] = await db
-    .insert(organizationInvitationsTable)
-    .values({
-      organizationId,
-      email,
-      role,
-      inviterId,
-      status: ORGANIZATION_INVITATION_STATUS.PENDING,
-      expiresAt: addDays(now, expirationDelayDays),
-    })
-    .returning();
+  const [result, error] = await safely(
+    db
+      .insert(organizationInvitationsTable)
+      .values({
+        organizationId,
+        email,
+        role,
+        inviterId,
+        status: ORGANIZATION_INVITATION_STATUS.PENDING,
+        expiresAt: addDays(now, expirationDelayDays),
+      })
+      .returning(),
+  );
+
+  if (isUniqueConstraintError({ error })) {
+    throw createOrganizationInvitationAlreadyExistsError();
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  const [organizationInvitation] = result;
 
   return { organizationInvitation };
 }
@@ -513,15 +529,25 @@ async function updateOrganizationInvitation({
   expiresAt?: Date;
   db: Database;
 }) {
-  await db
-    .update(organizationInvitationsTable)
-    .set(
-      omitUndefined({
-        status,
-        expiresAt,
-      }),
-    )
-    .where(eq(organizationInvitationsTable.id, invitationId));
+  const [, error] = await safely(
+    db
+      .update(organizationInvitationsTable)
+      .set(
+        omitUndefined({
+          status,
+          expiresAt,
+        }),
+      )
+      .where(eq(organizationInvitationsTable.id, invitationId)),
+  );
+
+  if (isUniqueConstraintError({ error })) {
+    throw createOrganizationInvitationAlreadyExistsError();
+  }
+
+  if (error) {
+    throw error;
+  }
 }
 
 async function getPendingInvitationsCount({
@@ -558,16 +584,14 @@ async function getPendingInvitationsCount({
   };
 }
 
-async function getInvitationForEmailAndOrganization({
+async function getPendingInvitationForEmailAndOrganization({
   email,
   organizationId,
   db,
-  now = new Date(),
 }: {
   email: string;
   organizationId: string;
   db: Database;
-  now?: Date;
 }) {
   const [invitation] = await db
     .select()
@@ -576,11 +600,12 @@ async function getInvitationForEmailAndOrganization({
       and(
         eq(organizationInvitationsTable.email, email),
         eq(organizationInvitationsTable.organizationId, organizationId),
+        eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
       ),
     );
 
   return {
-    invitation: ensureInvitationStatus({ invitation, now }),
+    invitation,
   };
 }
 
@@ -627,9 +652,11 @@ async function getOrganizationInvitations({
 
 async function updateExpiredPendingInvitationsStatus({
   db,
+  organizationId,
   now = new Date(),
 }: {
   db: Database;
+  organizationId?: string;
   now?: Date;
 }) {
   await db
@@ -639,6 +666,9 @@ async function updateExpiredPendingInvitationsStatus({
       and(
         lte(organizationInvitationsTable.expiresAt, now),
         eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+        organizationId === undefined
+          ? undefined
+          : eq(organizationInvitationsTable.organizationId, organizationId),
       ),
     );
 }

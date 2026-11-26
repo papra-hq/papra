@@ -1,6 +1,9 @@
-import { ofetch } from 'ofetch';
+import type { FetchOptions } from 'ofetch';
 import * as v from 'valibot';
-import { stripDoclingImagePlaceholders } from './docling.content-extraction-strategy.models';
+import {
+  buildDoclingRequestBody,
+  stripDoclingImagePlaceholders,
+} from './docling.content-extraction-strategy.models';
 
 export const doclingResponseSchema = v.object({
   status: v.literal('success'),
@@ -9,39 +12,37 @@ export const doclingResponseSchema = v.object({
   }),
 });
 
-export async function extractTextWithDoclingServer({
-  file,
+export function buildExtractTextWithDoclingServer({
   baseUrl,
   apiKey,
   timeoutMs,
+  options,
+  request,
 }: {
-  file: File;
   baseUrl: string;
   apiKey?: string;
   timeoutMs: number;
+  options: Record<string, unknown>;
+  request: (url: string, options: FetchOptions<'json'>) => Promise<unknown>;
 }) {
   const url = `${baseUrl.replace(/\/$/, '')}/v1/convert/file`;
 
-  const body = new FormData();
-  body.append('files', file);
-  body.append('to_formats', 'md');
-  body.append('image_export_mode', 'placeholder');
+  return async ({ file }: { file: File }) => {
+    const body = buildDoclingRequestBody({ file, options });
 
-  const response = await ofetch<unknown>(url, {
-    method: 'POST',
-    headers: {
-      // 'Content-Type': 'multipart/form-data',
-      ...(apiKey ? { 'X-Api-Key': apiKey } : {}),
-    },
-    timeout: timeoutMs,
-    body,
-  });
+    const response = await request(url, {
+      method: 'POST',
+      headers: {
+        ...(apiKey ? { 'X-Api-Key': apiKey } : {}),
+      },
+      timeout: timeoutMs,
+      body,
+    });
 
-  const parsedResponse = v.parse(doclingResponseSchema, response);
+    const parsedResponse = v.parse(doclingResponseSchema, response);
 
-  const text = stripDoclingImagePlaceholders(parsedResponse.document.md_content);
+    const text = stripDoclingImagePlaceholders(parsedResponse.document.md_content);
 
-  return {
-    text,
+    return { text };
   };
 }
