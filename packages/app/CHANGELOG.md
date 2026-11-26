@@ -20,7 +20,7 @@
 
 ### Patch Changes
 
-- [#1531](https://github.com/papra-hq/papra/pull/1531) [`4ac1d68`](https://github.com/papra-hq/papra/commit/4ac1d68e472b115a21bfd3316946a1170076a762) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added Hungarian translation
+- [#1531](https://github.com/papra-hq/papra/pull/1531) [`4ac1d68`](https://github.com/papra-hq/papra/commit/4ac1d68e472b115a21bfd3316946a1170076a762) Thanks [@nandidorogi](https://github.com/nandidorogi)! - Added Hungarian translation
 
 - [#1468](https://github.com/papra-hq/papra/pull/1468) [`4fef955`](https://github.com/papra-hq/papra/commit/4fef955ce7c13063448f4afd7c1e9a00cc93406b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fonts are now bundled with the app, so that it can be used offline, and no longer depends on Bunny Fonts. A step towards making Papra fully air-gapped.
 
