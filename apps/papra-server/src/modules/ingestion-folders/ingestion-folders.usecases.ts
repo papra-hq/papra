@@ -332,9 +332,12 @@ async function buildPathIgnoreFunction({
     const normalizedPath = isAbsolute(path) ? path : join(cwd, path);
 
     return (
-      Boolean(stats?.isFile()) &&
-      (ignoredFolders.some((folder) => normalizedPath.startsWith(folder)) ||
-        matchExcludedPatterns(normalizedPath))
+      Boolean(stats?.isFile()) && 
+      (
+        Boolean(stats?.size === 0) || // Ignore 0-byte files (issue #1606), ingesting them causes bugs anyway (issues #1168 & #1603)
+        ignoredFolders.some((folder) => normalizedPath.startsWith(folder)) ||
+        matchExcludedPatterns(normalizedPath)
+      )
     );
   };
 }
