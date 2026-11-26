@@ -1,17 +1,9 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useQuery } from '@tanstack/solid-query';
-import {
-  createMemo,
-  createResource,
-  lazy,
-  Match,
-  onCleanup,
-  Show,
-  Suspense,
-  Switch,
-} from 'solid-js';
+import { createResource, lazy, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { BlobUrl } from '@/modules/shared/components/blob-url';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
 
@@ -130,22 +122,6 @@ export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = 
     txtLikeMimeType.includes(props.mimeType) || props.mimeType.startsWith('text/');
   const { t } = useI18n();
 
-  const getObjectUrl = createMemo<string | undefined>((prev) => {
-    if (prev) {
-      // Revoke the previous object URL to avoid memory leaks
-      URL.revokeObjectURL(prev);
-    }
-
-    return getIsImage() || getIsPdf() ? URL.createObjectURL(props.blob) : undefined;
-  });
-
-  onCleanup(() => {
-    const url = getObjectUrl();
-    if (url) {
-      URL.revokeObjectURL(url);
-    }
-  });
-
   // Create a resource to check if octet-stream blob is text-safe
   const [isOctetStreamTextSafe] = createResource(
     () => (props.blob && props.mimeType === 'application/octet-stream' ? props.blob : null),
@@ -161,12 +137,14 @@ export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = 
     <Switch>
       <Match when={getIsImage()}>
         <div>
-          <img src={getObjectUrl()} class="w-full h-full object-contain" />
+          <BlobUrl blob={props.blob}>
+            {(url) => <img src={url} class="w-full h-full object-contain" />}
+          </BlobUrl>
         </div>
       </Match>
 
       <Match when={getIsPdf()}>
-        <PdfViewer url={getObjectUrl()!} />
+        <BlobUrl blob={props.blob}>{(url) => <PdfViewer url={url} />}</BlobUrl>
       </Match>
 
       <Match when={getIsTxtLike()}>
