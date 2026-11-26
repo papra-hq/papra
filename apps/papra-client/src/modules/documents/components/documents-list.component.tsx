@@ -124,7 +124,9 @@ export const deletedAtColumn: ColumnDef<Document> = {
 export const standardActionsColumn: ColumnDef<Document> = {
   header: () => {
     const { t } = useI18n();
-    return <span class="block text-right">{t('documents.list.table.headers.actions')}</span>;
+    return (
+      <span class="hidden text-right sm:block">{t('documents.list.table.headers.actions')}</span>
+    );
   },
   id: 'actions',
   enableSorting: false,
@@ -143,14 +145,16 @@ export const tagsColumn: ColumnDef<Document> = {
   accessorKey: 'tags',
   enableSorting: false,
   cell: (data) => (
-    <DocumentTagsList
-      tags={data.getValue<Tag[]>()}
-      tagClass="text-xs text-muted-foreground"
-      triggerClass="size-6"
-      documentId={data.row.original.id}
-      organizationId={data.row.original.organizationId}
-      asLink
-    />
+    <div class="hidden sm:block">
+      <DocumentTagsList
+        tags={data.getValue<Tag[]>()}
+        tagClass="text-xs text-muted-foreground"
+        triggerClass="size-6"
+        documentId={data.row.original.id}
+        organizationId={data.row.original.organizationId}
+        asLink
+      />
+    </div>
   ),
 };
 
@@ -167,7 +171,12 @@ export const DocumentsPaginatedList: Component<{
   getSorting?: Accessor<SortingState>;
   setSorting?: Setter<SortingState>;
 }> = (props) => {
-  const { t } = useI18n();
+  const { t, formatDate } = useI18n();
+  const isHiddenOnMobileColumn = (columnId: string) =>
+    columnId === 'documentDate' || columnId === 'createdAt' || columnId === 'tags' || columnId === 'deletedAt';
+  const isActionColumn = (columnId: string) => columnId === 'actions';
+  const isNameColumn = (columnId: string) => columnId === 'name';
+
   const table = createSolidTable({
     get data() {
       return props.documents ?? [];
@@ -181,17 +190,17 @@ export const DocumentsPaginatedList: Component<{
         accessorFn: (row) => row.name,
         enableSorting: true,
         cell: (data) => (
-          <div class="overflow-hidden flex gap-4 items-center max-w-500px">
+          <div class="overflow-hidden flex gap-4 items-center w-full min-w-0 sm:max-w-500px">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
               <div
                 class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-primary')}
               />
             </div>
 
-            <div class="flex-1 flex flex-col gap-1 truncate">
+            <div class="flex-1 min-w-0 flex flex-col gap-1">
               <A
                 href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
-                class="font-bold truncate block hover:underline"
+                class="font-bold block max-w-full truncate hover:underline"
                 title={data.row.original.name}
               >
                 {getDocumentNameWithoutExtension({
@@ -205,8 +214,25 @@ export const DocumentsPaginatedList: Component<{
                   getDocumentNameExtension({ name: data.row.original.name }),
                 ]
                   .filter(Boolean)
-                  .join(' - ')}{' '}
-                - <RelativeTime date={data.row.original.createdAt} />
+                  .join(' - ')}
+                <Show when={data.row.original.documentDate}>
+                  {(documentDate) => <> {' - '}{formatDate(documentDate(), { dateStyle: 'short' })}</>}
+                </Show>
+              </div>
+
+              <div class="text-xs text-muted-foreground/80 sm:hidden">
+                {t('documents.list.table.headers.created')} <RelativeTime date={data.row.original.createdAt} />
+              </div>
+
+              <div class="sm:hidden mt-1">
+                <DocumentTagsList
+                  tags={data.row.original.tags}
+                  tagClass="text-xs text-muted-foreground"
+                  triggerClass="size-6"
+                  documentId={data.row.original.id}
+                  organizationId={data.row.original.organizationId}
+                  asLink
+                />
               </div>
             </div>
           </div>
@@ -251,7 +277,13 @@ export const DocumentsPaginatedList: Component<{
                     <For each={headerGroup.headers}>
                       {(header) => {
                         return (
-                          <TableHead>
+                          <TableHead
+                            class={cn(
+                              isHiddenOnMobileColumn(header.column.id) && 'hidden sm:table-cell',
+                              isActionColumn(header.column.id) &&
+                                'w-9 px-1 sm:w-auto sm:px-2',
+                            )}
+                          >
                             <Show when={!header.isPlaceholder}>
                               <Show
                                 when={header.column.getCanSort()}
@@ -294,7 +326,14 @@ export const DocumentsPaginatedList: Component<{
                     <TableRow data-state={row.getIsSelected() && 'selected'}>
                       <For each={row.getVisibleCells()}>
                         {(cell) => (
-                          <TableCell>
+                          <TableCell
+                            class={cn(
+                              isHiddenOnMobileColumn(cell.column.id) && 'hidden sm:table-cell',
+                              isNameColumn(cell.column.id) && 'w-full min-w-0 max-w-0',
+                              isActionColumn(cell.column.id) &&
+                                'w-9 px-1 sm:w-auto sm:px-2',
+                            )}
+                          >
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         )}
