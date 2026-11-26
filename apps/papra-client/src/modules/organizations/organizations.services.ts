@@ -175,6 +175,10 @@ export async function fetchOrganizationSettings({ organizationId }: { organizati
           isEnabled: boolean;
           canCreateNewTags: boolean;
           maxTags: number;
+          namingEnabled: boolean;
+          separateNamingRequest: boolean;
+          filenamePrompt: string;
+          taggingPrompt: string;
         };
       };
     };
@@ -199,6 +203,10 @@ export async function updateOrganizationSettings({
         isEnabled?: boolean;
         canCreateNewTags?: boolean;
         maxTags?: number;
+        namingEnabled?: boolean;
+        separateNamingRequest?: boolean;
+        filenamePrompt?: string;
+        taggingPrompt?: string;
       };
     };
   };

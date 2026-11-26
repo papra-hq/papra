@@ -35,6 +35,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationDocumentsIterator,
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
+      renameDocumentIfUnchanged,
       updateDocumentStorageKey,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
@@ -606,4 +607,35 @@ export async function areAllDocumentsInOrganization({
   }
 
   return documentIds.every((documentId) => foundDocumentIds.has(documentId));
+}
+
+async function renameDocumentIfUnchanged({
+  documentId,
+  organizationId,
+  name,
+  expectedName,
+  expectedContent,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  name: string;
+  expectedName: string;
+  expectedContent: string;
+  db: Database;
+}) {
+  const [document] = await db
+    .update(documentsTable)
+    .set({ name })
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.isDeleted, false),
+        eq(documentsTable.name, expectedName),
+        eq(documentsTable.content, expectedContent),
+      ),
+    )
+    .returning();
+  return { document };
 }

@@ -61,7 +61,7 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 - _Coming maybe one day:_ **Mobile app**: Access and upload documents on the go.
 - _Coming maybe one day:_ **Desktop app**: Access and upload documents from your computer.
 - _Coming maybe one day:_ **Browser extension**: Upload documents from your browser.
-- _Coming maybe one day:_ **AI**: Use AI to help you manage or tag your documents.
+- **AI document enrichment**: Generate tags and descriptive filenames together, with configurable instructions. See the [auto tagging guide](./apps/docs/src/content/docs/03-guides/12-auto-tagging.mdx).
 
 ## Support
 

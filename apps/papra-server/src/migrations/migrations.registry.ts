@@ -28,6 +28,9 @@ import { addOrganizationSettingsTableMigration } from './list/0025-add-organizat
 import { addIndexesMigration } from './list/0026-add-indexes.migration';
 import { aiCreditsMigration } from './list/0027-ai-credits.migration';
 import { pendingOrganizationInvitationsUniqueMigration } from './list/0028-pending-organization-invitations-unique.migration';
+import { aiDocumentNamingMigration } from './list/0029-ai-document-naming.migration';
+import { separateNamingRequestMigration } from './list/0030-separate-naming-request.migration';
+import { taggingPromptMigration } from './list/0031-tagging-prompt.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -58,4 +61,7 @@ export const migrations: Migration[] = [
   addIndexesMigration,
   aiCreditsMigration,
   pendingOrganizationInvitationsUniqueMigration,
+  aiDocumentNamingMigration,
+  separateNamingRequestMigration,
+  taggingPromptMigration,
 ];

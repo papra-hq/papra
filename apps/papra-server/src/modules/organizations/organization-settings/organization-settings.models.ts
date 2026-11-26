@@ -12,6 +12,10 @@ export function formatOrganizationSettingsForApiResponse({
         'isEnabled',
         'canCreateNewTags',
         'maxTags',
+        'namingEnabled',
+        'separateNamingRequest',
+        'filenamePrompt',
+        'taggingPrompt',
       ]),
     },
   };

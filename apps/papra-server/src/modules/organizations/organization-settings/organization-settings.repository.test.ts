@@ -109,3 +109,35 @@ describe('organization-settings.repository', () => {
     });
   });
 });
+
+test('naming preferences persist independently for each organization', async () => {
+  const { db } = await createInMemoryDatabase({
+    organizations: [
+      { id: 'org_1', name: 'One' },
+      { id: 'org_2', name: 'Two' },
+    ],
+  });
+  const repository = createOrganizationSettingsRepository({ db });
+  await repository.createOrUpdateOrganizationSettings({
+    organizationId: 'org_1',
+    settings: {
+      aiAutoNamingEnabled: true,
+      aiFilenamePrompt: 'German filenames',
+    },
+  });
+  await repository.createOrUpdateOrganizationSettings({
+    organizationId: 'org_1',
+    settings: { aiAutoTaggingMaxTags: 3 },
+  });
+  const { organizationRawSettings } = await repository.getOrganizationSettings({
+    organizationId: 'org_1',
+  });
+  expect(organizationRawSettings).toMatchObject({
+    aiAutoNamingEnabled: true,
+    aiFilenamePrompt: 'German filenames',
+    aiAutoTaggingMaxTags: 3,
+  });
+  expect(
+    (await repository.getOrganizationSettings({ organizationId: 'org_2' })).organizationRawSettings,
+  ).toBeUndefined();
+});
