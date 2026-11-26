@@ -139,7 +139,8 @@ describe('custom-properties models', () => {
   });
 
   describe('buildCustomPropertiesArray', () => {
-    const def = (key: string, name: string, type: string, displayOrder: number) => ({
+    const def = (id: string, key: string, name: string, type: string, displayOrder: number) => ({
+      id,
       key,
       name,
       type,
@@ -148,7 +149,10 @@ describe('custom-properties models', () => {
 
     test('returns an array with definition info and values', () => {
       const result = buildCustomPropertiesArray({
-        propertyDefinitions: [def('name', 'Name', 'text', 0), def('amount', 'Amount', 'number', 1)],
+        propertyDefinitions: [
+          def('cpd_a', 'name', 'Name', 'text', 0),
+          def('cpd_b', 'amount', 'Amount', 'number', 1),
+        ],
         rawValues: [
           {
             value: {
@@ -184,14 +188,31 @@ describe('custom-properties models', () => {
       });
 
       expect(result).to.eql([
-        { key: 'name', name: 'Name', type: 'text', displayOrder: 0, value: 'hello' },
-        { key: 'amount', name: 'Amount', type: 'number', displayOrder: 1, value: 42 },
+        {
+          propertyDefinitionId: 'cpd_a',
+          key: 'name',
+          name: 'Name',
+          type: 'text',
+          displayOrder: 0,
+          value: 'hello',
+        },
+        {
+          propertyDefinitionId: 'cpd_b',
+          key: 'amount',
+          name: 'Amount',
+          type: 'number',
+          displayOrder: 1,
+          value: 42,
+        },
       ]);
     });
 
     test('includes null value for definitions with no value set', () => {
       const result = buildCustomPropertiesArray({
-        propertyDefinitions: [def('name', 'Name', 'text', 0), def('amount', 'Amount', 'number', 1)],
+        propertyDefinitions: [
+          def('cpd_a', 'name', 'Name', 'text', 0),
+          def('cpd_b', 'amount', 'Amount', 'number', 1),
+        ],
         rawValues: [
           {
             value: {
@@ -212,8 +233,22 @@ describe('custom-properties models', () => {
       });
 
       expect(result).to.eql([
-        { key: 'name', name: 'Name', type: 'text', displayOrder: 0, value: 'hello' },
-        { key: 'amount', name: 'Amount', type: 'number', displayOrder: 1, value: null },
+        {
+          propertyDefinitionId: 'cpd_a',
+          key: 'name',
+          name: 'Name',
+          type: 'text',
+          displayOrder: 0,
+          value: 'hello',
+        },
+        {
+          propertyDefinitionId: 'cpd_b',
+          key: 'amount',
+          name: 'Amount',
+          type: 'number',
+          displayOrder: 1,
+          value: null,
+        },
       ]);
     });
 
@@ -221,14 +256,62 @@ describe('custom-properties models', () => {
       expect(
         buildCustomPropertiesArray({
           propertyDefinitions: [
-            def('name', 'Name', 'text', 0),
-            def('amount', 'Amount', 'number', 1),
+            def('cpd_a', 'name', 'Name', 'text', 0),
+            def('cpd_b', 'amount', 'Amount', 'number', 1),
           ],
           rawValues: [],
         }),
       ).to.eql([
-        { key: 'name', name: 'Name', type: 'text', displayOrder: 0, value: null },
-        { key: 'amount', name: 'Amount', type: 'number', displayOrder: 1, value: null },
+        {
+          propertyDefinitionId: 'cpd_a',
+          key: 'name',
+          name: 'Name',
+          type: 'text',
+          displayOrder: 0,
+          value: null,
+        },
+        {
+          propertyDefinitionId: 'cpd_b',
+          key: 'amount',
+          name: 'Amount',
+          type: 'number',
+          displayOrder: 1,
+          value: null,
+        },
+      ]);
+    });
+
+    test('joins values by definition ID even if names and keys have changed', () => {
+      const result = buildCustomPropertiesArray({
+        propertyDefinitions: [def('cpd_a', 'reference', 'Reference', 'text', 0)],
+        rawValues: [
+          {
+            value: {
+              id: 'v1',
+              propertyDefinitionId: 'cpd_a',
+              textValue: 'INV-001',
+              numberValue: null,
+              dateValue: null,
+              booleanValue: null,
+              selectOptionId: null,
+              ...baseValue,
+            },
+            definition: { id: 'cpd_a', name: 'Invoice Number', key: 'invoicenumber', type: 'text' },
+            option: null,
+            ...baseRow,
+          },
+        ],
+      });
+
+      expect(result).to.eql([
+        {
+          propertyDefinitionId: 'cpd_a',
+          key: 'reference',
+          name: 'Reference',
+          type: 'text',
+          displayOrder: 0,
+          value: 'INV-001',
+        },
       ]);
     });
 

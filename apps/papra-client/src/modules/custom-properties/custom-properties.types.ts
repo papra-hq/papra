@@ -3,6 +3,7 @@ import type { CustomPropertyType } from '@papra/app-server/customProperties/cons
 export { CustomPropertyType };
 
 export type DocumentCustomProperty = {
+  propertyDefinitionId: string;
   key: string;
   name: string;
   type: CustomPropertyType;
