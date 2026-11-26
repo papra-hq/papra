@@ -1,5 +1,23 @@
 # @papra/app
 
+## 26.8.0
+
+### Minor Changes
+
+- [#1580](https://github.com/papra-hq/papra/pull/1580) [`d0638d1`](https://github.com/papra-hq/papra/commit/d0638d11e1ca3795600b7baa68afed1d5b1daabb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Admins can now delete organizations from their details page in the admin panel.
+
+### Patch Changes
+
+- [#1615](https://github.com/papra-hq/papra/pull/1615) [`22df14c`](https://github.com/papra-hq/papra/commit/22df14cbffe8dfbcfd12711074b0cea43edb661c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated Node.js to 26.13.1 to include the latest security fixes.
+
+- [#1614](https://github.com/papra-hq/papra/pull/1614) [`68efda6`](https://github.com/papra-hq/papra/commit/68efda659346333a609d0a69a1dd50d8f2bec5c5) Thanks [@Goldloli](https://github.com/Goldloli)! - Fixed the `-` negation prefix in front of a parenthesized group, `-(tag:personal OR tag:private)` now parses the same as `NOT (tag:personal OR tag:private)` instead of negating an empty text term
+
+- [#1627](https://github.com/papra-hq/papra/pull/1627) [`b935b80`](https://github.com/papra-hq/papra/commit/b935b80bdb177a1dfa3dbc5e868426a5531be389) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix PDF previews going blank after navigating back and reopening a document.
+
+- [#1628](https://github.com/papra-hq/papra/pull/1628) [`a3d8c14`](https://github.com/papra-hq/papra/commit/a3d8c1423e81bf8895bdef0edfa8b24595d88b6d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add Korean (ko) language support
+
+- [#1590](https://github.com/papra-hq/papra/pull/1590) [`648c223`](https://github.com/papra-hq/papra/commit/648c223b807500f0258c822e0321d6ef4964f064) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Refactor AI auto-tagging to use a capability-based document enrichment pipeline, preparing for additional enrichment features.
+
 ## 26.7.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @papra/mobile
 
+## 1.2.0
+
+### Minor Changes
+
+- [#1597](https://github.com/papra-hq/papra/pull/1597) [`a920154`](https://github.com/papra-hq/papra/commit/a9201548c27cb27303a76326058718e3f574c35b) Thanks [@milefil](https://github.com/milefil)! - Added Italian translations.
+
+### Patch Changes
+
+- [#1628](https://github.com/papra-hq/papra/pull/1628) [`a3d8c14`](https://github.com/papra-hq/papra/commit/a3d8c1423e81bf8895bdef0edfa8b24595d88b6d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add Italian (it) language support
+
 ## 1.1.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @papra/search-parser
 
+## 0.1.3
+
+### Patch Changes
+
+- [#1614](https://github.com/papra-hq/papra/pull/1614) [`68efda6`](https://github.com/papra-hq/papra/commit/68efda659346333a609d0a69a1dd50d8f2bec5c5) Thanks [@Goldloli](https://github.com/Goldloli)! - Fixed the `-` negation prefix in front of a parenthesized group, `-(tag:personal OR tag:private)` now parses the same as `NOT (tag:personal OR tag:private)` instead of negating an empty text term
+
 ## 0.1.2
 
 ### Patch Changes
