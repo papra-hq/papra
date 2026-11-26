@@ -3,7 +3,8 @@ import type { Config } from './config.types';
 import { describe, expect, test } from 'vitest';
 import * as v from 'valibot';
 import { publicConfigSchema } from './config.api.contracts';
-import { getClientBaseUrl, getPublicConfig, getServerBaseUrl } from './config.models';
+import { configDefinition } from './config';
+import { getClientBaseUrl, getConfigDefinitionEnvNames, getPublicConfig, getServerBaseUrl, resolveEnvVarsFromFiles } from './config.models';
 import { overrideConfig } from './config.test-utils';
 
 describe('config models', () => {
@@ -196,6 +197,77 @@ describe('config models', () => {
           } as Config,
         }),
       ).to.eql({ clientBaseUrl: 'https://papra.app' });
+    });
+  });
+
+  describe('getConfigDefinitionEnvNames', () => {
+    test('collects env names from nested definitions, including env name lists', () => {
+      expect(getConfigDefinitionEnvNames({
+        configDefinition: {
+          a: { schema: v.string(), env: 'A' },
+          nested: { b: { schema: v.string(), env: ['B1', 'B2'] }, c: { schema: v.string(), default: 'c' } },
+        },
+      }).sort()).to.eql(['A', 'B1', 'B2']);
+    });
+
+    test('the real config definition exposes its env names', () => {
+      const names = getConfigDefinitionEnvNames({ configDefinition });
+
+      expect(names).to.include('AUTH_SECRET');
+    });
+  });
+
+  describe('resolveEnvVarsFromFiles', () => {
+    const definition = {
+      secret: { schema: v.string(), env: 'AUTH_SECRET' },
+      other: { schema: v.string(), env: 'OTHER' },
+    };
+    const files: Record<string, string> = { '/run/secrets/auth': 'my-secret\n', '/run/secrets/crlf': 'crlf-secret\r\n', '/run/secrets/spaces': '  padded  \n\n' };
+    const readTextFile = async (path: string) => {
+      if (path in files) {
+        return files[path]!;
+      }
+      throw new Error('ENOENT: no such file or directory');
+    };
+
+    test('the value of <ENV>_FILE file is used as <ENV>, without the trailing newline', async () => {
+      const { env } = await resolveEnvVarsFromFiles({
+        env: { AUTH_SECRET_FILE: '/run/secrets/auth', OTHER: 'value' },
+        configDefinition: definition,
+        readTextFile,
+      });
+
+      expect(env).to.eql({ AUTH_SECRET_FILE: '/run/secrets/auth', AUTH_SECRET: 'my-secret', OTHER: 'value' });
+      expect((await resolveEnvVarsFromFiles({ env: { AUTH_SECRET_FILE: '/run/secrets/crlf' }, configDefinition: definition, readTextFile })).env.AUTH_SECRET).to.eql('crlf-secret');
+      expect((await resolveEnvVarsFromFiles({ env: { AUTH_SECRET_FILE: '/run/secrets/spaces' }, configDefinition: definition, readTextFile })).env.AUTH_SECRET).to.eql('  padded  \n');
+    });
+
+    test('the env is left untouched when no _FILE variable is set or it is empty', async () => {
+      const input = { AUTH_SECRET: 'direct', OTHER_FILE: '' };
+
+      expect((await resolveEnvVarsFromFiles({ env: input, configDefinition: definition, readTextFile })).env).to.eql(input);
+    });
+
+    test('_FILE variables of unknown env names are ignored', async () => {
+      const input = { UNKNOWN_FILE: '/run/secrets/auth' };
+
+      expect((await resolveEnvVarsFromFiles({ env: input, configDefinition: definition, readTextFile })).env).to.eql(input);
+    });
+
+    test('setting both <ENV> and <ENV>_FILE is an error', async () => {
+      await expect(resolveEnvVarsFromFiles({
+        env: { AUTH_SECRET: 'direct', AUTH_SECRET_FILE: '/run/secrets/auth' },
+        configDefinition: definition,
+        readTextFile,
+      })).rejects.toThrow('Both AUTH_SECRET and AUTH_SECRET_FILE are set, only one of them can be used');
+    });
+
+    test('an unreadable file is reported with the variable and path', async () => {
+      await expect(resolveEnvVarsFromFiles({
+        env: { AUTH_SECRET_FILE: '/run/secrets/missing' },
+        configDefinition: definition,
+        readTextFile,
+      })).rejects.toThrow('Unable to read the file "/run/secrets/missing" referenced by AUTH_SECRET_FILE: ENOENT');
     });
   });
 });
