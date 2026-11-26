@@ -42,7 +42,13 @@ export async function extractFileFromArchive({
   archive: JSZip;
   filePath: string;
 }): Promise<Buffer> {
-  const file = archive.file(filePath);
+  // Archive entry names and manifest paths can use different unicode normalization forms (e.g. NFD names in archives re-compressed on macOS)
+  const normalizedFilePath = filePath.normalize('NFC');
+  const file =
+    archive.file(filePath) ??
+    Object.values(archive.files).find(
+      (entry) => !entry.dir && entry.name.normalize('NFC') === normalizedFilePath,
+    );
 
   if (!file) {
     throw new Error(`File not found in archive: ${filePath}`);
