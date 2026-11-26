@@ -1,10 +1,7 @@
 import type { Database } from '../../app/database/database.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import { createTagsRepository } from '../../tags/tags.repository';
-import {
-  buildApplyAutoTaggingActions,
-  buildPromptForAutoTagging,
-} from '../../auto-tagging/auto-tagging.usecases';
+import { buildApplyAutoTaggingActions } from '../../auto-tagging/auto-tagging.usecases';
 import { applyTagsToDocuments, createTag } from '../../tags/tags.usecases';
 import { createLogger } from '../../shared/logger/logger';
 import { createResolveOrganizationSettingsUsecase } from '../../organizations/organization-settings/organization-settings.usecases';
@@ -15,6 +12,7 @@ import type { EventServices } from '../../app/events/events.services';
 import type { AiServices } from '../../ai/ai.services';
 import { buildEnrichDocument } from '../document-enrichment.usecases';
 import type { DocumentEnrichmentCapability } from '../document-enrichment.schemas';
+import { buildTagsEnrichmentCapability } from '../enrichment-capabilities/tags/tags.enrichment-capability';
 
 export async function registerEnrichDocumentTask({
   taskServices,
@@ -54,16 +52,21 @@ export async function registerEnrichDocumentTask({
         documentsRepository,
         tagsRepository,
         logger,
-        promptForAutoTagging: buildPromptForAutoTagging({ aiServices }),
-        applyAutoTaggingActions: buildApplyAutoTaggingActions({
-          createTag: async (args) => createTag({ ...args, config, tagsRepository }),
-          applyTagsToDocuments: async (args) =>
-            applyTagsToDocuments({ ...args, tagsRepository, eventServices, logger }),
-        }),
+        capabilityDefinitions: [
+          buildTagsEnrichmentCapability({
+            config,
+            applyAutoTaggingActions: buildApplyAutoTaggingActions({
+              createTag: async (args) => createTag({ ...args, config, tagsRepository }),
+              applyTagsToDocuments: async (args) =>
+                applyTagsToDocuments({ ...args, tagsRepository, eventServices, logger }),
+            }),
+          }),
+        ],
         resolveOrganizationSettings: createResolveOrganizationSettingsUsecase({
           config,
           organizationSettingsRepository,
         }),
+        aiServices,
       });
 
       await enrichDocument({ documentId, organizationId, capabilities });

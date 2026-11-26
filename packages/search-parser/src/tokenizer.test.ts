@@ -14,6 +14,18 @@ describe('tokenizer', () => {
           expectedTokens: [{ type: 'NOT' }, { type: 'TEXT', value: 'foobar' }, { type: 'EOF' }],
         },
         {
+          query: '-(tag:personal OR tag:private)',
+          expectedTokens: [
+            { type: 'NOT' },
+            { type: 'LPAREN' },
+            { type: 'FILTER', field: 'tag', operator: '=', value: 'personal' },
+            { type: 'OR' },
+            { type: 'FILTER', field: 'tag', operator: '=', value: 'private' },
+            { type: 'RPAREN' },
+            { type: 'EOF' },
+          ],
+        },
+        {
           query: 'status:open AND priority:high',
           expectedTokens: [
             { type: 'FILTER', field: 'status', operator: '=', value: 'open' },

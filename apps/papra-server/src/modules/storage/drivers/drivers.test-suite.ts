@@ -279,7 +279,7 @@ export function runDriverTestSuites({
           const { storageServices } = resource;
 
           // Use a unique key per run so suites that share a real backend (e.g. a live R2/B2 bucket)
-          // don't collide. With isolated localstack containers this just adds harmless entropy.
+          // don't collide.
           const storageKey = `files/${randomUUID()}.txt`;
 
           // Save the file

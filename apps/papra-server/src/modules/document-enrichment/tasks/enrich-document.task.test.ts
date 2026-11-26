@@ -114,7 +114,7 @@ describe('document enrichment task', () => {
     expect(request).toMatchObject({
       organizationId: 'org_1',
       modelId: 'openai://test-model',
-      source: 'auto-tagging',
+      source: 'document-enrichment',
     });
     expect(request.userPrompt).toContain('Invoice for office supplies');
     expect(await deps.db.select().from(documentsTagsTable)).toEqual([

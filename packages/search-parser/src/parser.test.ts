@@ -444,6 +444,46 @@ describe('parseSearchQuery', () => {
         issues: [],
       });
     });
+
+    test('negates grouped expression with minus prefix', () => {
+      expect(parseSearchQuery({ query: '-(tag:personal OR tag:private)' })).toEqual({
+        expression: {
+          type: 'not',
+          operand: {
+            type: 'or',
+            operands: [
+              { type: 'filter', field: 'tag', operator: '=', value: 'personal' },
+              { type: 'filter', field: 'tag', operator: '=', value: 'private' },
+            ],
+          },
+        },
+        issues: [],
+      });
+    });
+
+    test('negates nested grouped expression with minus prefix', () => {
+      expect(
+        parseSearchQuery({ query: '-((tag:personal OR tag:private) AND type:invoice)' }),
+      ).toEqual({
+        expression: {
+          type: 'not',
+          operand: {
+            type: 'and',
+            operands: [
+              {
+                type: 'or',
+                operands: [
+                  { type: 'filter', field: 'tag', operator: '=', value: 'personal' },
+                  { type: 'filter', field: 'tag', operator: '=', value: 'private' },
+                ],
+              },
+              { type: 'filter', field: 'type', operator: '=', value: 'invoice' },
+            ],
+          },
+        },
+        issues: [],
+      });
+    });
   });
 
   describe('when using grouping with parentheses', () => {

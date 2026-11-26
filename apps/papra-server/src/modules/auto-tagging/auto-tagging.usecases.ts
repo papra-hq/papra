@@ -1,4 +1,3 @@
-import type { AiServices } from '../ai/ai.services';
 import type { Tag } from '../tags/tags.types';
 import type {
   applyTagsToDocuments as applyTagsToDocumentsUsecase,
@@ -6,43 +5,6 @@ import type {
 } from '../tags/tags.usecases';
 import pLimit from 'p-limit';
 import type { AutoTaggingActions } from './auto-tagging.models';
-import {
-  buildAutoTaggingSchema,
-  buildAutoTaggingSystemPrompt,
-  buildAutoTaggingUserPrompt,
-  getTagsActions,
-} from './auto-tagging.models';
-
-export function buildPromptForAutoTagging({ aiServices }: { aiServices: AiServices }) {
-  return async ({
-    document,
-    existingTags,
-    canCreateNewTags,
-    maxTags,
-    modelId,
-  }: {
-    document: { content: string; name: string; organizationId: string };
-    existingTags: { id: string; name: string; description?: string | null }[];
-    canCreateNewTags: boolean;
-    maxTags: number;
-    modelId: string;
-  }): Promise<AutoTaggingActions> => {
-    const autoTaggingResponse = await aiServices.generateStructuredData({
-      modelId,
-      organizationId: document.organizationId,
-      source: 'auto-tagging',
-      schema: buildAutoTaggingSchema({ existingTags, canCreateNewTags }),
-      systemPrompt: buildAutoTaggingSystemPrompt({ existingTags, canCreateNewTags, maxTags }),
-      userPrompt: buildAutoTaggingUserPrompt({ document }),
-    });
-
-    return getTagsActions({
-      autoTaggingResponse,
-      existingTags,
-      maxTags,
-    });
-  };
-}
 
 export function buildApplyAutoTaggingActions({
   createTag,
