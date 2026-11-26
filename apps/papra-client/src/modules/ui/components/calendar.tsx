@@ -10,7 +10,7 @@ export const CalendarNav: Component<ComponentProps<typeof Calendar.Nav>> = (prop
     <Calendar.Nav
       {...props}
       class={cn(
-        'inline-flex items-center justify-center rounded-md size-7 hover:bg-accent hover:text-accent-foreground transition-colors',
+        'inline-flex items-center justify-center rounded-md size-7 hover:bg-accent hover:text-accent-foreground transition-colors disabled:(opacity-50 pointer-events-none)',
         props.class,
       )}
     />
