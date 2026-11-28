@@ -297,6 +297,36 @@ describe('query-builder - custom properties', async () => {
       });
     });
 
+    test('expiry:now.year uses the start of the current year', () => {
+      const { sqlQuery, issues } = handleCustomPropertyFilter({
+        expression: { type: 'filter', field: 'expiry', operator: '=', value: 'now.year' },
+        definition: makeDefinition({ id: 'cpd_4', type: 'date', key: 'expiry' }),
+        db,
+        now,
+      });
+
+      expect(issues).to.eql([]);
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" = ?))`,
+        params: ['cpd_4', new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0).getTime()],
+      });
+    });
+
+    test('expiry:now - 1y uses dynamic date arithmetic', () => {
+      const { sqlQuery, issues } = handleCustomPropertyFilter({
+        expression: { type: 'filter', field: 'expiry', operator: '=', value: 'now - 1y' },
+        definition: makeDefinition({ id: 'cpd_4', type: 'date', key: 'expiry' }),
+        db,
+        now,
+      });
+
+      expect(issues).to.eql([]);
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" = ?))`,
+        params: ['cpd_4', new Date('2024-06-15T00:00:00.000Z').getTime()],
+      });
+    });
+
     test('expiry:not-a-date returns an INVALID_DATE_FORMAT issue', () => {
       const { sqlQuery, issues } = handleCustomPropertyFilter({
         expression: { type: 'filter', field: 'expiry', operator: '=', value: 'not-a-date' },
